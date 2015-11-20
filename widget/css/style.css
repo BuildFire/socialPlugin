@@ -39,7 +39,7 @@
 /* Bottom Message */
 .holder.bottom-post{
 	background:#fff;
-	position:absolute;
+	position:fixed;
 	left:0;
 	bottom:0;
 	width:100%;
