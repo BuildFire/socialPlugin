@@ -14,7 +14,7 @@
              *To disable pull down to refresh functionality
              * */
 
-            buildfire.datastore.disableRefresh();
+//            buildfire.datastore.disableRefresh();
 
             $routeProvider
                 .when('/', {
