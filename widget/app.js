@@ -22,6 +22,11 @@
                     controllerAs: 'WidgetWall',
                     controller: 'WidgetWallCtrl'
                 })
+                .when('/thread/:threadId', {
+                    templateUrl: 'templates/thread.html',
+                    controllerAs: 'Thread',
+                    controller: 'ThreadCtrl'
+                })
                 .otherwise('/');
         }])
 })(window.angular, window.buildfire);
