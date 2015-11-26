@@ -62,6 +62,27 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
+                },
+                getUsers: function (userIdsArray) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'users/getUsers';
+                    postDataObject.params = {};
+                    postDataObject.params.userIds = userIdsArray || [];
+                    postDataObject.userToken = null;
+                    var successCallback = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data='+ JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 }
             }
         }])
