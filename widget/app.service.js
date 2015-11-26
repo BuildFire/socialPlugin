@@ -18,10 +18,10 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/add';
                     postDataObject.params = postData || {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId =  Buildfire.context.appId;
                     postDataObject.params.secureToken = null;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
-                    postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
+                    postDataObject.params.userToken =  localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDataObject.params.parentThreadId =  Buildfire.context.appId + Buildfire.context.instanceId;
                     postDataObject.userToken = null;
                     console.log(postDataObject);
                     if(localStorage.getItem('user'))
@@ -46,8 +46,8 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/findByPage';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
+                    postDataObject.params.appId=Buildfire.context.appId;
+                    postDataObject.params.parentThreadId =  Buildfire.context.appId + Buildfire.context.instanceId;
                     postDataObject.params.lastThreadId = null;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
@@ -62,6 +62,9 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
+                },
+                uploadImage:function(image){
+
                 }
             }
         }])
