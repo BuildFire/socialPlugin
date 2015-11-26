@@ -4,10 +4,10 @@
         <div class="head clearfix margin-bottom-fifteen">
             <div class="col-xs-8 padding-left-zero pull-left">
                 <div class="media-holder pull-left">
-                    <img src="http://www.placehold.it/100x100">
+                    <img ng-src="{{ContentHome.getUserImage(post.userId)}}" width="">
                 </div>
                 <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                    <a class="text-primary">Jackie Conrad</a>
+                    <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
                 </p>
             </div>
             <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
