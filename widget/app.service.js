@@ -24,8 +24,8 @@
                     postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
                     postDataObject.userToken = null;
                     console.log(postDataObject);
-                    if(localStorage.getItem('user'))
-                    postData.params.userToken = localStorage.getItem('user').userToken;
+                    if (localStorage.getItem('user'))
+                        postData.params.userToken = localStorage.getItem('user').userToken;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
@@ -34,7 +34,7 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link+'?data='+ JSON.stringify(postDataObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
@@ -43,7 +43,7 @@
                 getPosts: function () {
                     var deferred = $q.defer();
                     var postDataObject = {};
-                    postDataObject.id = '2';
+                    postDataObject.id = '1';
                     postDataObject.method = 'thread/findByPage';
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
@@ -58,20 +58,41 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link+'?data='+ JSON.stringify(postDataObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                addComment:function(data){
+                getUsers: function (userIdsArray) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'users/getUsers';
+                    postDataObject.params = {};
+                    postDataObject.params.userIds = userIdsArray || [];
+                    postDataObject.userToken = null;
+                    var successCallback = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                addComment: function (data) {
 
-                   /* var data1={"id":1,"method":"threadComments/add",
-                        "params":{
-                        "appId":socailAppId,
-                            "threadId":threadId,
-                            "userToken":userToken,
-                            "comment":”text text text”,
-                        "attachedImage":null},"userToken":null};*/
+                    /* var data1={"id":1,"method":"threadComments/add",
+                     "params":{
+                     "appId":socailAppId,
+                     "threadId":threadId,
+                     "userToken":userToken,
+                     "comment":”text text text”,
+                     "attachedImage":null},"userToken":null};*/
 
                     var deferred = $q.defer();
                     var postDataObject = {};
@@ -85,21 +106,22 @@
                     postDataObject.params.attachedImage = null;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
-                        console.log('Add Comment callback recieved--------------',response);
+                        console.log('Add Comment callback recieved--------------', response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
-                        console.log('Add Comment callback recieved--Error------------',err);
+                        console.log('Add Comment callback recieved--Error------------', err);
                         return deferred.reject(err);
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link+'?data='+ JSON.stringify(postDataObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
-                },
-                getThreadByUniqueLink:function(threadUniqueLink){
+                }
+                ,
+                getThreadByUniqueLink: function (threadUniqueLink) {
                     /*{
                      "id":1,
                      "method":"thread/getThread",
@@ -123,23 +145,20 @@
                     postDataObject.params.title = null;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
-                        console.log('get Post callback recieved--------------',response);
+                        console.log('get Post callback recieved--------------', response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
-                        console.log('get Post callback recieved--Error------------',err);
+                        console.log('get Post callback recieved--Error------------', err);
                         return deferred.reject(err);
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link+'?data='+ JSON.stringify(postDataObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 }
-               /* uploadImage:function(image){
-
-                }*/
             }
         }])
 })(window.angular, window.buildfire);
