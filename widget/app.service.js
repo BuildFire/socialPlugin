@@ -158,6 +158,12 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
+                },
+                getCommentsOfAPost:function(){
+
+                },
+                addLikeToAPost:function(){
+                    
                 }
             }
         }])
