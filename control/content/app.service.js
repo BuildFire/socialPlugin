@@ -18,7 +18,7 @@
                     postDataObject.method = 'thread/findByPage';
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    postDataObject.params.parentThreadId =  '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
+                    postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
                     postDataObject.params.lastThreadId = null;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
