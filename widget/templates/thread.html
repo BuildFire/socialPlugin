@@ -50,7 +50,7 @@
 				<a>Load More Comments</a>			
 			</div>
 			<div class="comments-list">
-				<div class="social-comment">
+				<div class="social-comment" ng-repeat="comment in Thread.comments">
 					<hr class="small">
 					<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
 						<div class="col-xs-8 pull-left">
@@ -63,7 +63,7 @@
 						</div>
 					</div>
 					<div class="copy padding-left-ten padding-right-ten margin-bottom-five">
-						<p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+						<p class="margin-zero">{{comment.comment}}</p>
 					</div>
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
@@ -82,43 +82,6 @@
 						</div>
 					</div>
 				</div>
-				<!--<div class="social-comment">
-					<hr class="small">
-					<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
-						<div class="col-xs-8 pull-left">
-							<p class="text-primary ellipsis margin-top-five margin-bottom-zero">
-								<a class="text-primary">Jackie Conrad</a>
-							</p>
-						</div>
-						<div class="col-xs-3 pull-right margin-top-five text-right">
-							<span class="time-ago opacity-seventy">2h</span>
-						</div>
-					</div>
-					<div class="copy padding-left-ten padding-right-ten margin-bottom-five">
-						<p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-					</div>
-					<div class="plugin-banner clearfix margin-bottom-fifteen">
-						<div class="plugin-slide text-center">
-							<img src="http://www.placehold.it/720x380.jpg">
-						</div>
-					</div>
-					<div class="footer margin-bottom-ten clearfix">
-						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-							<a class="social-icon">
-								<span class="icon icon-heart"></span>
-							</a>
-						</div>
-						<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-							<div class="pull-right">
-								<p class="pull-left margin-bottom-zero">9 Likes</p>
-								<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
-								<a class="more-info">
-									<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>-->
 			</div>
 		</div>
 	</div>
@@ -132,10 +95,10 @@
 			</a>
 		</div>
 		<div class="add-message pull-left">
-			<input type="text" class="form-control" placeholder="Type your comment message...">
+			<input type="text" class="form-control" placeholder="Type your comment message..." ng-model="Thread.comment">
 		</div>
 		<div class="send-message">
-			<input type="submit" class="text-primary" value="Send">
+			<input type="submit" class="text-primary" value="Send" ng-click="Thread.addComment()">
 		</div>
 	</div>
 </div>
