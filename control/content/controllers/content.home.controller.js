@@ -58,6 +58,24 @@
                 });
                 return userImageUrl;
             };
+            ContentHome.deletePost = function (postId) {
+                console.log('delete post method called');
+                var success = function (response) {
+                    console.log('inside success of delete post', response);
+                    if(response.data.result) {
+                        console.log('post successfully deleted');
+                        ContentHome.posts = ContentHome.posts.filter(function (el) {
+                                return el._id != postId;
+                            });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+                SocialDataStore.deletePost(postId).then(success, error);
+            };
         }]);
 })(window.angular);
 
