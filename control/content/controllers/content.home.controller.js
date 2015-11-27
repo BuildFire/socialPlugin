@@ -98,13 +98,14 @@
                 var error = function (err) {
                     console.log('Error while deleting post ', err);
                 };
+            };
             ContentHome.banUser = function (userId) {
+                console.log('inside ban user controller method>>>>>>>>>>');
                 Modals.BanPopupModal(userId).then(function (data) {
 
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
-            };
             };
         }]);
 })(window.angular);
