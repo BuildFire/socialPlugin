@@ -40,7 +40,7 @@
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
                     return deferred.promise;
                 },
-                getPosts: function () {
+                getPosts: function (data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -48,7 +48,7 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
-                    postDataObject.params.lastThreadId = null;
+                    postDataObject.params.lastThreadId = data.lastThreadId;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
