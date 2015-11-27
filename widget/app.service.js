@@ -85,15 +85,6 @@
                     return deferred.promise;
                 },
                 addComment: function (data) {
-
-                    /* var data1={"id":1,"method":"threadComments/add",
-                     "params":{
-                     "appId":socailAppId,
-                     "threadId":threadId,
-                     "userToken":userToken,
-                     "comment":”text text text”,
-                     "attachedImage":null},"userToken":null};*/
-
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -101,18 +92,18 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = data.threadId;
-                    postDataObject.params.userToken = null;
                     postDataObject.params.comment = data.comment;
-                    postDataObject.params.attachedImage = null;
+                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
-                        console.log('Add Comment callback recieved--------------', response);
+                        console.log('add Comment callback recieved--------------', response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
-                        console.log('Add Comment callback recieved--Error------------', err);
+                        console.log('add Comment callback recieved--Error------------', err);
                         return deferred.reject(err);
                     };
+                    console.log('Data----------------------------in add comment method--------',JSON.stringify(postDataObject));
                     $http({
                         method: 'GET',
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
@@ -159,11 +150,45 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                getCommentsOfAPost:function(){
+                getCommentsOfAPost:function(data){
 
+                    /*{
+                     "id":1,
+                     "method":"threadComments/findByPage",
+                     "params":{
+                     "appId":socailAppId,
+                     "threadId":threadId,
+                     "lastCommentId":null
+                     },
+                     "userToken":null
+                     }
+                     */
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'threadComments/findByPage';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.threadId = data.threadId;
+                    postDataObject.params.lastCommentId = data.lastCommentId || null;
+                    postDataObject.userToken = null;
+                    var successCallback = function (response) {
+                        console.log('get Comment callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('get Comment callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 },
                 addLikeToAPost:function(){
-                    
+
                 }
             }
         }])
