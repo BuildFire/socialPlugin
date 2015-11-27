@@ -11,7 +11,7 @@
         }])
         .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', '$http', function (Buildfire, $q, SERVER_URL, $http) {
             return {
-                getPosts: function () {
+                getPosts: function (data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -19,7 +19,7 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
-                    postDataObject.params.lastThreadId = null;
+                    postDataObject.params.lastThreadId = data.lastThreadId;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);

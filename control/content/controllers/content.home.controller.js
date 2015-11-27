@@ -11,12 +11,28 @@
             ContentHome.postText = '';
             ContentHome.posts = [];
             var init = function () {
+                ContentHome.height = window.innerHeight;
+                ContentHome.noMore = false;
+            };
+            init();
+            ContentHome.getPosts = function () {
+                console.log('Get post method called--in----- content--------------');
+                var lastThreadId;
                 var success = function (response) {
                         console.info('inside success of get posts and result inside content section is: ', response);
-                        ContentHome.posts = response.data.result;
+//                        ContentHome.posts = response.data.result;
+                        if(response && response.data && response.data.result){
+                            if(response.data.result.length<10){
+                                ContentHome.noMore=true;
+                            }
+                            else{
+                                ContentHome.noMore=false;
+                            }
+                        }
                         response.data.result.forEach(function(postData) {
                             if(userIds.indexOf(postData.userId.toString()) == -1)
                                 userIds.push(postData.userId.toString());
+                            ContentHome.posts.push(postData);
                         });
                         var successCallback = function (response) {
                             console.info('Users fetching response is: ', response.data.result);
@@ -35,9 +51,12 @@
                     , error = function (err) {
                         console.error('Error while getting data inside content section is: ', err);
                     };
-                SocialDataStore.getPosts().then(success, error);
+                if (ContentHome.posts.length)
+                    lastThreadId = ContentHome.posts[ContentHome.posts.length - 1]._id;
+                else
+                    lastThreadId = null;
+                SocialDataStore.getPosts({lastThreadId: lastThreadId}).then(success, error);
             };
-            init();
             ContentHome.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {

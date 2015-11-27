@@ -1,46 +1,56 @@
-<div class="wrapper social-plugin">
-<div class="social-item clearfix border-grey border-radius-three" ng-repeat="post in ContentHome.posts">
-    <div class="padded padding-bottom-zero">
-        <div class="head clearfix margin-bottom-fifteen">
-            <div class="col-xs-8 padding-left-zero pull-left">
-                <div class="media-holder pull-left">
-                    <img ng-src="{{ContentHome.getUserImage(post.userId)}}" width="">
+<div ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}" style="overflow-y:scroll;" class="infinite-scroll-parent">
+    <div
+         class="wrapper social-plugin" infinite-scroll-distance="0"
+         data-infinite-container=".infinite-scroll-parent"
+         infinite-scroll="ContentHome.getPosts()"
+         infinite-scroll-disabled="ContentHome.noMore">
+        <div class="social-item clearfix border-grey border-radius-three" ng-repeat="post in ContentHome.posts">
+            <div class="padded padding-bottom-zero">
+                <div class="head clearfix margin-bottom-fifteen">
+                    <div class="col-xs-8 padding-left-zero pull-left">
+                        <div class="media-holder pull-left">
+                            <img ng-src="{{ContentHome.getUserImage(post.userId)}}" width="">
+                        </div>
+                        <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
+                            <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
+                        </p>
+                    </div>
+                    <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
+                        <span class="time-ago opacity-seventy">2h</span>
+                    </div>
                 </div>
-                <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                    <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
-                </p>
+                <div class="copy margin-bottom-fifteen">
+                    <p class="margin-zero">{{post.text}}</p>
+                </div>
             </div>
-            <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
-                <span class="time-ago opacity-seventy">2h</span>
+            <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
+                <div class="plugin-slide text-center">
+                    <img ng-src="{{post.imageUrl}}">
+                </div>
             </div>
-        </div>
-        <div class="copy margin-bottom-fifteen">
-            <p class="margin-zero">{{post.text}}</p>
-        </div>
-    </div>
-    <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
-        <div class="plugin-slide text-center">
-            <img ng-src="{{post.imageUrl}}">
-        </div>
-    </div>
-    <div class="social-footer padded padding-top-zero clearfix">
-        <div class="icons col-xs-3 padding-left-zero pull-left">
-            <a class="social-icon">
-                <span class="icon icon-heart"></span>
-                <span class="number">{{post.likesCount}}</span>
-            </a>
-            <a class="social-icon margin-left-twenty">
-                <span class="icon icon-bubble"></span>
-                <span class="number">{{post.commentsCount}}</span>
-            </a>
-        </div>
-        <div class="status col-xs-9 padding-right-zero pull-right">
-            <div class="pull-right">
-                <p class="pull-left margin-bottom-zero"><a class="text-primary">View Comments</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Ban User</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.deletePost(post._id)"><a class="text-danger">Delete Post</a></p>
+            <div class="social-footer padded padding-top-zero clearfix">
+                <div class="icons col-xs-3 padding-left-zero pull-left">
+                    <a class="social-icon">
+                        <span class="icon icon-heart"></span>
+                        <span class="number">{{post.likesCount}}</span>
+                    </a>
+                    <a class="social-icon margin-left-twenty">
+                        <span class="icon icon-bubble"></span>
+                        <span class="number">{{post.commentsCount}}</span>
+                    </a>
+                </div>
+                <div class="status col-xs-9 padding-right-zero pull-right">
+                    <div class="pull-right">
+                        <p class="pull-left margin-bottom-zero"><a class="text-primary">View Comments</a></p>
+
+                        <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Ban User</a>
+                        </p>
+
+                        <p class="pull-left margin-bottom-zero margin-left-twenty"
+                           ng-click="ContentHome.deletePost(post._id)"><a class="text-danger">Delete Post</a></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
