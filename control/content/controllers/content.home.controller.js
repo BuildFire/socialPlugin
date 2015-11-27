@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', function ($scope, SocialDataStore) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', function ($scope, SocialDataStore, Modals) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             var usersData = [];
@@ -78,6 +78,11 @@
                 return userImageUrl;
             };
             ContentHome.deletePost = function (postId) {
+                Modals.removePopupModal(postId).then(function (data) {
+                    SocialDataStore.deletePost(postId).then(success, error);
+                }, function (err) {
+                    console.log('Error is: ', err);
+                });
                 console.log('delete post method called');
                 var success = function (response) {
                     console.log('inside success of delete post', response);
@@ -93,7 +98,13 @@
                 var error = function (err) {
                     console.log('Error while deleting post ', err);
                 };
-                SocialDataStore.deletePost(postId).then(success, error);
+            ContentHome.banUser = function (userId) {
+                Modals.BanPopupModal(userId).then(function (data) {
+
+                }, function (err) {
+                    console.log('Error is: ', err);
+                });
+            };
             };
         }]);
 })(window.angular);

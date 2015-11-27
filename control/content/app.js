@@ -1,7 +1,7 @@
 'use strict';
 
 (function (angular) {
-    angular.module('socialPluginContent', ['ngRoute', 'infinite-scroll'])
+    angular.module('socialPluginContent', ['ngRoute', 'infinite-scroll', 'socialModals'])
         //injected ngRoute for routing
         .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
