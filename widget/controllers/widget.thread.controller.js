@@ -4,7 +4,7 @@
     angular.module('socialPluginWidget')
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', function ($scope, $routeParams, SocialDataStore) {
             var Thread = this;
-            var commentUsersIds = [];
+            var userIds = [];
             var usersData = [];
             console.log('$routeParams--------------------------------', $routeParams);
             if ($routeParams.threadId) {
@@ -12,18 +12,19 @@
                     function (data) {
                         if (data && data.data && data.data.result) {
                             Thread.post = data.data.result;
+                            userIds.push(Thread.post.userId);
                             SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
                                 function (data) {
                                     console.log('Success get Comments---------', data);
                                     if(data && data.data && data.data.result)
                                     Thread.comments=data.data.result;
                                     Thread.comments.forEach(function(commentData) {
-                                        if(commentUsersIds.indexOf(commentData.userId) == -1) {
-                                            commentUsersIds.push(commentData.userId);
+                                        if(userIds.indexOf(commentData.userId) == -1) {
+                                            userIds.push(commentData.userId);
                                         }
                                     });
-                                    if(commentUsersIds && commentUsersIds.length > 0) {
-                                        SocialDataStore.getUsers(commentUsersIds).then(function (response) {
+                                    if(userIds && userIds.length > 0) {
+                                        SocialDataStore.getUsers(userIds).then(function (response) {
                                             console.info('Users fetching for comments and response is: ', response.data.result);
                                             if(response.data.error) {
                                                 console.error('Error while fetching users for comments ', response.data.error);
@@ -68,6 +69,16 @@
                     }
                 });
                 return userName;
+            };
+            Thread.getUserImage = function (userId) {
+                var userImageUrl = '';
+                usersData.some(function(userData) {
+                    if(userData.userObject._id == userId) {
+                        userImageUrl = userData.userObject.imageUrl || '';
+                        return true;
+                    }
+                });
+                return userImageUrl;
             };
         }])
 })(window.angular);
