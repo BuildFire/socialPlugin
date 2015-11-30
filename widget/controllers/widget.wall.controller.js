@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope','SocialDataStore', function($scope, SocialDataStore) {
+        .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', function($scope, SocialDataStore,Modals) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -95,6 +95,14 @@
                     }
                 });
                 return userImageUrl;
+            };
+            WidgetWall.showMoreOptions=function(){
+                Modals.showMoreOptionsModal({}).then(function(data){
+                        console.log('Data in Successs------------------data');
+                    },
+                    function(err){
+                        console.log('Error in Error handler--------------------------',err);
+                    });
             };
         }])
 })(window.angular);
