@@ -37,8 +37,8 @@
 				</div>
 				<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
 					<div class="pull-right">
-						<p class="pull-left margin-bottom-zero">9 Likes</p>
-						<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
+						<p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Likes</p>
+						<p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}} Comments</p>
 						<a class="more-info">
 							<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
 						</a>
@@ -47,7 +47,7 @@
 			</div>
 			<hr class="small margin-bottom-zero">
 			<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
-				<a>Load More Comments</a>			
+				<a ng-click="Thread.loadMoreComments()">Load More Comments</a>
 			</div>
 			<div class="comments-list">
 				<div class="social-comment" ng-repeat="comment in Thread.comments">

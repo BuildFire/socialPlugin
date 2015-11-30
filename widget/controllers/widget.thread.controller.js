@@ -13,8 +13,8 @@
                             SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
                                 function (data) {
                                     console.log('Success get Comments---------', data);
-                                    if(data && data.data && data.data.result)
-                                    Thread.comments=data.data.result;
+                                    if (data && data.data && data.data.result)
+                                        Thread.comments = data.data.result;
                                 },
                                 function (err) {
                                     console.log('Error get Comments----------', err);
@@ -35,6 +35,24 @@
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
+                    }
+                );
+            };
+            Thread.loadMoreComments = function () {
+                SocialDataStore.getCommentsOfAPost({
+                    threadId: Thread.post._id,
+                    lastCommentId: Thread.comments[Thread.comments.length - 1]._id
+                }).then(
+                    function (data) {
+                        console.log('Success get Load more Comments---------', data);
+                        if (data && data.data && data.data.result){
+                            Thread.comments=Thread.comments.concat(data.data.result);
+                            if (!$scope.$$phase)$scope.$digest();
+                            console.log('After Update comments---------------------',Thread.comments);
+                        }
+                    },
+                    function (err) {
+                        console.log('Error get Load More Comments----------', err);
                     }
                 );
             };
