@@ -198,8 +198,35 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                addLikeToAPost:function(){
-
+                addThreadLike: function (post, type){
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'threadLikes/add';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;;
+                    postDataObject.params.threadId = post._id;
+                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;;
+                    postDataObject.params.parentThreadId = post.parentThreadId;
+                    postDataObject.params.additionalInfo = {
+                        type: type,
+                        refId: post._id,
+                        externalAppId: '551ae57f94ed199c3400002e' || Buildfire.context.appId
+                    };
+                    var successCallback = function (response) {
+                        console.log('add like callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('add like callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 }
             }
         }])
