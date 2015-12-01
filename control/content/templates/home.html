@@ -1,222 +1,96 @@
-<div class="wrapper social-plugin">
-<div class="social-item clearfix border-grey border-radius-three">
-    <div class="padded padding-bottom-zero">
-        <div class="head clearfix margin-bottom-fifteen">
-            <div class="col-xs-8 padding-left-zero pull-left">
-                <div class="media-holder pull-left">
-                    <img src="http://www.placehold.it/100x100">
-                </div>
-                <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                    <a class="text-primary">Jackie Conrad</a>
-                </p>
-            </div>
-            <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
-                <span class="time-ago opacity-seventy">2h</span>
-            </div>
-        </div>
-        <div class="copy margin-bottom-fifteen">
-            <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-    </div>
-    <div class="plugin-banner clearfix margin-bottom-fifteen">
-        <div class="plugin-slide text-center">
-            <img src="http://www.placehold.it/720x380.jpg">
-        </div>
-    </div>
-    <div class="social-footer padded padding-top-zero clearfix">
-        <div class="icons col-xs-3 padding-left-zero pull-left">
-            <a class="social-icon">
-                <span class="icon icon-heart"></span>
-                <span class="number">9</span>
-            </a>
-            <a class="social-icon margin-left-twenty">
-                <span class="icon icon-bubble"></span>
-                <span class="number">15</span>
-            </a>
-        </div>
-        <div class="status col-xs-9 padding-right-zero pull-right">
-            <div class="pull-right">
-                <p class="pull-left margin-bottom-zero"><a class="text-primary">View Comments</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Ban User</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="social-item clearfix border-grey padded border-radius-three">
-    <div class="padded padding-bottom-zero">
-        <div class="head clearfix margin-bottom-fifteen">
-            <div class="col-xs-8 padding-left-zero pull-left">
-                <div class="media-holder pull-left">
-                    <img src="http://www.placehold.it/100x100">
-                </div>
-                <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                    <a class="text-primary">Jackie Conrad</a>
-                </p>
-            </div>
-            <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
-                <span class="time-ago opacity-seventy">2h</span>
-            </div>
-        </div>
-        <div class="copy margin-bottom-fifteen">
-            <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-    </div>
-    <div class="social-footer padded padding-top-zero clearfix">
-        <div class="icons col-xs-3 padding-left-zero pull-left">
-            <a class="social-icon">
-                <span class="icon icon-heart"></span>
-                <span class="number">9</span>
-            </a>
-            <a class="social-icon margin-left-twenty">
-                <span class="icon icon-bubble"></span>
-                <span class="number">15</span>
-            </a>
-        </div>
-        <div class="status col-xs-9 padding-right-zero pull-right">
-            <div class="pull-right">
-                <p class="pull-left margin-bottom-zero"><a class="text-primary">Hide Comments</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Ban User</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
-            </div>
-        </div>
-    </div>
-    <hr class="small margin-zero">
-    <div class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
-        <a>Show More Comments</a>
-    </div>
-    <div class="comments-list">
-        <div class="social-comment padded">
-            <div class="head clearfix margin-bottom-zero">
-                <div class="col-xs-8 padding-left-zero pull-left">
-                    <p class="text-primary ellipsis margin-bottom-zero">
-                        <a class="text-primary">Jackie Conrad</a>
-                    </p>
-                </div>
-                <div class="col-xs-3 padding-right-zero pull-right text-right">
-                    <span class="time-ago opacity-seventy">2h</span>
-                </div>
-            </div>
-            <div class="copy margin-bottom-five">
-                <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </div>
-            <div class="social-footer clearfix">
-                <div class="icons col-xs-3 padding-left-zero pull-left">
-                    <a class="social-icon">
-                        <span class="icon icon-heart"></span>
-                        <span class="number">9</span>
-                    </a>
-                </div>
-                <div class="status col-xs-9 padding-right-zero pull-right">
-                    <div class="pull-right">
-                        <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
-                        <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
+<div ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}" style="overflow-y:scroll;" class="infinite-scroll-parent">
+    <div
+         class="wrapper social-plugin" infinite-scroll-distance="0"
+         data-infinite-container=".infinite-scroll-parent"
+         infinite-scroll="ContentHome.getPosts()"
+         infinite-scroll-disabled="ContentHome.noMore">
+        <div class="social-item clearfix border-grey padded border-radius-three" ng-repeat="post in ContentHome.posts">
+            <div class="padded padding-bottom-zero">
+                <div class="head clearfix margin-bottom-fifteen">
+                    <div class="col-xs-8 padding-left-zero pull-left">
+                        <div class="media-holder pull-left">
+                            <img ng-src="{{ContentHome.getUserImage(post.userId)}}">
+                        </div>
+                        <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
+                            <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
+                        </p>
+                    </div>
+                    <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
+                        <span class="time-ago opacity-seventy">2h</span>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="social-comment padded">
-            <div class="head clearfix margin-bottom-zero">
-                <div class="col-xs-8 padding-left-zero pull-left">
-                    <p class="text-primary ellipsis margin-bottom-zero">
-                        <a class="text-primary">Jackie Conrad</a>
-                    </p>
-                </div>
-                <div class="col-xs-3 padding-right-zero pull-right text-right">
-                    <span class="time-ago opacity-seventy">2h</span>
+                <div class="copy margin-bottom-fifteen">
+                    <p class="margin-zero">{{post.text}}</p>
                 </div>
             </div>
-            <div class="copy margin-bottom-five">
-                <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </div>
-            <div class="social-footer clearfix">
-                <div class="icons col-xs-3 padding-left-zero pull-left">
-                    <a class="social-icon">
-                        <span class="icon icon-heart"></span>
-                        <span class="number">9</span>
-                    </a>
-                </div>
-                <div class="status col-xs-9 padding-right-zero pull-right">
-                    <div class="pull-right">
-                        <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
-                        <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="social-comment padded">
-            <div class="head clearfix margin-bottom-zero">
-                <div class="col-xs-8 padding-left-zero pull-left">
-                    <p class="text-primary ellipsis margin-bottom-zero">
-                        <a class="text-primary">Jackie Conrad</a>
-                    </p>
-                </div>
-                <div class="col-xs-3 padding-right-zero pull-right text-right">
-                    <span class="time-ago opacity-seventy">2h</span>
-                </div>
-            </div>
-            <div class="copy margin-bottom-five">
-                <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </div>
-            <div class="plugin-banner clearfix margin-top-ten margin-bottom-fifteen">
+            <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                 <div class="plugin-slide text-center">
-                    <img src="http://www.placehold.it/720x380.jpg">
+                    <img ng-src="{{post.imageUrl}}">
                 </div>
             </div>
-            <div class="social-footer clearfix">
+            <div class="social-footer padded padding-top-zero clearfix">
                 <div class="icons col-xs-3 padding-left-zero pull-left">
                     <a class="social-icon">
                         <span class="icon icon-heart"></span>
-                        <span class="number">9</span>
+                        <span class="number">{{post.likesCount}}</span>
+                    </a>
+                    <a class="social-icon margin-left-twenty">
+                        <span class="icon icon-bubble"></span>
+                        <span class="number">{{post.commentsCount}}</span>
                     </a>
                 </div>
                 <div class="status col-xs-9 padding-right-zero pull-right">
                     <div class="pull-right">
-                        <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
-                        <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
+                        <p class="pull-left margin-bottom-zero"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post)">View Comments</a></p>
+
+                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId)"><a class="text-danger">Ban User</a>
+                        </p>
+
+                        <p class="pull-left margin-bottom-zero margin-left-twenty"
+                           ng-click="ContentHome.deletePost(post._id)"><a class="text-danger">Delete Post</a></p>
+                    </div>
+                </div>
+            </div>
+            <hr class="small margin-zero">
+            <div ng-if="post.comments.length" class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
+                <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
+            </div>
+            <div class="comments-list">
+                <div class="social-comment padded" ng-repeat="comment in post.comments">
+                    <div class="head clearfix margin-bottom-zero">
+                        <div class="col-xs-8 padding-left-zero pull-left">
+                            <p class="text-primary ellipsis margin-bottom-zero">
+                                <a class="text-primary">Jackie Conrad</a>
+                            </p>
+                        </div>
+                        <div class="col-xs-3 padding-right-zero pull-right text-right">
+                            <span class="time-ago opacity-seventy">2h</span>
+                        </div>
+                    </div>
+                    <div class="copy margin-bottom-five">
+                        <p class="margin-zero">{{comment.comment}}</p>
+                    </div>
+                    <div class="plugin-banner clearfix margin-top-ten margin-bottom-fifteen">
+                        <div class="plugin-slide text-center">
+                            <img ng-src="{{comment.attachedImage}}">
+                        </div>
+                    </div>
+                    <div class="social-footer clearfix">
+                        <div class="icons col-xs-3 padding-left-zero pull-left">
+                            <a class="social-icon">
+                                <span class="icon icon-heart"></span>
+                                <span class="number">9</span>
+                            </a>
+                        </div>
+                        <div class="status col-xs-9 padding-right-zero pull-right">
+                            <div class="pull-right">
+                                <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
+                                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="social-item clearfix border-grey border-radius-three">
-    <div class="padded padding-bottom-zero">
-        <div class="head clearfix margin-bottom-fifteen">
-            <div class="col-xs-8 padding-left-zero pull-left">
-                <div class="media-holder pull-left">
-                    <img src="http://www.placehold.it/100x100">
-                </div>
-                <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                    <a class="text-primary">Jackie Conrad</a>
-                </p>
-            </div>
-            <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
-                <span class="time-ago opacity-seventy">2h</span>
-            </div>
-        </div>
-        <div class="copy margin-bottom-fifteen">
-            <p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-    </div>
-    <div class="social-footer padded padding-top-zero clearfix">
-        <div class="icons col-xs-3 padding-left-zero pull-left">
-            <a class="social-icon">
-                <span class="icon icon-heart"></span>
-                <span class="number">9</span>
-            </a>
-            <a class="social-icon margin-left-twenty">
-                <span class="icon icon-bubble"></span>
-                <span class="number">15</span>
-            </a>
-        </div>
-        <div class="status col-xs-9 padding-right-zero pull-right">
-            <div class="pull-right">
-                <p class="pull-left margin-bottom-zero"><a class="text-primary">View Comments</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Ban User</a></p>
-                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
