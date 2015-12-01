@@ -107,7 +107,9 @@
                     console.log('Error is: ', err);
                 });
             };
-            ContentHome.loadMoreComments = function (thread) {
+            ContentHome.loadMoreComments = function (thread, viewComment) {
+                if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
+                    thread.viewComments = thread.viewComments == true ? false : true;
                 SocialDataStore.getCommentsOfAPost({
                     threadId: thread._id,
                     lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
@@ -115,7 +117,7 @@
                     function (data) {
                         console.log('Success in Conrtent get Load more Comments---------', data);
                         if (data && data.data && data.data.result) {
-                            thread.comments = thread.comments ? thread.comments.concat(data.data.result):data.data.result;
+                            thread.comments = thread.comments ? thread.comments.concat(data.data.result) : data.data.result;
                             if (!$scope.$$phase)$scope.$digest();
                         }
                     },
