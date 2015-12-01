@@ -207,7 +207,7 @@
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;;
                     postDataObject.params.threadId = post._id;
                     postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;;
-                    postDataObject.params.parentThreadId = post.parentThreadId;
+                    postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
                         refId: post._id,
