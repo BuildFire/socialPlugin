@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-                <p class="margin-zero"><a href="#/thread/{{post.uniqueLink}}">{{post.text}}</a></p>
+                <p class="margin-zero"><a href="#/thread/{{post.uniqueLink}}">{{post.text | limitTo : 150}}</a><snap ng-if="post.text.length>150">...</snap><a ng-if="post.text.length>150">Read More</a></p>
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                 <div class="plugin-slide text-center">
