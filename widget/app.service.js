@@ -9,6 +9,17 @@
             };
             return Buildfire;
         }])
+        .factory('Location', [function () {
+            var _location = location;
+            return {
+                go: function (path) {
+                    _location.href = path;
+                },
+                goToHome: function () {
+                    _location.href = _location.href.substr(0, _location.href.indexOf('#'));
+                }
+            };
+        }])
         .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', '$http', function (Buildfire, $q, SERVER_URL, $http) {
             return {
                 createPost: function (postData) {

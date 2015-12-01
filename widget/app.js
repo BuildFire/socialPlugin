@@ -29,4 +29,14 @@
                 })
                 .otherwise('/');
         }])
+        .run(['$location', '$rootScope','Location', function ( $location, $rootScope,Location) {
+            buildfire.navigation.onBackButtonClick = function () {
+                var path = $location.path();
+                if (path.indexOf('/thread') == 0) {
+                    Location.goToHome();
+                }
+                else
+                    buildfire.navigation.navigateHome();
+            }
+        }]);
 })(window.angular, window.buildfire);
