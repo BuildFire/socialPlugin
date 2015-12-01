@@ -46,7 +46,7 @@
 				</div>
 			</div>
 			<hr class="small margin-bottom-zero">
-			<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
+			<div ng-if="Thread.comments.length>=10" class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
 				<a ng-click="Thread.loadMoreComments()">Load More Comments</a>
 			</div>
 			<div class="comments-list">
