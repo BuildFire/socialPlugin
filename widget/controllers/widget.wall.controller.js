@@ -6,6 +6,8 @@
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
+            WidgetWall.height=window.innerHeight;
+            WidgetWall.noMore=false;
             WidgetWall.postText = '';
             WidgetWall.posts = [];
             WidgetWall.createPost = function () {
@@ -49,12 +51,27 @@
                 SocialDataStore.createPost(postData).then(success, error);
             };
             var init = function () {
+            };
+            init();
+            WidgetWall.getPosts = function () {
+                WidgetWall.noMore=true;
+                var lastThreadId;
+                console.log('Get method called------------------------------');
                 var success = function (response) {
                         console.info('inside success of get posts and result is: ', response);
-                        WidgetWall.posts = response.data.result;
-                        response.data.result.forEach(function(postData) {
-                            if(userIds.indexOf(postData.userId.toString()) == -1)
-                            userIds.push(postData.userId.toString());
+                        //WidgetWall.posts = response.data.result;
+                        if(response && response.data && response.data.result){
+                            if(response.data.result.length<10){
+                                WidgetWall.noMore=true;
+                            }
+                            else{
+                                WidgetWall.noMore=false;
+                            }
+                        }
+                        response.data.result.forEach(function (postData) {
+                            if (userIds.indexOf(postData.userId.toString()) == -1)
+                                userIds.push(postData.userId.toString());
+                            WidgetWall.posts.push(postData);
                         });
                         var successCallback = function (response) {
                             console.info('Users fetching response is: ', response.data.result);
@@ -66,6 +83,7 @@
                             }
                         };
                         var errorCallback = function (err) {
+                            WidgetWall.noMore=false;
                             console.log('Error while fetching users details ', err);
                         };
                         SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
@@ -73,9 +91,12 @@
                     , error = function (err) {
                         console.error('Error while getting data', err);
                     };
-                SocialDataStore.getPosts().then(success, error);
+                if (WidgetWall.posts.length)
+                    lastThreadId = WidgetWall.posts[WidgetWall.posts.length - 1]._id;
+                else
+                    lastThreadId = null;
+                SocialDataStore.getPosts({lastThreadId: lastThreadId}).then(success, error);
             };
-            init();
             WidgetWall.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {
