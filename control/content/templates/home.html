@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="copy margin-bottom-fifteen">
-                    <p class="margin-zero">{{post.text}}</p>
+                    <p class="margin-zero">{{post.text | limitTo : (post.limit || 150) :0}}</a><snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap><a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a></p>
                 </div>
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">

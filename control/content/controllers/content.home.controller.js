@@ -134,6 +134,11 @@
                     }
                 );
             };
+            ContentHome.seeMore=function(post){
+                post.seeMore=true;
+                post.limit=10000000;
+                if (!$scope.$$phase)$scope.$digest();
+            };
         }]);
 })(window.angular);
 
