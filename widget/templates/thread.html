@@ -28,7 +28,7 @@
 			</div>
 			<div class="footer margin-bottom-ten clearfix">
 				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-					<a class="social-icon">
+					<a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
 						<span class="icon icon-heart"></span>
 					</a>
 					<a class="social-icon margin-left-twenty">
@@ -67,14 +67,14 @@
 					</div>
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-							<a class="social-icon">
+							<a class="social-icon" ng-click="Thread.likeThread(comment, 'thread')">
 								<span class="icon icon-heart"></span>
 							</a>
 						</div>
 						<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
 							<div class="pull-right">
 								<p class="pull-left margin-bottom-zero">9 Likes</p>
-								<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
+								<!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
 								<a class="more-info">
 									<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
 								</a>

@@ -21,6 +21,7 @@ module.exports = function (config) {
             './bower_components/angular-animate/angular-animate.min.js',
             './bower_components/angular-route/angular-route.min.js',
             './bower_components/angular-bootstrap/ui-bootstrap.min.js',
+            './test/assets/buildfire.js',
             './control/design/**/*.js',
             './control/content/**/*.js',
             './control/settings/**/*.js',

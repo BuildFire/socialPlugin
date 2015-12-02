@@ -106,5 +106,14 @@
                         console.log('Error in Error handler--------------------------',err);
                     });
             };
+            Thread.likeThread = function (post, type) {
+                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                    console.log('thread gets liked', res);
+                    post.likesCount++;
+                    if (!$scope.$$phase)$scope.$digest();
+                }, function (err) {
+                    console.log('error while liking thread', err);
+                });
+            };
         }])
 })(window.angular);
