@@ -99,10 +99,18 @@
                     console.log('Error while deleting post ', err);
                 };
             };
-            ContentHome.banUser = function (userId) {
+            ContentHome.banUser = function (userId, threadId) {
                 console.log('inside ban user controller method>>>>>>>>>>');
-                Modals.BanPopupModal(userId).then(function (data) {
-
+                Modals.BanPopupModal().then(function (data) {
+                    if(data == 'yes') {
+                        var success = function (response) {
+                            console.log('User successfully banned and response is :', response);
+                        };
+                        var error = function (err) {
+                            console.log('Error while banning a user ', err);
+                        };
+                        SocialDataStore.banUser(userId, threadId).then(success, error);
+                    }
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -125,6 +133,11 @@
                         console.log('Error get Load More Comments----------', err);
                     }
                 );
+            };
+            ContentHome.seeMore=function(post){
+                post.seeMore=true;
+                post.limit=10000000;
+                if (!$scope.$$phase)$scope.$digest();
             };
         }]);
 })(window.angular);

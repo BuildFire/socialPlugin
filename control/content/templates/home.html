@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="copy margin-bottom-fifteen">
-                    <p class="margin-zero">{{post.text}}</p>
+                    <p class="margin-zero">{{post.text | limitTo : (post.limit || 150) :0}}</a><snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap><a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a></p>
                 </div>
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
@@ -44,7 +44,7 @@
                         <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View Comments</a></p>
                         <p class="pull-left margin-bottom-zero" ng-show="post.viewComments"><a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a></p>
 
-                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId)"><a class="text-danger">Ban User</a>
+                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId, post._id)"><a class="text-danger">Ban User</a>
                         </p>
 
                         <p class="pull-left margin-bottom-zero margin-left-twenty"

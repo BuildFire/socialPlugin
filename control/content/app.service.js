@@ -115,6 +115,34 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
+                },
+                banUser: function (userId, threadId) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'users/blockUnblockUser';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.threadId = threadId;
+                    postDataObject.params.userId = userId;
+                    postDataObject.params.block = true;
+                    postDataObject.params.secureToken = null;
+                    postDataObject.params.removeAllComments = false;
+                    postDataObject.userToken = null;
+                    var successCallback = function (response) {
+                        console.log('get Comment callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('get Comment callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 }
             }
         }])
