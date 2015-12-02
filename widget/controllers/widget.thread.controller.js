@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', function ($scope, $routeParams, SocialDataStore) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', function ($scope, $routeParams, SocialDataStore, Modals) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -97,6 +97,14 @@
                     }
                 });
                 return userImageUrl;
+            };
+            Thread.showMoreOptions=function(){
+                Modals.showMoreOptionsModal({}).then(function(data){
+                        console.log('Data in Successs------------------data');
+                    },
+                    function(err){
+                        console.log('Error in Error handler--------------------------',err);
+                    });
             };
         }])
 })(window.angular);
