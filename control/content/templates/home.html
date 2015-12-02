@@ -53,7 +53,7 @@
                 </div>
             </div>
             <hr class="small margin-zero">
-            <div ng-if="post.comments.length && post.viewComments" class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
+            <div ng-if="post.comments.length % 10 == 0 && post.viewComments" class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
                 <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
             </div>
             <div class="comments-list" ng-if="post.comments.length && post.viewComments">
