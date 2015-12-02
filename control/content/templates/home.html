@@ -44,7 +44,7 @@
                         <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View Comments</a></p>
                         <p class="pull-left margin-bottom-zero" ng-show="post.viewComments"><a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a></p>
 
-                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId)"><a class="text-danger">Ban User</a>
+                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId, post._id)"><a class="text-danger">Ban User</a>
                         </p>
 
                         <p class="pull-left margin-bottom-zero margin-left-twenty"
