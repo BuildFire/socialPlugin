@@ -20,7 +20,7 @@
                 }
             };
         }])
-        .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', '$http', function (Buildfire, $q, SERVER_URL, $http) {
+        .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', '$http', 'Upload', function (Buildfire, $q, SERVER_URL, $http, Upload) {
             return {
                 createPost: function (postData) {
                     var deferred = $q.defer();
@@ -204,9 +204,9 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'threadLikes/add';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;;
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;;
+                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
                     postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
@@ -226,6 +226,21 @@
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                uploadImage: function (file) {
+                    var deferred = $q.defer();
+                    console.log('inside upload image method : ', file, Upload);
+                    Upload.upload({
+                        url: SERVER_URL.link + '?method=Image/upload',
+                        data: {'files': file, 'userToken': 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken}
+                    }).then(function (resp) {
+                        console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+                        deferred.resolve(resp);
+                    }, function (resp) {
+                        console.log('Error status: ' + resp.status);
+                        deferred.reject(resp);
+                    });
                     return deferred.promise;
                 }
             }
