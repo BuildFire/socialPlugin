@@ -1,8 +1,9 @@
 {
   "author":"Daniel Hindi"
 ,"pluginName":"Social Plugin"
-,"pluginDescription":"Social Plugin description."
-,"supportEmail":"[Your support Email]"
+,"pluginDescription":"This Plugin is for Social Networking."
+,"supportEmail":"support@buildfire.com"
+,"pluginIcon": "icon.png"
 ,"control":{
   "content":{
     "enabled":true
@@ -15,7 +16,6 @@
   }
 }
 ,"widget":{
-
 },
   "features" : [],
   "languages" : ["en"]
