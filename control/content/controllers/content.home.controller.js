@@ -17,6 +17,7 @@
             init();
             ContentHome.getPosts = function () {
                 console.log('Get post method called--in----- content--------------');
+                ContentHome.noMore=true;
                 var lastThreadId;
                 var success = function (response) {
                         console.info('inside success of get posts and result inside content section is: ', response);
