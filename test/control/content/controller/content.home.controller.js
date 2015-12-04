@@ -57,7 +57,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
             expect(spy).toHaveBeenCalledWith({lastThreadId: 1});
         });
 
-        xit('it should pass if SocialDataStore.getPosts adds to ContentHome.posts in case of success', function () {
+        it('it should pass if SocialDataStore.getPosts adds to ContentHome.posts in case of success', function () {
             ContentHome.posts = [{_id: 1}];
             ContentHome.getPosts();
             expect(ContentHome.posts.length).toEqual(2);
@@ -87,6 +87,26 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
+    describe('ContentHome.banUser', function () {
+        var spy1;
+        beforeEach(inject(function () {
+            spy1 = spyOn(Modals,'BanPopupModal').and.callFake(function () {
+                console.log(2);
+                var deferred = $q.defer();
+                deferred.resolve('');
+                return deferred.promise;
+            });
+
+        }));
+
+        it('it should pass if it calls Modals.BanPopupModal', function () {
+            //ContentHome.posts = [{_id: 1}];
+
+            ContentHome.banUser(1,1);
+            expect(spy1).toHaveBeenCalled();
+        });
+    });
+
     xdescribe('ContentHome.loadMoreComments', function () {
 
         var spy1;
@@ -108,4 +128,12 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
+    describe('ContentHome.seeMore', function () {
+        it('it should pass if makes seeMore true of the passed argument post', function () {
+            //ContentHome.posts = [{_id: 1}];
+            var a = {seeMore:false};
+            ContentHome.seeMore(a);
+            expect(a.seeMore).toBeTruthy();
+        });
+    });
 });
