@@ -131,6 +131,10 @@
             Thread.unFollow=function(){
 
             };
+            Thread.getDuration = function (timestamp) {
+                console.log('post created thread : ',moment(timestamp.toString()).fromNow());
+                return moment(timestamp.toString()).fromNow();
+            };
             function addComment(imageUrl){
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {
