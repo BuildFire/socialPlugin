@@ -120,6 +120,21 @@
                     console.log('error while liking thread', err);
                 });
             };
+            Thread.follow=function(){
+
+                SocialDataStore.getUserSettings({threadId:Thread.post._id,userId:Thread.post.userId}).then(function(data){
+                    console.log('Get USer Seetings------------------',data);
+                },function(err){
+                    console.log('Error while getting user Details--------------',err);
+                });
+            };
+            Thread.unFollow=function(){
+
+            };
+            Thread.getDuration = function (timestamp) {
+                console.log('post created thread : ',moment(timestamp.toString()).fromNow());
+                return moment(timestamp.toString()).fromNow();
+            };
             function addComment(imageUrl){
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {

@@ -167,5 +167,9 @@
                     post.limit=10000000;
                     if (!$scope.$$phase)$scope.$digest();
                 };
+                WidgetWall.getDuration = function (timestamp) {
+                    console.log('post created wall : ',moment(timestamp.toString()).fromNow());
+                    return moment(timestamp.toString()).fromNow();
+                };
             }])
 })(window.angular);

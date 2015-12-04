@@ -977,6 +977,7 @@ var buildfire = {
             buildfire._sendPacket(p);
         },
         getCurrentUser: function (callback) {
+            var options = {};
             var p = new Packet(null, 'auth.getCurrentUser', options);
             buildfire._sendPacket(p, callback);
         },
