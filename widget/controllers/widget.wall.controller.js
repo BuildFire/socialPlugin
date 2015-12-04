@@ -17,6 +17,7 @@
                     if(WidgetWall.picFile) {                // image post
                         var success = function (response) {
                             console.log('response inside controller for image upload is: ', response);
+                            finalPostCreation(response.data.result);
                         };
                         var error = function (err) {
                             console.log('Error is : ', err);
@@ -41,11 +42,11 @@
                     });
                 };
                 init();
-                function finalPostCreation () {
+                function finalPostCreation (imageUrl) {
                     var postData = {};
                     postData.text = WidgetWall.postText;
                     postData.title = '';
-                    postData.imageUrl = null;
+                    postData.imageUrl = imageUrl || null;
                     var success = function (response) {
                         console.info('Post creation response is: ', response.data);
                         WidgetWall.postText = '';
@@ -53,7 +54,7 @@
                             console.error('Error while creating post ', response.data.error);
                         } else if(response.data.result) {
                             console.info('Post created successfully', response.data.result);
-                            WidgetWall.posts.push(response.data.result);
+                            WidgetWall.posts.unshift(response.data.result);
                             if(userIds.indexOf(response.data.result.userId.toString()) == -1) {
                                 userIds.push(response.data.result.userId.toString());
                             }
