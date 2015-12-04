@@ -79,19 +79,7 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                getCommentsOfAPost:function(data){
-
-                    /*{
-                     "id":1,
-                     "method":"threadComments/findByPage",
-                     "params":{
-                     "appId":socailAppId,
-                     "threadId":threadId,
-                     "lastCommentId":null
-                     },
-                     "userToken":null
-                     }
-                     */
+                getCommentsOfAPost:function(data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
