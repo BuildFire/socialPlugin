@@ -2,10 +2,11 @@
 
 (function (angular) {
         angular.module('socialPluginWidget')
-            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', function($scope, SocialDataStore, Modals) {
+            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire', function($scope, SocialDataStore, Modals, Buildfire) {
                 var WidgetWall = this;
                 var usersData = [];
                 var userIds = [];
+                WidgetWall.userDetails={};
                 WidgetWall.height=window.innerHeight;
                 WidgetWall.noMore=false;
                 WidgetWall.postText = '';
@@ -26,6 +27,18 @@
                     }
                 };
                 var init = function () {
+                    Buildfire.auth.getCurrentUser(function(userData){
+                        console.log('Datta-----------------',userData);
+                        var context=Buildfire.context;
+                        if(userData){
+                            WidgetWall.userDetails.appId=context.appId;
+                            WidgetWall.userDetails.parentThreadId=context.appId+context.instanceId;
+                            WidgetWall.userDetails.userToken=userData.userToken;
+                        }
+                        else{
+                            Buildfire.auth.login();
+                        }
+                    });
                 };
                 init();
                 function finalPostCreation () {
