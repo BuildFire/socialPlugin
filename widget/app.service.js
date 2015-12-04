@@ -220,6 +220,43 @@
                         deferred.reject(resp);
                     });
                     return deferred.promise;
+                },
+                getUserSettings:function(data){
+                    /*data:
+                     {"id":1,"method":"users/getUserSettings",
+                     "params":{
+                     "appId":socailAppId,
+                     "threadId":threadId,
+                     "userId":userId,
+                     "userToken":userToken
+                     }}
+                     */
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'users/getUserSettings';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.threadId = data.threadId;
+                    postDataObject.params.userId = "55f8a6c6bed1b418e3000001" || null;
+                    postDataObject.userToken = data.userToken ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
+                    var successCallback = function (response) {
+                        console.log('get Comment callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('get Comment callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                saveUserSettings:function(){
+
                 }
             }
         }])

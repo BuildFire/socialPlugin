@@ -120,6 +120,17 @@
                     console.log('error while liking thread', err);
                 });
             };
+            Thread.follow=function(){
+
+                SocialDataStore.getUserSettings({threadId:Thread.post._id,userId:Thread.post.userId}).then(function(data){
+                    console.log('Get USer Seetings------------------',data);
+                },function(err){
+                    console.log('Error while getting user Details--------------',err);
+                });
+            };
+            Thread.unFollow=function(){
+
+            };
             function addComment(imageUrl){
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {
