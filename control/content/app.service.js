@@ -113,8 +113,8 @@
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = threadId;
                     postDataObject.params.userId = userId;
+                    postDataObject.params.secureToken = "null";
                     postDataObject.params.block = true;
-                    postDataObject.params.secureToken = null;
                     postDataObject.params.removeAllComments = false;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
