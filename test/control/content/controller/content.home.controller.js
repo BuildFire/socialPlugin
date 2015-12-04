@@ -34,7 +34,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
     });
 
 
-    describe('ContentHome.getPosts', function () {
+    xdescribe('ContentHome.getPosts', function () {
 
         var spy;
         beforeEach(inject(function () {
@@ -64,7 +64,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    describe('ContentHome.deletePost', function () {
+    xdescribe('ContentHome.deletePost', function () {
 
         var spy1, spySocial;
         beforeEach(inject(function () {
@@ -87,7 +87,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    describe('ContentHome.banUser', function () {
+    xdescribe('ContentHome.banUser', function () {
         var spy1;
         beforeEach(inject(function () {
             spy1 = spyOn(Modals,'BanPopupModal').and.callFake(function () {
