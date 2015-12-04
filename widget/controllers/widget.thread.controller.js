@@ -3,10 +3,11 @@
 (function (angular) {
     angular.module('socialPluginWidget')
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', function ($scope, $routeParams, SocialDataStore, Modals) {
+            console.log('Thread controller is loaded');
+            console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
             var userIds = [];
             var usersData = [];
-            console.log('$routeParams--------------------------------', $routeParams);
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
@@ -50,14 +51,19 @@
                 );
             }
             Thread.addComment = function () {
-                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment}).then(
-                    function (data) {
-                        console.log('Add Comment Successsss------------------', data);
-                    },
-                    function (err) {
-                        console.log('Add Comment Error------------------', err);
-                    }
-                );
+                if(Thread.picFile) {                // image post
+                    var success = function (response) {
+                        console.log('response inside controller for image upload is: ', response);
+                        addComment(response.data.result);
+                    };
+                    var error = function (err) {
+                        console.log('Error is : ', err);
+                    };
+                    SocialDataStore.uploadImage(Thread.picFile).then(success, error);
+                }
+                else{
+                    addComment();
+                }
             };
             Thread.loadMoreComments = function () {
                 SocialDataStore.getCommentsOfAPost({
@@ -77,7 +83,6 @@
                     }
                 );
             };
-            console.log('Thread controller is loaded');
             Thread.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {
@@ -115,5 +120,15 @@
                     console.log('error while liking thread', err);
                 });
             };
+            function addComment(imageUrl){
+                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
+                    function (data) {
+                        console.log('Add Comment Successsss------------------', data);
+                    },
+                    function (err) {
+                        console.log('Add Comment Error------------------', err);
+                    }
+                );
+            }
         }])
 })(window.angular);

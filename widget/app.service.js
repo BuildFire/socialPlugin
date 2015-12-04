@@ -104,6 +104,7 @@
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.comment = data.comment;
+                    postDataObject.params.attachedImage = data.imageUrl;
                     postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
@@ -124,18 +125,6 @@
                 }
                 ,
                 getThreadByUniqueLink: function (threadUniqueLink) {
-                    /*{
-                     "id":1,
-                     "method":"thread/getThread",
-                     "params":{
-                     "appId":socailAppId,
-                     "uniqueLink":uniqueLink,
-                     "title":title,
-                     "userToken":userToken
-                     },
-                     "userToken":null
-                     }
-                     */
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -162,18 +151,6 @@
                     return deferred.promise;
                 },
                 getCommentsOfAPost:function(data){
-
-                    /*{
-                     "id":1,
-                     "method":"threadComments/findByPage",
-                     "params":{
-                     "appId":socailAppId,
-                     "threadId":threadId,
-                     "lastCommentId":null
-                     },
-                     "userToken":null
-                     }
-                     */
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -233,9 +210,10 @@
                     console.log('inside upload image method : ', file, Upload);
                     Upload.upload({
                         url: SERVER_URL.link + '?method=Image/upload',
-                        data: {'files': file, 'userToken': 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken}
+                        data: {'files': file, 'userToken': 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken,'secureToken': "null",
+                            'appId': "551ae57f94ed199c3400002e"}
                     }).then(function (resp) {
-                        console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+                        console.log('Success uploaded. Response: ' + resp);
                         deferred.resolve(resp);
                     }, function (resp) {
                         console.log('Error status: ' + resp.status);

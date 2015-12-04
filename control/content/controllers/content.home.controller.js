@@ -17,6 +17,7 @@
             init();
             ContentHome.getPosts = function () {
                 console.log('Get post method called--in----- content--------------');
+                ContentHome.noMore=true;
                 var lastThreadId;
                 var success = function (response) {
                         console.info('inside success of get posts and result inside content section is: ', response);
@@ -138,6 +139,10 @@
                 post.seeMore=true;
                 post.limit=10000000;
                 if (!$scope.$$phase)$scope.$digest();
+            };
+            ContentHome.getDuration = function (timestamp) {
+                console.log('post created : ',moment(timestamp.toString()).fromNow());
+                return moment(timestamp.toString()).fromNow();
             };
         }]);
 })(window.angular);

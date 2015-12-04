@@ -65,6 +65,11 @@
 					<div class="copy padding-left-ten padding-right-ten margin-bottom-five">
 						<p class="margin-zero">{{comment.comment}}</p>
 					</div>
+					<div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
+						<div class="plugin-slide text-center">
+							<img ng-src="{{comment.attachedImage}}">
+						</div>
+					</div>
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
 							<a class="social-icon" ng-click="Thread.likeThread(comment, 'thread')">
@@ -91,7 +96,7 @@
 	<div class="post-holder clearfix">
 		<div class="add-media">
 			<a>
-				<span class="icon icon-camera2 text-primary"></span>
+				<span class="icon icon-camera2 text-primary"  ngf-select="Thread.uploadImage()" ng-model="Thread.picFile" ngf-pattern="'image/*'" ngf-multiple="false" ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true" name="files"></span>
 			</a>
 		</div>
 		<div class="add-message pull-left">
