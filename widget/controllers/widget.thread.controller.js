@@ -3,10 +3,11 @@
 (function (angular) {
     angular.module('socialPluginWidget')
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', function ($scope, $routeParams, SocialDataStore, Modals) {
+            console.log('Thread controller is loaded');
+            console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
             var userIds = [];
             var usersData = [];
-            console.log('$routeParams--------------------------------', $routeParams);
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
@@ -82,7 +83,6 @@
                     }
                 );
             };
-            console.log('Thread controller is loaded');
             Thread.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {

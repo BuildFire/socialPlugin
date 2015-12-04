@@ -125,18 +125,6 @@
                 }
                 ,
                 getThreadByUniqueLink: function (threadUniqueLink) {
-                    /*{
-                     "id":1,
-                     "method":"thread/getThread",
-                     "params":{
-                     "appId":socailAppId,
-                     "uniqueLink":uniqueLink,
-                     "title":title,
-                     "userToken":userToken
-                     },
-                     "userToken":null
-                     }
-                     */
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -163,18 +151,6 @@
                     return deferred.promise;
                 },
                 getCommentsOfAPost:function(data){
-
-                    /*{
-                     "id":1,
-                     "method":"threadComments/findByPage",
-                     "params":{
-                     "appId":socailAppId,
-                     "threadId":threadId,
-                     "lastCommentId":null
-                     },
-                     "userToken":null
-                     }
-                     */
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
