@@ -104,6 +104,7 @@
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.comment = data.comment;
+                    postDataObject.params.attachedImage = data.imageUrl;
                     postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
