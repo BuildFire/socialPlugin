@@ -140,6 +140,10 @@
                 post.limit=10000000;
                 if (!$scope.$$phase)$scope.$digest();
             };
+            ContentHome.getDuration = function (timestamp) {
+                console.log('post created : ',moment(timestamp.toString()).fromNow());
+                return moment(timestamp.toString()).fromNow();
+            };
         }]);
 })(window.angular);
 

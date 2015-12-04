@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "ng-file-upload-shim": "~10.1.5",
-    "ng-file-upload": "~10.1.5"
+    "ng-file-upload": "~10.1.5",
+    "moment": "~2.10.6"
   }
 }
