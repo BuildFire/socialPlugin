@@ -50,6 +50,9 @@
                     }
                 );
             }
+            /**
+             * Thread.addComment method checks whether image is present or not in comment.
+             */
             Thread.addComment = function () {
                 if(Thread.picFile) {                // image post
                     var success = function (response) {
@@ -65,6 +68,9 @@
                     addComment();
                 }
             };
+            /**
+             * loadMoreComments methods is loads the more comments of a post.
+             */
             Thread.loadMoreComments = function () {
                 SocialDataStore.getCommentsOfAPost({
                     threadId: Thread.post._id,
@@ -83,6 +89,11 @@
                     }
                 );
             };
+            /**
+             * getUserName method is used to get the username on the basis of userId.
+             * @param userId
+             * @returns {string}
+             */
             Thread.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {
@@ -93,6 +104,11 @@
                 });
                 return userName;
             };
+            /**
+             * getUserImage is used to get userImage on the basis of userId.
+             * @param userId
+             * @returns {string}
+             */
             Thread.getUserImage = function (userId) {
                 var userImageUrl = '';
                 usersData.some(function(userData) {
@@ -103,6 +119,9 @@
                 });
                 return userImageUrl;
             };
+            /**
+             * showMoreOptions method shows the more Option popup.
+             */
             Thread.showMoreOptions=function(){
                 Modals.showMoreOptionsModal({}).then(function(data){
                         console.log('Data in Successs------------------data');
@@ -111,6 +130,11 @@
                         console.log('Error in Error handler--------------------------',err);
                     });
             };
+            /**
+             * likeThread method is used to like a post.
+             * @param post
+             * @param type
+             */
             Thread.likeThread = function (post, type) {
                 SocialDataStore.addThreadLike(post, type).then(function (res) {
                     console.log('thread gets liked', res);
@@ -120,6 +144,9 @@
                     console.log('error while liking thread', err);
                 });
             };
+            /**
+             * follow method is used to follow the thread/post.
+             */
             Thread.follow=function(){
 
                 SocialDataStore.getUserSettings({threadId:Thread.post._id,userId:Thread.post.userId}).then(function(data){
@@ -131,10 +158,18 @@
             Thread.unFollow=function(){
 
             };
+            /**
+             * getDuration method to used to show the time from current.
+             * @param timestamp
+             * @returns {*}
+             */
             Thread.getDuration = function (timestamp) {
-                console.log('post created thread : ',moment(timestamp.toString()).fromNow());
                 return moment(timestamp.toString()).fromNow();
             };
+            /**
+             * addComment method is used to add the comment to a post.
+             * @param imageUrl
+             */
             function addComment(imageUrl){
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {
