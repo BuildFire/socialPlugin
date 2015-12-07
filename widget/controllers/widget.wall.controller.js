@@ -154,13 +154,36 @@
                         });
                 };
                 WidgetWall.likeThread = function (post, type) {
-                    SocialDataStore.addThreadLike(post, type).then(function (res) {
-                        console.log('thread gets liked', res);
-                        post.likesCount++;
-                        if (!$scope.$$phase)$scope.$digest();
-                    }, function (err) {
-                        console.log('error while liking thread', err);
-                    });
+                    var uniqueIdsArray = [];
+                    uniqueIdsArray.push(post.uniqueLink);
+                    var success = function (response) {
+                        console.log('inside success of getThreadLikes',response);
+                        if(response.data && response.data.result && response.data.result.length > 0) {
+                            if(response.data.result[0].isUserLikeActive) {
+                                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                                    console.log('thread gets liked', res);
+                                    post.likesCount++;
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.log('error while liking thread', err);
+                                });
+                            } else {
+                                SocialDataStore.removeThreadLike(post, type).then(function (res) {
+                                    console.log('thread like gets removed', res);
+                                    if(res.data && res.data.result)
+                                        post.likesCount--;
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.log('error while removing like of thread', err);
+                                });
+                            }
+                        }
+                    };
+                    var error = function (err) {
+                        console.log('error is : ', err);
+                    };
+                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
+
                 };
                 WidgetWall.seeMore=function(post){
                     post.seeMore=true;

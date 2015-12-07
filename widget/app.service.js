@@ -222,15 +222,6 @@
                     return deferred.promise;
                 },
                 getUserSettings:function(data){
-                    /*data:
-                     {"id":1,"method":"users/getUserSettings",
-                     "params":{
-                     "appId":socailAppId,
-                     "threadId":threadId,
-                     "userId":userId,
-                     "userToken":userToken
-                     }}
-                     */
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -257,6 +248,59 @@
                 },
                 saveUserSettings:function(){
 
+                },
+                getThreadLikes: function (uniqueids) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'threadLikes/getLikes';
+                    postDataObject.params = {};
+                    postDataObject.params.uniqueIds = uniqueids;
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.userId = "5317c378a6611c6009000001" || null;
+                    var success = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var error = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(success, error);
+                    return deferred.promise;
+                },
+                removeThreadLike: function (post, type) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'threadLikes/unlike';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.threadId = post._id;
+                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
+                    postDataObject.params.additionalInfo = {
+                        type: type,
+                        refId: post._id,
+                        externalAppId: '551ae57f94ed199c3400002e' || Buildfire.context.appId
+                    };
+                    postDataObject.userToken = null;
+                    var successCallback = function (response) {
+                        console.log('remove like callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('remove like callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 }
             }
         }])
