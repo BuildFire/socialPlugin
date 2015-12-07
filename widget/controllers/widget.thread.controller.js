@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', function ($scope, $routeParams, SocialDataStore, Modals) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope) {
             console.log('Thread controller is loaded');
             console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
@@ -12,6 +12,7 @@
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
                         if (data && data.data && data.data.result) {
+                            $rootScope.showThread=false;
                             Thread.post = data.data.result;
                             userIds.push(Thread.post.userId);
                             SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(

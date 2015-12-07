@@ -2,7 +2,8 @@
 
 (function (angular) {
         angular.module('socialPluginWidget')
-            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire', function($scope, SocialDataStore, Modals, Buildfire) {
+            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire','$rootScope', function($scope, SocialDataStore, Modals, Buildfire,$rootScope) {
+                console.log('WidgetWall controller loaded--------------------------------------------------------------');
                 var WidgetWall = this;
                 var usersData = [];
                 var userIds = [];
@@ -12,6 +13,7 @@
                 WidgetWall.postText = '';
                 WidgetWall.picFile = '';
                 WidgetWall.posts = [];
+                $rootScope.showThread=true;
                 WidgetWall.createPost = function () {
                     console.log('inside create post method>>>>>',WidgetWall.postText, WidgetWall.picFile);
                     if(WidgetWall.picFile) {                // image post
@@ -53,6 +55,7 @@
                         if(response.data.error) {
                             console.error('Error while creating post ', response.data.error);
                         } else if(response.data.result) {
+                            Buildfire.messaging.sendMessageToControl({eventName:'Post Created',status:'Success'});
                             console.info('Post created successfully', response.data.result);
                             WidgetWall.posts.unshift(response.data.result);
                             if(userIds.indexOf(response.data.result.userId.toString()) == -1) {
