@@ -18,9 +18,7 @@
 
             $routeProvider
                 .when('/', {
-                    templateUrl: 'templates/wall.html',
-                    controllerAs: 'WidgetWall',
-                    controller: 'WidgetWallCtrl'
+                    template: '<div></div>'
                 })
                 .when('/thread/:threadId', {
                     templateUrl: 'templates/thread.html',
@@ -33,7 +31,8 @@
             buildfire.navigation.onBackButtonClick = function () {
                 var path = $location.path();
                 if (path.indexOf('/thread') == 0) {
-                    Location.goToHome();
+                    $rootScope.showThread = true;
+                    $rootScope.$digest();
                 }
                 else
                     buildfire.navigation.navigateHome();
