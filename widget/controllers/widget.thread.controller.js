@@ -2,15 +2,17 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', function ($scope, $routeParams, SocialDataStore) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope) {
+            console.log('Thread controller is loaded');
+            console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
             var userIds = [];
             var usersData = [];
-            console.log('$routeParams--------------------------------', $routeParams);
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
                         if (data && data.data && data.data.result) {
+                            $rootScope.showThread=false;
                             Thread.post = data.data.result;
                             userIds.push(Thread.post.userId);
                             SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
@@ -49,16 +51,27 @@
                     }
                 );
             }
+            /**
+             * Thread.addComment method checks whether image is present or not in comment.
+             */
             Thread.addComment = function () {
-                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment}).then(
-                    function (data) {
-                        console.log('Add Comment Successsss------------------', data);
-                    },
-                    function (err) {
-                        console.log('Add Comment Error------------------', err);
-                    }
-                );
+                if(Thread.picFile) {                // image post
+                    var success = function (response) {
+                        console.log('response inside controller for image upload is: ', response);
+                        addComment(response.data.result);
+                    };
+                    var error = function (err) {
+                        console.log('Error is : ', err);
+                    };
+                    SocialDataStore.uploadImage(Thread.picFile).then(success, error);
+                }
+                else{
+                    addComment();
+                }
             };
+            /**
+             * loadMoreComments methods is loads the more comments of a post.
+             */
             Thread.loadMoreComments = function () {
                 SocialDataStore.getCommentsOfAPost({
                     threadId: Thread.post._id,
@@ -77,7 +90,11 @@
                     }
                 );
             };
-            console.log('Thread controller is loaded');
+            /**
+             * getUserName method is used to get the username on the basis of userId.
+             * @param userId
+             * @returns {string}
+             */
             Thread.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function(userData) {
@@ -88,6 +105,11 @@
                 });
                 return userName;
             };
+            /**
+             * getUserImage is used to get userImage on the basis of userId.
+             * @param userId
+             * @returns {string}
+             */
             Thread.getUserImage = function (userId) {
                 var userImageUrl = '';
                 usersData.some(function(userData) {
@@ -98,5 +120,67 @@
                 });
                 return userImageUrl;
             };
+            /**
+             * showMoreOptions method shows the more Option popup.
+             */
+            Thread.showMoreOptions=function(){
+                Modals.showMoreOptionsModal({}).then(function(data){
+                        console.log('Data in Successs------------------data');
+                    },
+                    function(err){
+                        console.log('Error in Error handler--------------------------',err);
+                    });
+            };
+            /**
+             * likeThread method is used to like a post.
+             * @param post
+             * @param type
+             */
+            Thread.likeThread = function (post, type) {
+                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                    console.log('thread gets liked', res);
+                    post.likesCount++;
+                    if (!$scope.$$phase)$scope.$digest();
+                }, function (err) {
+                    console.log('error while liking thread', err);
+                });
+            };
+            /**
+             * follow method is used to follow the thread/post.
+             */
+            Thread.follow=function(){
+
+                SocialDataStore.getUserSettings({threadId:Thread.post._id,userId:Thread.post.userId}).then(function(data){
+                    console.log('Get USer Seetings------------------',data);
+                },function(err){
+                    console.log('Error while getting user Details--------------',err);
+                });
+            };
+            Thread.unFollow=function(){
+
+            };
+            /**
+             * getDuration method to used to show the time from current.
+             * @param timestamp
+             * @returns {*}
+             */
+            Thread.getDuration = function (timestamp) {
+                if(timestamp)
+                    return moment(timestamp.toString()).fromNow();
+            };
+            /**
+             * addComment method is used to add the comment to a post.
+             * @param imageUrl
+             */
+            function addComment(imageUrl){
+                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
+                    function (data) {
+                        console.log('Add Comment Successsss------------------', data);
+                    },
+                    function (err) {
+                        console.log('Add Comment Error------------------', err);
+                    }
+                );
+            }
         }])
 })(window.angular);

@@ -1,7 +1,7 @@
 'use strict';
 
 (function (angular, buildfire) {
-    angular.module('socialPluginWidget', ['ngRoute', 'infinite-scroll', 'ngAnimate','socialModals'])
+    angular.module('socialPluginWidget', ['ngRoute', 'infinite-scroll', 'ngAnimate','socialModals', 'ngFileUpload', 'socialPluginFilters'])
         .config(['$routeProvider', '$compileProvider', function ($routeProvider, $compileProvider) {
 
             /**
@@ -18,9 +18,7 @@
 
             $routeProvider
                 .when('/', {
-                    templateUrl: 'templates/wall.html',
-                    controllerAs: 'WidgetWall',
-                    controller: 'WidgetWallCtrl'
+                    template: '<div></div>'
                 })
                 .when('/thread/:threadId', {
                     templateUrl: 'templates/thread.html',
@@ -29,4 +27,15 @@
                 })
                 .otherwise('/');
         }])
+        .run(['$location', '$rootScope','Location', function ( $location, $rootScope,Location) {
+            buildfire.navigation.onBackButtonClick = function () {
+                var path = $location.path();
+                if (path.indexOf('/thread') == 0) {
+                    $rootScope.showThread = true;
+                    $rootScope.$digest();
+                }
+                else
+                    buildfire.navigation.navigateHome();
+            }
+        }]);
 })(window.angular, window.buildfire);

@@ -31,5 +31,10 @@
     "angular-bootstrap": "~0.13.3",
     "angular-route": "~1.4.0",
     "angular-animate": "~1.4.3"
+  },
+  "dependencies": {
+    "ng-file-upload-shim": "~10.1.5",
+    "ng-file-upload": "~10.1.5",
+    "moment": "~2.10.6"
   }
 }

@@ -1,7 +1,8 @@
 <div class="holder padding-zero has-bottom">
 	<div class="social-plugin social-thread">				
 		<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
-			<a>Follow Thread</a>			
+			<a ng-click="Thread.follow()">Follow Thread</a>
+			<!--<a ng-click="Thread.unFollow()">Following Thread</a>-->
 		</div>
 		<div class="social-item clearfix">
 			<hr class="small">
@@ -14,8 +15,8 @@
 						<a class="text-primary">{{Thread.getUserName(Thread.post.userId)}}</a>
 					</p>
 				</div>
-				<div class="col-xs-3 pull-right margin-top-ten text-right">
-					<span class="time-ago opacity-seventy">2h</span>
+				<div class="col-xs-3 pull-right margin-top-ten text-right" ng-if="Thread.post.createdOn">
+					<span class="time-ago opacity-seventy">{{Thread.getDuration(Thread.post.createdOn) | convertTimeFormat}}</span>
 				</div>
 			</div>
 			<div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
@@ -28,7 +29,7 @@
 			</div>
 			<div class="footer margin-bottom-ten clearfix">
 				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-					<a class="social-icon">
+					<a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
 						<span class="icon icon-heart"></span>
 					</a>
 					<a class="social-icon margin-left-twenty">
@@ -39,14 +40,14 @@
 					<div class="pull-right">
 						<p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Likes</p>
 						<p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}} Comments</p>
-						<a class="more-info">
+						<a class="more-info" ng-click="Thread.showMoreOptions()">
 							<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
 						</a>
 					</div>
 				</div>
 			</div>
 			<hr class="small margin-bottom-zero">
-			<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
+			<div ng-if="Thread.comments.length>=10" class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
 				<a ng-click="Thread.loadMoreComments()">Load More Comments</a>
 			</div>
 			<div class="comments-list">
@@ -58,23 +59,28 @@
 								<a class="text-primary">{{Thread.getUserName(comment.userId)}}</a>
 							</p>
 						</div>
-						<div class="col-xs-3 pull-right margin-top-five text-right">
-							<span class="time-ago opacity-seventy">2h</span>
+						<div class="col-xs-3 pull-right margin-top-five text-right" ng-if="comment.createdOn">
+							<span class="time-ago opacity-seventy">{{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</span>
 						</div>
 					</div>
 					<div class="copy padding-left-ten padding-right-ten margin-bottom-five">
 						<p class="margin-zero">{{comment.comment}}</p>
 					</div>
+					<div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
+						<div class="plugin-slide text-center">
+							<img ng-src="{{comment.attachedImage}}">
+						</div>
+					</div>
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-							<a class="social-icon">
+							<a class="social-icon" ng-click="Thread.likeThread(comment, 'thread')">
 								<span class="icon icon-heart"></span>
 							</a>
 						</div>
 						<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
 							<div class="pull-right">
 								<p class="pull-left margin-bottom-zero">9 Likes</p>
-								<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
+								<!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
 								<a class="more-info">
 									<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
 								</a>
@@ -91,7 +97,7 @@
 	<div class="post-holder clearfix">
 		<div class="add-media">
 			<a>
-				<span class="icon icon-camera2 text-primary"></span>
+				<span class="icon icon-camera2 text-primary"  ngf-select="Thread.uploadImage()" ng-model="Thread.picFile" ngf-pattern="'image/*'" ngf-multiple="false" ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true" name="files"></span>
 			</a>
 		</div>
 		<div class="add-message pull-left">
