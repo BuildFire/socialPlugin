@@ -15,7 +15,7 @@
 						<a class="text-primary">{{Thread.getUserName(Thread.post.userId)}}</a>
 					</p>
 				</div>
-				<div class="col-xs-3 pull-right margin-top-ten text-right">
+				<div class="col-xs-3 pull-right margin-top-ten text-right" ng-if="Thread.post.createdOn">
 					<span class="time-ago opacity-seventy">{{Thread.getDuration(Thread.post.createdOn) | convertTimeFormat}}</span>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 								<a class="text-primary">{{Thread.getUserName(comment.userId)}}</a>
 							</p>
 						</div>
-						<div class="col-xs-3 pull-right margin-top-five text-right">
+						<div class="col-xs-3 pull-right margin-top-five text-right" ng-if="comment.createdOn">
 							<span class="time-ago opacity-seventy">{{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</span>
 						</div>
 					</div>

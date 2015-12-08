@@ -16,7 +16,7 @@
                         </p>
                     </div>
                     <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
-                        <span class="time-ago opacity-seventy">{{ContentHome.getDuration(post.createdOn)}}</span>
+                        <span class="time-ago opacity-seventy">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</span>
                     </div>
                 </div>
                 <div class="copy margin-bottom-fifteen">
@@ -65,7 +65,7 @@
                             </p>
                         </div>
                         <div class="col-xs-3 padding-right-zero pull-right text-right">
-                            <span class="time-ago opacity-seventy">{{ContentHome.getDuration(comment.createdOn)}}</span>
+                            <span class="time-ago opacity-seventy">{{ContentHome.getDuration(comment.createdOn) | convertTimeFormat}}</span>
                         </div>
                     </div>
                     <div class="copy margin-bottom-five">

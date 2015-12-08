@@ -165,7 +165,8 @@
              * @returns {*}
              */
             Thread.getDuration = function (timestamp) {
-                return moment(timestamp.toString()).fromNow();
+                if(timestamp)
+                    return moment(timestamp.toString()).fromNow();
             };
             /**
              * addComment method is used to add the comment to a post.
