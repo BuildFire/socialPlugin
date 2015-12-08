@@ -180,6 +180,7 @@
                                 SocialDataStore.addThreadLike(post, type).then(function (res) {
                                     console.log('thread gets liked', res);
                                     post.likesCount++;
+                                    post.waitAPICompletion = false;
                                     WidgetWall.updateLikesData(post._id, false);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
@@ -190,6 +191,7 @@
                                     console.log('thread like gets removed', res);
                                     if(res.data && res.data.result)
                                         post.likesCount--;
+                                    post.waitAPICompletion = false;
                                     WidgetWall.updateLikesData(post._id, true);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
@@ -199,9 +201,13 @@
                         }
                     };
                     var error = function (err) {
+                        post.waitAPICompletion = false;
                         console.log('error is : ', err);
                     };
-                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
+                    if(!post.waitAPICompletion) {
+                        post.waitAPICompletion = true;
+                        SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
+                    }
 
                 };
                 WidgetWall.seeMore=function(post){
