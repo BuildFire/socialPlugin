@@ -27,7 +27,7 @@
                             console.log('Error is : ', err);
                         };
                         SocialDataStore.uploadImage(WidgetWall.picFile).then(success, error);
-                    } else {                        // text post
+                    } else if(WidgetWall.postText) {                        // text post
                         finalPostCreation();
                     }
                 };
