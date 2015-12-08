@@ -7,6 +7,8 @@
                 var WidgetWall = this;
                 var usersData = [];
                 var userIds = [];
+                var postsUniqueIds = [];
+                var getLikesData = [];
                 WidgetWall.userDetails={};
                 WidgetWall.height=window.innerHeight;
                 WidgetWall.noMore=false;
@@ -103,11 +105,12 @@
                                 if (userIds.indexOf(postData.userId.toString()) == -1)
                                     userIds.push(postData.userId.toString());
                                 WidgetWall.posts.push(postData);
+                                postsUniqueIds.push(postData.uniqueLink);
                             });
                             var successCallback = function (response) {
                                 console.info('Users fetching response is: ', response.data.result);
                                 if(response.data.error) {
-                                    console.error('Error while creating post ', response.data.error);
+                                    console.error('Error while fetching users ', response.data.error);
                                 } else if(response.data.result) {
                                     console.info('Users fetched successfully', response.data.result);
                                     usersData = response.data.result;
@@ -118,6 +121,17 @@
                                 console.log('Error while fetching users details ', err);
                             };
                             SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                            SocialDataStore.getThreadLikes(postsUniqueIds).then(function (response) {
+                                console.info('get thread likes response is: ', response.data.result);
+                                if(response.data.error) {
+                                    console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                                } else if(response.data.result) {
+                                    console.info('Thread likes fetched successfully', response.data.result);
+                                    getLikesData = response.data.result;
+                                }
+                            }, function (err) {
+                                console.log('Error while fetching thread likes ', err);
+                            });
                         }
                         , error = function (err) {
                             console.error('Error while getting data', err);
@@ -166,6 +180,7 @@
                                 SocialDataStore.addThreadLike(post, type).then(function (res) {
                                     console.log('thread gets liked', res);
                                     post.likesCount++;
+                                    WidgetWall.updateLikesData(post._id, false);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while liking thread', err);
@@ -175,6 +190,7 @@
                                     console.log('thread like gets removed', res);
                                     if(res.data && res.data.result)
                                         post.likesCount--;
+                                    WidgetWall.updateLikesData(post._id, true);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while removing like of thread', err);
@@ -197,5 +213,23 @@
                     console.log('post created wall : ',moment(timestamp.toString()).fromNow());
                     return moment(timestamp.toString()).fromNow();
                 };
+                WidgetWall.isLikedByLoggedInUser = function (postId) {
+                    var isUserLikeActive = true;
+                    getLikesData.some(function(likeData) {
+                        if(likeData._id == postId) {
+                            isUserLikeActive = likeData.isUserLikeActive;
+                            return true;
+                        }
+                    });
+                    return isUserLikeActive;
+                };
+                WidgetWall.updateLikesData = function (postId, status) {
+                    getLikesData.some(function (likeData) {
+                        if(likeData._id == postId) {
+                            likeData.isUserLikeActive = status;
+                            return true;
+                        }
+                    })
+                }
             }])
 })(window.angular);
