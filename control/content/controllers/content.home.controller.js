@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', function ($scope, SocialDataStore, Modals) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', function ($scope, SocialDataStore, Modals, Buildfire) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             var usersData = [];
@@ -21,46 +21,45 @@
             // Method for getting posts and its detail using SocialDataStrore methods
             ContentHome.getPosts = function () {
                 console.log('Get post method called--in----- content--------------');
-                ContentHome.noMore=true;
+                ContentHome.noMore = true;
                 var lastThreadId;
                 // Called when getting success from SocialDataStore getPosts method
                 var success = function (response) {
-                        console.info('inside success of get posts and result inside content section is: ', response);
+                    console.info('inside success of get posts and result inside content section is: ', response);
 //                        ContentHome.posts = response.data.result;
-                        if (response && response.data && response.data.result) {
-                            if (response.data.result.length < 10) {
-                                ContentHome.noMore = true;
-                            }
-                            else {
-                                ContentHome.noMore = false;
-                            }
+                    if (response && response.data && response.data.result && response.data.result.length < 10) {
+                        ContentHome.noMore = true;
+                    }
+                    else {
+                        ContentHome.noMore = false;
+                    }
+
+                    response.data.result.forEach(function (postData) {
+                        if (userIds.indexOf(postData.userId.toString()) == -1)
+                            userIds.push(postData.userId.toString());
+                        ContentHome.posts.push(postData);
+                    });
+                    // Called when getting success from SocialDataStore getUsers method
+                    var successCallback = function (response) {
+                        console.info('Users fetching response is: ', response.data.result);
+                        if (response.data.error) {
+                            console.error('Error while creating post ', response.data.error);
+                        } else if (response.data.result) {
+                            console.info('Users fetched successfully', response.data.result);
+                            usersData = response.data.result;
                         }
-                        response.data.result.forEach(function (postData) {
-                            if (userIds.indexOf(postData.userId.toString()) == -1)
-                                userIds.push(postData.userId.toString());
-                            ContentHome.posts.push(postData);
-                        });
-                        // Called when getting success from SocialDataStore getUsers method
-                        var successCallback = function (response) {
-                            console.info('Users fetching response is: ', response.data.result);
-                            if (response.data.error) {
-                                console.error('Error while creating post ', response.data.error);
-                            } else if (response.data.result) {
-                                console.info('Users fetched successfully', response.data.result);
-                                usersData = response.data.result;
-                            }
-                        };
-                        // Called when getting error from SocialDataStore getUsers method
-                        var errorCallback = function (err) {
-                            console.log('Error while fetching users details ', err);
-                        };
-                        // Getting users details of posts
-                        SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
                     };
+                    // Called when getting error from SocialDataStore getUsers method
+                    var errorCallback = function (err) {
+                        console.log('Error while fetching users details ', err);
+                    };
+                    // Getting users details of posts
+                    SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                };
                 // Called when getting error from SocialDataStore getPosts method
                 var error = function (err) {
-                        console.error('Error while getting data inside content section is: ', err);
-                    };
+                    console.error('Error while getting data inside content section is: ', err);
+                };
                 if (ContentHome.posts.length)
                     lastThreadId = ContentHome.posts[ContentHome.posts.length - 1]._id;
                 else
@@ -106,6 +105,7 @@
                 var success = function (response) {
                     console.log('inside success of delete post', response);
                     if (response.data.result) {
+                        Buildfire.messaging.sendMessageToWidget({'name': 'POST_DELETED', '_id': postId});
                         console.log('post successfully deleted');
                         ContentHome.posts = ContentHome.posts.filter(function (el) {
                             return el._id != postId;
@@ -124,10 +124,16 @@
             ContentHome.banUser = function (userId, threadId) {
                 console.log('inside ban user controller method>>>>>>>>>>');
                 Modals.BanPopupModal().then(function (data) {
-                    if(data == 'yes') {
+                    if (data == 'yes') {
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
                             console.log('User successfully banned and response is :', response);
+                            Buildfire.messaging.sendMessageToWidget({'name': 'BAN_USER', '_id': userId});
+                            ContentHome.posts = ContentHome.posts.filter(function (el) {
+                                return el.userId != userId;
+                            });
+                            if (!$scope.$$phase)
+                                $scope.$digest();
                         };
                         // Called when getting error from SocialDataStore banUser method
                         var error = function (err) {
@@ -145,7 +151,7 @@
             ContentHome.loadMoreComments = function (thread, viewComment) {
                 initialCommentsLength = (thread.comments && thread.comments.length) || null;
                 if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
-                    thread.viewComments = thread.viewComments == true ? false : true;
+                    thread.viewComments = thread.viewComments ? false : true;
                 SocialDataStore.getCommentsOfAPost({
                     threadId: thread._id,
                     lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
@@ -164,15 +170,14 @@
                 );
             };
 
-            ContentHome.seeMore=function(post){
-                post.seeMore=true;
-                post.limit=10000000;
+            ContentHome.seeMore = function (post) {
+                post.seeMore = true;
+                post.limit = 10000000;
                 if (!$scope.$$phase)$scope.$digest();
             };
 
             // Method for getting Post's and Comment's creation time in User Readable Time Format
             ContentHome.getDuration = function (timestamp) {
-                console.log('post/comment created : ',moment(timestamp.toString()).fromNow());
                 return moment(timestamp.toString()).fromNow();
             };
         }]);
