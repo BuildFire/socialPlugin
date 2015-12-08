@@ -38,10 +38,11 @@
     <!-- Meta -->
     <meta charset="utf-8">
 </head>
-<body class="body-scroll">
+<body class="scrollable">
 <div class="main_view">
     <div class="slide content" ng-show="showThread">
-        <div ng-controller="WidgetWallCtrl as WidgetWall">
+        <div ng-controller="WidgetWallCtrl as WidgetWall"
+             ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}">
             <div class="holder padding-zero has-bottom">
                 <div class="social-plugin social-wall">
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
