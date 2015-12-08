@@ -249,13 +249,13 @@
                 saveUserSettings:function(){
 
                 },
-                getThreadLikes: function (uniqueids) {
+                getThreadLikes: function (uniqueIds) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'threadLikes/getLikes';
                     postDataObject.params = {};
-                    postDataObject.params.uniqueIds = uniqueids;
+                    postDataObject.params.uniqueIds = uniqueIds;
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.userId = "5317c378a6611c6009000001" || null;
                     var success = function (response) {
