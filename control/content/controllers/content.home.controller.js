@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', function ($scope, SocialDataStore, Modals) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals','Buildfire', function ($scope, SocialDataStore, Modals,Buildfire) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             var usersData = [];
@@ -106,6 +106,7 @@
                 var success = function (response) {
                     console.log('inside success of delete post', response);
                     if (response.data.result) {
+                        Buildfire.messaging.sendMessageToWidget({'name':'POST_DELETED','_id':postId});
                         console.log('post successfully deleted');
                         ContentHome.posts = ContentHome.posts.filter(function (el) {
                             return el._id != postId;
@@ -128,6 +129,7 @@
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
                             console.log('User successfully banned and response is :', response);
+                            Buildfire.messaging.sendMessageToWidget({'name':'BAN_USER','_id':userId});
                         };
                         // Called when getting error from SocialDataStore banUser method
                         var error = function (err) {
@@ -145,7 +147,7 @@
             ContentHome.loadMoreComments = function (thread, viewComment) {
                 initialCommentsLength = (thread.comments && thread.comments.length) || null;
                 if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
-                    thread.viewComments = thread.viewComments == true ? false : true;
+                    thread.viewComments = thread.viewComments ? false : true;
                 SocialDataStore.getCommentsOfAPost({
                     threadId: thread._id,
                     lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
@@ -172,7 +174,6 @@
 
             // Method for getting Post's and Comment's creation time in User Readable Time Format
             ContentHome.getDuration = function (timestamp) {
-                console.log('post/comment created : ',moment(timestamp.toString()).fromNow());
                 return moment(timestamp.toString()).fromNow();
             };
         }]);

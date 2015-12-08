@@ -236,5 +236,22 @@
                         }
                     })
                 };
+                Buildfire.messaging.onReceivedMessage = function (event) {
+                    console.log('Widget syn called method in controller called-----', event);
+                    if(event && event.name=='POST_DELETED'){
+                        WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            return el._id != event._id;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                    else if(event && event.name=='BAN_USER'){
+                        WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            return el.userId != event._id;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
             }])
 })(window.angular);

@@ -122,8 +122,7 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
-                }
-                ,
+                },
                 getThreadByUniqueLink: function (threadUniqueLink) {
                     var deferred = $q.defer();
                     var postDataObject = {};
