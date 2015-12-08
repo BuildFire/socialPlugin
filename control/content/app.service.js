@@ -115,7 +115,7 @@
                     postDataObject.params.userId = userId;
                     postDataObject.params.secureToken = "null";
                     postDataObject.params.block = true;
-                    postDataObject.params.removeAllComments = false;
+                    postDataObject.params.removeAllComments = true;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);

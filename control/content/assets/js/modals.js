@@ -11,7 +11,7 @@
                     var removePopupDeferred = $q.defer();
                     var removePopupModal = $modal
                         .open({
-                            templateUrl: '../../templates/modals/rm-post-modal.html',
+                            templateUrl: 'templates/modals/rm-post-modal.html',
                             controller: 'RemovePopupCtrl',
                             controllerAs: 'RemovePopup',
                             size: 'sm',
@@ -33,7 +33,7 @@
                     var banPopupDeferred = $q.defer();
                     var banPopupModal = $modal
                         .open({
-                            templateUrl: '../../templates/modals/ban-user-modal.html',
+                            templateUrl: 'templates/modals/ban-user-modal.html',
                             controller: 'BanPopupCtrl',
                             controllerAs: 'BanPopup',
                             size: 'sm',
