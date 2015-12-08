@@ -2,7 +2,7 @@
 
 (function (angular) {
         angular.module('socialPluginWidget')
-            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire','$rootScope', function($scope, SocialDataStore, Modals, Buildfire,$rootScope) {
+            .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire','$rootScope','Location', function($scope, SocialDataStore, Modals, Buildfire,$rootScope,Location) {
                 console.log('WidgetWall controller loaded--------------------------------------------------------------');
                 var WidgetWall = this;
                 var usersData = [];
@@ -219,6 +219,11 @@
                     console.log('post created wall : ',moment(timestamp.toString()).fromNow());
                     return moment(timestamp.toString()).fromNow();
                 };
+
+                WidgetWall.goInToThread=function(threadId){
+                    if(threadId)
+                    Location.go('#/thread/'+threadId);
+                };
                 WidgetWall.isLikedByLoggedInUser = function (postId) {
                     var isUserLikeActive = true;
                     getLikesData.some(function(likeData) {
@@ -236,6 +241,6 @@
                             return true;
                         }
                     })
-                }
+                };
             }])
 })(window.angular);
