@@ -54,6 +54,7 @@
                     var success = function (response) {
                         console.info('Post creation response is: ', response.data);
                         WidgetWall.postText = '';
+                        WidgetWall.picFile = '';
                         if(response.data.error) {
                             console.error('Error while creating post ', response.data.error);
                         } else if(response.data.result) {
@@ -74,7 +75,9 @@
                             };
                             var errorCallback = function (err) {
                                 console.log('Error while fetching users details ', err);
-                                $scope.$digest();
+                                WidgetWall.postText = '';
+                                WidgetWall.picFile = '';
+                                if (!$scope.$$phase)$scope.$digest();
                             };
                             SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
                         }
@@ -82,6 +85,8 @@
                     var error = function (err) {
                         console.log('Error while creating post ', err);
                         WidgetWall.postText = '';
+                        WidgetWall.picFile = '';
+                        if (!$scope.$$phase)$scope.$digest();
                     };
                     console.log('post data inside controller is: ',postData);
                     SocialDataStore.createPost(postData).then(success, error);
@@ -93,13 +98,10 @@
                     var success = function (response) {
                             console.info('inside success of get posts and result is: ', response);
                             //WidgetWall.posts = response.data.result;
-                            if(response && response.data && response.data.result){
-                                if(response.data.result.length<10){
-                                    WidgetWall.noMore=true;
-                                }
-                                else{
-                                    WidgetWall.noMore=false;
-                                }
+                            if (response && response.data && response.data.result && response.data.result.length < 10) {
+                                WidgetWall.noMore = true;
+                            } else {
+                                WidgetWall.noMore = false;
                             }
                             response.data.result.forEach(function (postData) {
                                 if (userIds.indexOf(postData.userId.toString()) == -1)

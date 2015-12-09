@@ -75,6 +75,8 @@
                     };
                     var error = function (err) {
                         console.log('Error is : ', err);
+                        Thread.picFile = '';
+                        Thread.comment = '';
                     };
                     SocialDataStore.uploadImage(Thread.picFile).then(success, error);
                 }
@@ -219,9 +221,13 @@
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {
                         console.log('Add Comment Successsss------------------', data);
+                        Thread.picFile = '';
+                        Thread.comment = '';
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
+                        Thread.picFile = '';
+                        Thread.comment = '';
                     }
                 );
             }
