@@ -27,15 +27,15 @@
                 })
                 .otherwise('/');
         }])
-        .run(['$location', '$rootScope','Location', function ( $location, $rootScope,Location) {
-            buildfire.navigation.onBackButtonClick = function () {
+        .run(['$location', '$rootScope','Location','Buildfire', function ( $location, $rootScope,Location,Buildfire) {
+            Buildfire.navigation.onBackButtonClick = function () {
                 var path = $location.path();
                 if (path.indexOf('/thread') == 0) {
                     $rootScope.showThread = true;
                     $rootScope.$digest();
                 }
                 else
-                    buildfire.navigation.navigateHome();
+                    Buildfire.navigation.navigateHome();
             }
         }]);
 })(window.angular, window.buildfire);

@@ -115,7 +115,7 @@
                     postDataObject.params.userId = userId;
                     postDataObject.params.secureToken = "null";
                     postDataObject.params.block = true;
-                    postDataObject.params.removeAllComments = false;
+                    postDataObject.params.removeAllComments = true;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
@@ -128,6 +128,31 @@
                     $http({
                         method: 'GET',
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                deleteComment: function (commentId, threadId) {
+                    var deferred = $q.defer();
+                    var postDeleteObject = {};
+                    postDeleteObject.id = '1';
+                    postDeleteObject.method = 'threadComments/delete';
+                    postDeleteObject.params = {};
+                    postDeleteObject.params.commentId = commentId;
+                    postDeleteObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDeleteObject.params.threadId = threadId;
+                    postDeleteObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDeleteObject.params.secureToken = null;
+                    postDeleteObject.userToken = null;
+                    var successCallback = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data='+ JSON.stringify(postDeleteObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;

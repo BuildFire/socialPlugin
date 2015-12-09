@@ -38,10 +38,10 @@
     <!-- Meta -->
     <meta charset="utf-8">
 </head>
-<body class="body-scroll">
+<body class="scrollable">
 <div class="main_view">
-    <div class="slide content" ng-show="showThread">
-        <div ng-controller="WidgetWallCtrl as WidgetWall">
+    <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall">
+        <div class="slide content" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}">
             <div class="holder padding-zero has-bottom">
                 <div class="social-plugin social-wall">
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
@@ -70,9 +70,7 @@
                                     </div>
                                 </div>
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-                                    <p class="margin-zero"><a href="#/thread/{{post.uniqueLink}}">{{post.text | limitTo
-                                        :
-                                        (post.limit || 150) :0}}</a>
+                                    <p class="margin-zero cursor-pointer" ng-click="WidgetWall.goInToThread(post.uniqueLink)">{{post.text | limitTo : (post.limit || 150) :0}}
                                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
                                         <a ng-if="(post.text.length>150 && !post.seeMore)"
                                            ng-click="WidgetWall.seeMore(post)">Read
@@ -86,7 +84,7 @@
                                 <div class="footer margin-bottom-ten clearfix">
                                     <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
                                         <a class="social-icon" ng-click="WidgetWall.likeThread(post, 'thread')">
-                                            <span class="icon icon-heart"></span>
+                                            <span class="icon icon-heart" ng-class="{active: !WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
                                         </a>
                                         <a href="#/thread/{{post.uniqueLink}}" class="social-icon margin-left-twenty">
                                             <span class="icon icon-bubble"></span>
@@ -110,24 +108,25 @@
                     </div>
                 </div>
             </div>
-            <div class="holder padding-zero bottom-post bodyBackgroundTheme">
-                <hr class="small">
-                <div class="post-holder clearfix">
-                    <div class="add-media">
-                        <a>
+
+        </div>
+        <div class="holder padding-zero bottom-post bodyBackgroundTheme">
+            <hr class="small">
+            <div class="post-holder clearfix">
+                <div class="add-media">
+                    <a>
                     <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage()"
                           ng-model="WidgetWall.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
                           ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true"
                           name="files"></span>
-                        </a>
-                    </div>
-                    <div class="add-message pull-left">
-                        <input type="text" class="form-control" placeholder="Type your message..." name="text"
-                               ng-model="WidgetWall.postText">
-                    </div>
-                    <div class="send-message">
-                        <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost()">
-                    </div>
+                    </a>
+                </div>
+                <div class="add-message pull-left">
+                    <input type="text" class="form-control" placeholder="Type your message..." name="text"
+                           ng-model="WidgetWall.postText">
+                </div>
+                <div class="send-message">
+                    <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost()">
                 </div>
             </div>
         </div>

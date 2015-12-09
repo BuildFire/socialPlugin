@@ -30,7 +30,7 @@
 			<div class="footer margin-bottom-ten clearfix">
 				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
 					<a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
-						<span class="icon icon-heart"></span>
+						<span class="icon icon-heart" ng-class="{active: !Thread.post.isUserLikeActive}"></span>
 					</a>
 					<a class="social-icon margin-left-twenty">
 						<span class="icon icon-bubble"></span>
