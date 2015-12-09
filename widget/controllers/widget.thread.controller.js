@@ -78,7 +78,7 @@
                     };
                     SocialDataStore.uploadImage(Thread.picFile).then(success, error);
                 }
-                else{
+                else if(Thread.comment) {
                     addComment();
                 }
             };
