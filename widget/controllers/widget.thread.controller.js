@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire) {
             console.log('Thread controller is loaded');
             console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
@@ -236,5 +236,19 @@
                     }
                 );
             }
+            Buildfire.messaging.onReceivedMessage = function (event) {
+                console.log('Widget syn called method in controller Thread called-----', event);
+                if(event && event.name=='POST_DELETED' && event._id==Thread.post._id){
+                    $rootScope.showThread = true;
+                    $rootScope.$digest();
+                }
+                /*else if(event && event.name=='BAN_USER'){
+                    WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                        return el.userId != event._id;
+                    });
+                    if (!$scope.$$phase)
+                        $scope.$digest();
+                }*/
+            };
         }])
 })(window.angular);
