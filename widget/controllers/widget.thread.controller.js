@@ -68,7 +68,8 @@
              * Thread.addComment method checks whether image is present or not in comment.
              */
             Thread.addComment = function () {
-                if(Thread.picFile) {                // image post
+                if(Thread.picFile && !Thread.waitAPICompletion) {                // image post
+                    Thread.waitAPICompletion = true;
                     var success = function (response) {
                         console.log('response inside controller for image upload is: ', response);
                         addComment(response.data.result);
@@ -80,7 +81,8 @@
                     };
                     SocialDataStore.uploadImage(Thread.picFile).then(success, error);
                 }
-                else if(Thread.comment) {
+                else if(Thread.comment && !Thread.waitAPICompletion) {
+                    Thread.waitAPICompletion = true;
                     addComment();
                 }
             };
@@ -223,11 +225,14 @@
                         console.log('Add Comment Successsss------------------', data);
                         Thread.picFile = '';
                         Thread.comment = '';
+                        Thread.waitAPICompletion = false;
+                        Thread.post.commentsCount++;
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
                         Thread.picFile = '';
                         Thread.comment = '';
+                        Thread.waitAPICompletion = false;
                     }
                 );
             }
