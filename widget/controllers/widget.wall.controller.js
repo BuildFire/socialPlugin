@@ -18,7 +18,8 @@
                 $rootScope.showThread=true;
                 WidgetWall.createPost = function () {
                     console.log('inside create post method>>>>>',WidgetWall.postText, WidgetWall.picFile);
-                    if(WidgetWall.picFile) {                // image post
+                    if(WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
+                        WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
                             console.log('response inside controller for image upload is: ', response);
                             finalPostCreation(response.data.result);
@@ -27,8 +28,9 @@
                             console.log('Error is : ', err);
                         };
                         SocialDataStore.uploadImage(WidgetWall.picFile).then(success, error);
-                    } else if(WidgetWall.postText) {                        // text post
-                        finalPostCreation();
+                    } else if(WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
+                            WidgetWall.waitAPICompletion = true;
+                            finalPostCreation();
                     }
                 };
                 var init = function () {
@@ -71,12 +73,14 @@
                                 } else if(response.data.result) {
                                     console.info('Users fetched successfully', response.data.result);
                                     usersData = response.data.result;
+                                    WidgetWall.waitAPICompletion = false;
                                 }
                             };
                             var errorCallback = function (err) {
                                 console.log('Error while fetching users details ', err);
                                 WidgetWall.postText = '';
                                 WidgetWall.picFile = '';
+                                WidgetWall.waitAPICompletion = false;
                                 if (!$scope.$$phase)$scope.$digest();
                             };
                             SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
@@ -86,6 +90,7 @@
                         console.log('Error while creating post ', err);
                         WidgetWall.postText = '';
                         WidgetWall.picFile = '';
+                        WidgetWall.waitAPICompletion = false;
                         if (!$scope.$$phase)$scope.$digest();
                     };
                     console.log('post data inside controller is: ',postData);
