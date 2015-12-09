@@ -32,7 +32,7 @@
                     }
                 };
                 var init = function () {
-                    Buildfire.auth.getCurrentUser(function(userData){
+                    Buildfire.auth.getCurrentUser(function(err,userData){
                         console.log('Datta-----------------',userData);
                         var context=Buildfire.context;
                         if(userData){
