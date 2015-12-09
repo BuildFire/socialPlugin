@@ -57,7 +57,7 @@
                         if(response.data.error) {
                             console.error('Error while creating post ', response.data.error);
                         } else if(response.data.result) {
-                            Buildfire.messaging.sendMessageToControl({eventName:'Post Created',status:'Success'});
+                            Buildfire.messaging.sendMessageToControl({name:'POST_CREATED',status:'Success',post:response.data.result});
                             console.info('Post created successfully', response.data.result);
                             WidgetWall.posts.unshift(response.data.result);
                             if(userIds.indexOf(response.data.result.userId.toString()) == -1) {
