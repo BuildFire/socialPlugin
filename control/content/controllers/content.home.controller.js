@@ -181,25 +181,27 @@
 
             // Method for loading comments
             ContentHome.loadMoreComments = function (thread, viewComment) {
-                initialCommentsLength = (thread.comments && thread.comments.length) || null;
-                if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
-                    thread.viewComments = thread.viewComments ? false : true;
-                SocialDataStore.getCommentsOfAPost({
-                    threadId: thread._id,
-                    lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
-                }).then(
-                    function (data) {
-                        console.log('Success in Conrtent get Load more Comments---------', data);
-                        if (data && data.data && data.data.result) {
-                            thread.comments = thread.comments ? thread.comments.concat(data.data.result) : data.data.result;
-                            thread.moreComments = thread.comments && (thread.comments.length > initialCommentsLength) ? false : true;
-                            if (!$scope.$$phase)$scope.$digest();
+                if(thread.commentsCount > 0) {
+                    initialCommentsLength = (thread.comments && thread.comments.length) || null;
+                    if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
+                        thread.viewComments = thread.viewComments ? false : true;
+                    SocialDataStore.getCommentsOfAPost({
+                        threadId: thread._id,
+                        lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
+                    }).then(
+                        function (data) {
+                            console.log('Success in Conrtent get Load more Comments---------', data);
+                            if (data && data.data && data.data.result) {
+                                thread.comments = thread.comments ? thread.comments.concat(data.data.result) : data.data.result;
+                                thread.moreComments = thread.comments && (thread.comments.length > initialCommentsLength) ? false : true;
+                                if (!$scope.$$phase)$scope.$digest();
+                            }
+                        },
+                        function (err) {
+                            console.log('Error get Load More Comments----------', err);
                         }
-                    },
-                    function (err) {
-                        console.log('Error get Load More Comments----------', err);
-                    }
-                );
+                    );
+                }
             };
 
             ContentHome.seeMore = function (post) {
