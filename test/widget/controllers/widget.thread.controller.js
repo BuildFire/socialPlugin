@@ -32,7 +32,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
         });
     });
 
-    describe('Thread.likeThread', function () {
+    xdescribe('Thread.likeThread', function () {
 
 
         var spy1;

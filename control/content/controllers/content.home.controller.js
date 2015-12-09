@@ -212,6 +212,14 @@
             ContentHome.getDuration = function (timestamp) {
                 return moment(timestamp.toString()).fromNow();
             };
+
+            Buildfire.messaging.onReceivedMessage = function (event) {
+                console.log('Content syn called method in content.home.controller called-----', event);
+                if(event && event.name =='POST_CREATED' && event.post){
+                    ContentHome.posts.unshift(event.post);
+                    if (!$scope.$$phase)$scope.$digest();
+                }
+            };
         }]);
 })(window.angular);
 

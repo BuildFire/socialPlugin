@@ -12,9 +12,4 @@
                 })
                 .otherwise('/');
         }])
-        .run([ 'Buildfire', function (Buildfire) {
-            Buildfire.messaging.onReceivedMessage = function (event) {
-                console.log('Content syn called method called-----', event);
-            };
-        }])
 })(window.angular);
