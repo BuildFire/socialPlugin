@@ -94,7 +94,7 @@
 
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
-                Modals.removePopupModal(postId).then(function (data) {
+                Modals.removePopupModal({name:'Post'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deletePost(postId).then(success, error);
                 }, function (err) {
@@ -120,10 +120,42 @@
                 };
             };
 
+            // Method for deleting comments of a post
+            ContentHome.deleteComment = function (post, commentId) {
+                Modals.removePopupModal({name:'Comment'}).then(function (data) {
+                    // Deleting post having id as postId
+                    SocialDataStore.deleteComment(commentId, post._id).then(success, error);
+                }, function (err) {
+                    console.log('Error is: ', err);
+                });
+                console.log('delete comment method called');
+                // Called when getting success from SocialDataStore.deletePost method
+                var success = function (response) {
+                    console.log('inside success of delete comment', response);
+                    if (response.data.result) {
+                        Buildfire.messaging.sendMessageToWidget({'name': 'COMMENT_DELETED', '_id': commentId});
+                        console.log('comment successfully deleted');
+                        post.commentsCount--;
+                        if(post.commentsCount < 1) {
+                            post.viewComments = false;
+                        }
+                        post.comments = post.comments.filter(function (el) {
+                            return el._id != commentId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                // Called when getting error from SocialDataStore.deletePost method
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+            };
+
             // Method for banning a user by calling SocialDataStore banUser method
             ContentHome.banUser = function (userId, threadId) {
                 console.log('inside ban user controller method>>>>>>>>>>');
-                Modals.BanPopupModal().then(function (data) {
+                Modals.banPopupModal().then(function (data) {
                     if (data == 'yes') {
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
