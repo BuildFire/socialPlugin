@@ -133,7 +133,7 @@
                 var success = function (response) {
                     console.log('inside success of delete comment', response);
                     if (response.data.result) {
-                        Buildfire.messaging.sendMessageToWidget({'name': 'COMMENT_DELETED', '_id': commentId});
+                        Buildfire.messaging.sendMessageToWidget({'name': 'COMMENT_DELETED', '_id': commentId,'postId':post._id});
                         console.log('comment successfully deleted');
                         post.commentsCount--;
                         if(post.commentsCount < 1) {

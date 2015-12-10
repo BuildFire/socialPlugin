@@ -247,6 +247,16 @@
                         if (!$scope.$$phase)
                             $scope.$digest();
                     }
+                    else if(event && event.name=="COMMENT_DELETED"){
+                        WidgetWall.posts.some(function (el) {
+                            if(el._id==event.postId){
+                                el.commentsCount--;
+                                return true;
+                            }
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
                 };
             }])
 })(window.angular);
