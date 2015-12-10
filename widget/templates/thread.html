@@ -24,7 +24,7 @@
 			</div>
 			<div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="Thread.post.imageUrl">
 				<div class="plugin-slide text-center">
-					<img ng-src="{{Thread.post.imageUrl}}">
+					<img ng-src="{{Thread.post.imageUrl | cropImage :342 : 193}}">
 				</div>
 			</div>
 			<div class="footer margin-bottom-ten clearfix">
