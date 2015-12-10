@@ -3,7 +3,6 @@
 (function (angular) {
         angular.module('socialPluginWidget')
             .controller('WidgetWallCtrl', ['$scope','SocialDataStore','Modals', 'Buildfire','$rootScope','Location', function($scope, SocialDataStore, Modals, Buildfire,$rootScope,Location) {
-                console.log('WidgetWall controller loaded--------------------------------------------------------------');
                 var WidgetWall = this;
                 var usersData = [];
                 var userIds = [];
@@ -17,11 +16,9 @@
                 WidgetWall.posts = [];
                 $rootScope.showThread=true;
                 WidgetWall.createPost = function () {
-                    console.log('inside create post method>>>>>',WidgetWall.postText, WidgetWall.picFile);
                     if(WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
-                            console.log('response inside controller for image upload is: ', response);
                             finalPostCreation(response.data.result);
                         };
                         var error = function (err) {
@@ -35,7 +32,7 @@
                 };
                 var init = function () {
                     Buildfire.auth.getCurrentUser(function(err,userData){
-                        console.log('Datta-----------------',userData);
+                        console.info('Current Logged In user details are -----------------',userData);
                         var context=Buildfire.context;
                         if(userData){
                             WidgetWall.userDetails.appId=context.appId;
@@ -54,20 +51,17 @@
                     postData.title = '';
                     postData.imageUrl = imageUrl || null;
                     var success = function (response) {
-                        console.info('Post creation response is: ', response.data);
                         WidgetWall.postText = '';
                         WidgetWall.picFile = '';
                         if(response.data.error) {
                             console.error('Error while creating post ', response.data.error);
                         } else if(response.data.result) {
                             Buildfire.messaging.sendMessageToControl({name:'POST_CREATED',status:'Success',post:response.data.result});
-                            console.info('Post created successfully', response.data.result);
                             WidgetWall.posts.unshift(response.data.result);
                             if(userIds.indexOf(response.data.result.userId.toString()) == -1) {
                                 userIds.push(response.data.result.userId.toString());
                             }
                             var successCallback = function (response) {
-                                console.info('Users fetching response when added dynamic post is: ', response.data.result);
                                 if(response.data.error) {
                                     console.error('Error while fetching users ', response.data.error);
                                 } else if(response.data.result) {
@@ -93,15 +87,12 @@
                         WidgetWall.waitAPICompletion = false;
                         if (!$scope.$$phase)$scope.$digest();
                     };
-                    console.log('post data inside controller is: ',postData);
                     SocialDataStore.createPost(postData).then(success, error);
                 }
                 WidgetWall.getPosts = function () {
                     WidgetWall.noMore=true;
                     var lastThreadId;
-                    console.log('Get method called------------------------------');
                     var success = function (response) {
-                            console.info('inside success of get posts and result is: ', response);
                             //WidgetWall.posts = response.data.result;
                             if (response && response.data && response.data.result && response.data.result.length < 10) {
                                 WidgetWall.noMore = true;
@@ -115,29 +106,25 @@
                                 postsUniqueIds.push(postData.uniqueLink);
                             });
                             var successCallback = function (response) {
-                                console.info('Users fetching response is: ', response.data.result);
                                 if(response.data.error) {
                                     console.error('Error while fetching users ', response.data.error);
                                 } else if(response.data.result) {
-                                    console.info('Users fetched successfully', response.data.result);
                                     usersData = response.data.result;
                                 }
                             };
                             var errorCallback = function (err) {
                                 WidgetWall.noMore=false;
-                                console.log('Error while fetching users details ', err);
+                                console.error('Error while fetching users details ', err);
                             };
                             SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
                             SocialDataStore.getThreadLikes(postsUniqueIds).then(function (response) {
-                                console.info('get thread likes response is: ', response.data.result);
                                 if(response.data.error) {
                                     console.error('Error while getting likes of thread by logged in user ', response.data.error);
                                 } else if(response.data.result) {
-                                    console.info('Thread likes fetched successfully', response.data.result);
                                     getLikesData = response.data.result;
                                 }
                             }, function (err) {
-                                console.log('Error while fetching thread likes ', err);
+                                console.error('Error while fetching thread likes ', err);
                             });
                         }
                         , error = function (err) {
@@ -171,17 +158,15 @@
                 };
                 WidgetWall.showMoreOptions=function(){
                     Modals.showMoreOptionsModal({}).then(function(data){
-                            console.log('Data in Successs------------------data');
                         },
                         function(err){
-                            console.log('Error in Error handler--------------------------',err);
+                            // Do something when user cancel the popup
                         });
                 };
                 WidgetWall.likeThread = function (post, type) {
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(post.uniqueLink);
                     var success = function (response) {
-                        console.log('inside success of getThreadLikes',response);
                         if(response.data && response.data.result && response.data.result.length > 0) {
                             if(response.data.result[0].isUserLikeActive) {
                                 SocialDataStore.addThreadLike(post, type).then(function (res) {
@@ -191,25 +176,24 @@
                                     WidgetWall.updateLikesData(post._id, false);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
-                                    console.log('error while liking thread', err);
+                                    console.error('error while liking thread', err);
                                 });
                             } else {
                                 SocialDataStore.removeThreadLike(post, type).then(function (res) {
-                                    console.log('thread like gets removed', res);
                                     if(res.data && res.data.result)
                                         post.likesCount--;
                                     post.waitAPICompletion = false;
                                     WidgetWall.updateLikesData(post._id, true);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
-                                    console.log('error while removing like of thread', err);
+                                    console.error('error while removing like of thread', err);
                                 });
                             }
                         }
                     };
                     var error = function (err) {
                         post.waitAPICompletion = false;
-                        console.log('error is : ', err);
+                        console.error('error is : ', err);
                     };
                     if(!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
@@ -223,7 +207,6 @@
                     if (!$scope.$$phase)$scope.$digest();
                 };
                 WidgetWall.getDuration = function (timestamp) {
-                    console.log('post created wall : ',moment(timestamp.toString()).fromNow());
                     return moment(timestamp.toString()).fromNow();
                 };
 
@@ -250,7 +233,6 @@
                     })
                 };
                 Buildfire.messaging.onReceivedMessage = function (event) {
-                    console.log('Widget syn called method in controller called-----', event);
                     if(event && event.name=='POST_DELETED'){
                         WidgetWall.posts = WidgetWall.posts.filter(function (el) {
                             return el._id != event._id;
@@ -261,6 +243,16 @@
                     else if(event && event.name=='BAN_USER'){
                         WidgetWall.posts = WidgetWall.posts.filter(function (el) {
                             return el.userId != event._id;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                    else if(event && event.name=="COMMENT_DELETED"){
+                        WidgetWall.posts.some(function (el) {
+                            if(el._id==event.postId){
+                                el.commentsCount--;
+                                return true;
+                            }
                         });
                         if (!$scope.$$phase)
                             $scope.$digest();
