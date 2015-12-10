@@ -15,6 +15,7 @@
                             var uniqueIdsArray = [];
                             $rootScope.showThread=false;
                             Thread.post = data.data.result;
+                            Thread.showMore = Thread.post.commentsCount > 10 ? true : false;
                             uniqueIdsArray.push(Thread.post.uniqueLink);
                             userIds.push(Thread.post.userId);
                             SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
@@ -90,22 +91,27 @@
              * loadMoreComments methods is loads the more comments of a post.
              */
             Thread.loadMoreComments = function () {
-                SocialDataStore.getCommentsOfAPost({
-                    threadId: Thread.post._id,
-                    lastCommentId: Thread.comments[Thread.comments.length - 1]._id
-                }).then(
-                    function (data) {
-                        console.log('Success get Load more Comments---------', data);
-                        if (data && data.data && data.data.result){
-                            Thread.comments=Thread.comments.concat(data.data.result);
-                            if (!$scope.$$phase)$scope.$digest();
-                            console.log('After Update comments---------------------',Thread.comments);
+                if(Thread.comments && Thread.comments.length < Thread.post.commentsCount) {
+                    SocialDataStore.getCommentsOfAPost({
+                        threadId: Thread.post._id,
+                        lastCommentId: Thread.comments[Thread.comments.length - 1]._id
+                    }).then(
+                        function (data) {
+                            console.log('Success get Load more Comments---------', data);
+                            if (data && data.data && data.data.result) {
+                                Thread.comments = Thread.comments.concat(data.data.result);
+                                Thread.showMore = Thread.comments.length < Thread.post.commentsCount ? true : false;
+                                if (!$scope.$$phase)$scope.$digest();
+                                console.log('After Update comments---------------------', Thread.comments);
+                            }
+                        },
+                        function (err) {
+                            console.log('Error get Load More Comments----------', err);
                         }
-                    },
-                    function (err) {
-                        console.log('Error get Load More Comments----------', err);
-                    }
-                );
+                    );
+                } else {
+                    Thread.showMore = false;
+                }
             };
             /**
              * getUserName method is used to get the username on the basis of userId.
