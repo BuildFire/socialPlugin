@@ -247,6 +247,14 @@
                     $rootScope.showThread = true;
                     $rootScope.$digest();
                 }
+                else if(event && event.name=="COMMENT_DELETED" && event.postId==Thread.post._id){
+                    Thread.post.commentsCount--;
+                    Thread.comments=Thread.comments.filter(function (el) {
+                        return el._id!=event._id;
+                    });
+                    if (!$scope.$$phase)
+                        $scope.$digest();
+                }
                 /*else if(event && event.name=='BAN_USER'){
                     WidgetWall.posts = WidgetWall.posts.filter(function (el) {
                         return el.userId != event._id;
