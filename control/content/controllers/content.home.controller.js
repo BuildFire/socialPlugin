@@ -181,19 +181,19 @@
 
             // Method for loading comments
             ContentHome.loadMoreComments = function (thread, viewComment) {
-                if(thread.commentsCount > 0) {
-                    initialCommentsLength = (thread.comments && thread.comments.length) || null;
-                    if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
-                        thread.viewComments = thread.viewComments ? false : true;
+                initialCommentsLength = (thread.comments && thread.comments.length) || null;
+                if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
+                    thread.viewComments = thread.viewComments ? false : true;
+                if(thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,
-                        lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
+                        lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null
                     }).then(
                         function (data) {
                             console.log('Success in Conrtent get Load more Comments---------', data);
                             if (data && data.data && data.data.result) {
-                                thread.comments = thread.comments ? thread.comments.concat(data.data.result) : data.data.result;
-                                thread.moreComments = thread.comments && (thread.comments.length > initialCommentsLength) ? false : true;
+                                thread.comments = thread.comments && !viewComment ? thread.comments.concat(data.data.result) : data.data.result;
+                                thread.moreComments = thread.comments && thread.comments.length < thread.commentsCount ? false : true;
                                 if (!$scope.$$phase)$scope.$digest();
                             }
                         },
