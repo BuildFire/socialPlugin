@@ -171,6 +171,7 @@
                             if(response.data.result[0].isUserLikeActive) {
                                 SocialDataStore.addThreadLike(post, type).then(function (res) {
                                     console.log('thread gets liked', res);
+                                    Buildfire.messaging.sendMessageToControl({'name':'POST_LIKED','_id':post._id});
                                     post.likesCount++;
                                     post.waitAPICompletion = false;
                                     WidgetWall.updateLikesData(post._id, false);
@@ -181,6 +182,7 @@
                             } else {
                                 SocialDataStore.removeThreadLike(post, type).then(function (res) {
                                     if(res.data && res.data.result)
+                                        Buildfire.messaging.sendMessageToControl({'name':'POST_UNLIKED','_id':post._id});
                                         post.likesCount--;
                                     post.waitAPICompletion = false;
                                     WidgetWall.updateLikesData(post._id, true);

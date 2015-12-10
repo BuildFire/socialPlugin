@@ -221,6 +221,24 @@
                     ContentHome.posts.unshift(event.post);
                     if (!$scope.$$phase)$scope.$digest();
                 }
+                else if(event && event.name =='POST_LIKED'){
+                    ContentHome.posts.some(function (el) {
+                        if(el._id==event._id){
+                            el.likesCount++;
+                            return true;
+                        }
+                    });
+                    if (!$scope.$$phase)$scope.$digest();
+                }
+                else if(event && event.name =='POST_UNLIKED'){
+                    ContentHome.posts.some(function (el) {
+                        if(el._id==event._id){
+                            el.likesCount--;
+                            return true;
+                        }
+                    });
+                    if (!$scope.$$phase)$scope.$digest();
+                }
             };
         }]);
 })(window.angular);
