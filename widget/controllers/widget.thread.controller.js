@@ -3,8 +3,6 @@
 (function (angular) {
     angular.module('socialPluginWidget')
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire) {
-            console.log('Thread controller is loaded');
-            console.log('$routeParams--------------------------------', $routeParams);
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -227,6 +225,7 @@
                         Thread.comment = '';
                         Thread.waitAPICompletion = false;
                         Thread.post.commentsCount++;
+                        Buildfire.messaging.sendMessageToControl({'name':'COMMENT_ADDED','_id':Thread.post._id})
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);

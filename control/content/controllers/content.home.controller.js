@@ -239,6 +239,15 @@
                     });
                     if (!$scope.$$phase)$scope.$digest();
                 }
+                else if(event && event.name =='COMMENT_ADDED'){
+                    ContentHome.posts.some(function (el) {
+                        if(el._id==event._id){
+                            el.commentsCount++;
+                            return true;
+                        }
+                    });
+                    if (!$scope.$$phase)$scope.$digest();
+                }
             };
         }]);
 })(window.angular);
