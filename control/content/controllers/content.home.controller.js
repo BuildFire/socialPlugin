@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', function ($scope, SocialDataStore, Modals, Buildfire) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             var usersData = [];
@@ -94,7 +94,7 @@
 
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
-                Modals.removePopupModal({name:'Post'}).then(function (data) {
+                Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deletePost(postId).then(success, error);
                 }, function (err) {
@@ -105,7 +105,7 @@
                 var success = function (response) {
                     console.log('inside success of delete post', response);
                     if (response.data.result) {
-                        Buildfire.messaging.sendMessageToWidget({'name': 'POST_DELETED', '_id': postId});
+                        Buildfire.messaging.sendMessageToWidget({'name': EVENTS.POST_DELETED, '_id': postId});
                         console.log('post successfully deleted');
                         ContentHome.posts = ContentHome.posts.filter(function (el) {
                             return el._id != postId;
@@ -122,7 +122,7 @@
 
             // Method for deleting comments of a post
             ContentHome.deleteComment = function (post, commentId) {
-                Modals.removePopupModal({name:'Comment'}).then(function (data) {
+                Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deleteComment(commentId, post._id).then(success, error);
                 }, function (err) {
@@ -133,10 +133,14 @@
                 var success = function (response) {
                     console.log('inside success of delete comment', response);
                     if (response.data.result) {
-                        Buildfire.messaging.sendMessageToWidget({'name': 'COMMENT_DELETED', '_id': commentId,'postId':post._id});
+                        Buildfire.messaging.sendMessageToWidget({
+                            'name': EVENTS.COMMENT_DELETED,
+                            '_id': commentId,
+                            'postId': post._id
+                        });
                         console.log('comment successfully deleted');
                         post.commentsCount--;
-                        if(post.commentsCount < 1) {
+                        if (post.commentsCount < 1) {
                             post.viewComments = false;
                         }
                         post.comments = post.comments.filter(function (el) {
@@ -160,7 +164,7 @@
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
                             console.log('User successfully banned and response is :', response);
-                            Buildfire.messaging.sendMessageToWidget({'name': 'BAN_USER', '_id': userId});
+                            Buildfire.messaging.sendMessageToWidget({'name': EVENTS.BAN_USER, '_id': userId});
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el.userId != userId;
                             });
@@ -184,7 +188,7 @@
                 initialCommentsLength = (thread.comments && thread.comments.length) || null;
                 if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
                     thread.viewComments = thread.viewComments ? false : true;
-                if(thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
+                if (thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,
                         lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null
@@ -217,36 +221,44 @@
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Content syn called method in content.home.controller called-----', event);
-                if(event && event.name =='POST_CREATED' && event.post){
-                    ContentHome.posts.unshift(event.post);
-                    if (!$scope.$$phase)$scope.$digest();
-                }
-                else if(event && event.name =='POST_LIKED'){
-                    ContentHome.posts.some(function (el) {
-                        if(el._id==event._id){
-                            el.likesCount++;
-                            return true;
-                        }
-                    });
-                    if (!$scope.$$phase)$scope.$digest();
-                }
-                else if(event && event.name =='POST_UNLIKED'){
-                    ContentHome.posts.some(function (el) {
-                        if(el._id==event._id){
-                            el.likesCount--;
-                            return true;
-                        }
-                    });
-                    if (!$scope.$$phase)$scope.$digest();
-                }
-                else if(event && event.name =='COMMENT_ADDED'){
-                    ContentHome.posts.some(function (el) {
-                        if(el._id==event._id){
-                            el.commentsCount++;
-                            return true;
-                        }
-                    });
-                    if (!$scope.$$phase)$scope.$digest();
+                if (event) {
+                    switch (event.name) {
+                        case EVENTS.POST_CREATED :
+                            if (event.post) {
+                                ContentHome.posts.unshift(event.post);
+                                if (!$scope.$$phase)$scope.$digest();
+                            }
+                            break;
+                        case EVENTS.POST_LIKED :
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.likesCount++;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.POST_UNLIKED:
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.likesCount--;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_ADDED:
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.commentsCount++;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        default :
+                            break;
+                    }
                 }
             };
         }]);

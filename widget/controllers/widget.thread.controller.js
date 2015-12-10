@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire','EVENTS', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire,EVENTS) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -166,6 +166,7 @@
                         if(response.data.result[0].isUserLikeActive) {
                             SocialDataStore.addThreadLike(post, type).then(function (res) {
                                 console.log('thread gets liked', res);
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
                                 post.likesCount++;
                                 post.waitAPICompletion = false;
                                 post.isUserLikeActive = false;
@@ -177,6 +178,7 @@
                             SocialDataStore.removeThreadLike(post, type).then(function (res) {
                                 console.log('thread like gets removed', res);
                                 if(res.data && res.data.result)
+                                    Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': Thread.post._id});
                                     post.likesCount--;
                                 post.waitAPICompletion = false;
                                 post.isUserLikeActive = true;
@@ -231,7 +233,7 @@
                         Thread.comment = '';
                         Thread.waitAPICompletion = false;
                         Thread.post.commentsCount++;
-                        Buildfire.messaging.sendMessageToControl({'name':'COMMENT_ADDED','_id':Thread.post._id})
+                        Buildfire.messaging.sendMessageToControl({'name':EVENTS.COMMENT_ADDED,'_id':Thread.post._id})
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
@@ -243,25 +245,33 @@
             }
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Widget syn called method in controller Thread called-----', event);
-                if(event && event.name=='POST_DELETED' && event._id==Thread.post._id){
-                    $rootScope.showThread = true;
-                    $rootScope.$digest();
+                if (event) {
+                    switch (event.name) {
+                        case EVENTS.POST_DELETED :
+                            $rootScope.showThread = true;
+                            $rootScope.$digest();
+                            break;
+                        case EVENTS.BAN_USER :
+                            WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                                return el.userId != event._id;
+                            });
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_DELETED:
+                            if(event.postId==Thread.post._id){
+                                Thread.post.commentsCount--;
+                                Thread.comments=Thread.comments.filter(function (el) {
+                                    return el._id!=event._id;
+                                });
+                                if (!$scope.$$phase)
+                                    $scope.$digest();
+                            }
+                            break;
+                        default :
+                            break;
+                    }
                 }
-                else if(event && event.name=="COMMENT_DELETED" && event.postId==Thread.post._id){
-                    Thread.post.commentsCount--;
-                    Thread.comments=Thread.comments.filter(function (el) {
-                        return el._id!=event._id;
-                    });
-                    if (!$scope.$$phase)
-                        $scope.$digest();
-                }
-                /*else if(event && event.name=='BAN_USER'){
-                    WidgetWall.posts = WidgetWall.posts.filter(function (el) {
-                        return el.userId != event._id;
-                    });
-                    if (!$scope.$$phase)
-                        $scope.$digest();
-                }*/
             };
         }])
 })(window.angular);
