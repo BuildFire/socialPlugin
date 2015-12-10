@@ -259,6 +259,7 @@
                                 $scope.$digest();
                             break;
                         case EVENTS.COMMENT_DELETED:
+                            console.log('Comment Deleted in thread controlled evenet called-----------',event);
                             if(event.postId==Thread.post._id){
                                 Thread.post.commentsCount--;
                                 Thread.comments=Thread.comments.filter(function (el) {

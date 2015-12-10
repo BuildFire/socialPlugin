@@ -258,6 +258,7 @@
                                 $scope.$digest();
                             break;
                         case EVENTS.COMMENT_DELETED:
+                            console.log('Comment Deleted in Wall controlled evenet called-----------',event);
                             WidgetWall.posts.some(function (el) {
                                 if (el._id == event.postId) {
                                     el.commentsCount--;
