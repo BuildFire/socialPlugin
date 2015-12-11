@@ -6,44 +6,19 @@
             var Thread = this;
             var userIds = [];
             var usersData = [];
+            Thread.comments=[];
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
                         if (data && data.data && data.data.result) {
+                            Thread.getComments(data.data.result._id,null);
                             var uniqueIdsArray = [];
                             $rootScope.showThread=false;
                             Thread.post = data.data.result;
                             Thread.showMore = Thread.post.commentsCount > 10 ? true : false;
                             uniqueIdsArray.push(Thread.post.uniqueLink);
                             userIds.push(Thread.post.userId);
-                            SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
-                                function (data) {
-                                    console.log('Success get Comments---------', data);
-                                    if(data && data.data && data.data.result)
-                                    Thread.comments=data.data.result;
-                                    Thread.comments.forEach(function(commentData) {
-                                        if(userIds.indexOf(commentData.userId) == -1) {
-                                            userIds.push(commentData.userId);
-                                        }
-                                    });
-                                    if(userIds && userIds.length > 0) {
-                                        SocialDataStore.getUsers(userIds).then(function (response) {
-                                            console.info('Users fetching for comments and response is: ', response.data.result);
-                                            if(response.data.error) {
-                                                console.error('Error while fetching users for comments ', response.data.error);
-                                            } else if(response.data.result) {
-                                                console.info('Users fetched successfully for comments ', response.data.result);
-                                                usersData = response.data.result;
-                                            }
-                                        }, function (err) {
-                                            console.log('Error while fetching users of comments inside thread page: ', err);
-                                        });
-                                    }
-                                },
-                                function (err) {
-                                    console.log('Error get Comments----------', err);
-                                }
-                            );
+
                             SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
                                 console.info('get thread likes response is: ', response.data.result);
                                 if(response.data.error) {
@@ -63,6 +38,36 @@
                     }
                 );
             }
+            Thread.getComments=function(postId,lastCommentId){
+                SocialDataStore.getCommentsOfAPost({threadId: postId,lastCommentId:lastCommentId}).then(
+                    function (data) {
+                        console.log('Success get Comments---------', data);
+                        if(data && data.data && data.data.result)
+                            Thread.comments=Thread.comments.concat(data.data.result);
+                        Thread.comments.forEach(function(commentData) {
+                            if(userIds.indexOf(commentData.userId) == -1) {
+                                userIds.push(commentData.userId);
+                            }
+                        });
+                        if(userIds && userIds.length > 0) {
+                            SocialDataStore.getUsers(userIds).then(function (response) {
+                                console.info('Users fetching for comments and response is: ', response.data.result);
+                                if(response.data.error) {
+                                    console.error('Error while fetching users for comments ', response.data.error);
+                                } else if(response.data.result) {
+                                    console.info('Users fetched successfully for comments ', response.data.result);
+                                    usersData = response.data.result;
+                                }
+                            }, function (err) {
+                                console.log('Error while fetching users of comments inside thread page: ', err);
+                            });
+                        }
+                    },
+                    function (err) {
+                        console.log('Error get Comments----------', err);
+                    }
+                );
+            };
             /**
              * Thread.addComment method checks whether image is present or not in comment.
              */
@@ -250,6 +255,12 @@
                         Thread.waitAPICompletion = false;
                         Thread.post.commentsCount++;
                         Buildfire.messaging.sendMessageToControl({'name':EVENTS.COMMENT_ADDED,'_id':Thread.post._id})
+                        if(Thread.comments.length){
+                            Thread.getComments(Thread.post._id,Thread.comments[Thread.comments.length-1]._id);
+                        }
+                        else{
+                            Thread.getComments(Thread.post._id,null);
+                        }
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
