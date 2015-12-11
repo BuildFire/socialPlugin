@@ -256,6 +256,12 @@
                             });
                             if (!$scope.$$phase)$scope.$digest();
                             break;
+                        case EVENTS.POST_DELETED:
+                            ContentHome.posts = ContentHome.posts.filter(function (el) {
+                                return el._id != event._id;
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
                         default :
                             break;
                     }
