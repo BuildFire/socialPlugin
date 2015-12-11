@@ -221,6 +221,22 @@
                 if(timestamp)
                     return moment(timestamp.toString()).fromNow();
             };
+            Thread.deleteComment=function(commentId){
+                SocialDataStore.deleteComment(commentId,Thread.post._id).then(
+                    function(data){
+                        Thread.post.commentsCount--;
+                        Thread.comments=Thread.comments.filter(function (el) {
+                            return el._id!=commentId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                        console.log('Comment deleted=============================success----------data',data);
+                    },
+                    function (err) {
+                        console.log('Comment deleted=============================Error----------err',err);
+                    }
+                );
+            };
             /**
              * addComment method is used to add the comment to a post.
              * @param imageUrl
