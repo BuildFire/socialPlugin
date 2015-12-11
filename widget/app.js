@@ -32,12 +32,14 @@
                 return {
 
                     request: function (config) {
-                        buildfire.spinner.show();
-                        counter++;
+                        if(config.url.indexOf('threadLikes') != -1) {
+                            buildfire.spinner.show();
+                            counter++;
+                        }
                         return config;
                     },
                     response: function (response) {
-                        counter--;
+                        counter = counter > 0 ? counter-- : 0;
                         if (counter === 0) {
                             buildfire.spinner.hide();
                         }
