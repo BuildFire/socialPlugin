@@ -229,6 +229,7 @@
             Thread.deleteComment=function(commentId){
                 SocialDataStore.deleteComment(commentId,Thread.post._id).then(
                     function(data){
+                        Buildfire.messaging.sendMessageToControl({name:EVENTS.COMMENT_DELETED,_id:commentId,postId:Thread.post._id});
                         Thread.post.commentsCount--;
                         Thread.comments=Thread.comments.filter(function (el) {
                             return el._id!=commentId;

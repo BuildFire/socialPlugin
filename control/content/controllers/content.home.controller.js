@@ -262,6 +262,27 @@
                             });
                             if (!$scope.$$phase)$scope.$digest();
                             break;
+                        case EVENTS.COMMENT_DELETED:
+                            console.log('Comment Deleted in Contenet home  controlled evenet called-----------', event);
+                            var post = ContentHome.posts.filter(function (el) {
+                                return el._id == event.postId;
+                            });
+                            console.log('Post in Content.home.controller---------------------------------', post);
+                            if (post && post[0] && post[0].comments && post[0].comments.length) {
+                                post[0].commentsCount--;
+                                post[0].comments = post[0].comments.filter(function (el) {
+                                    return el._id != event._id;
+                                });
+                            }
+                            /*ContentHome.posts.some(function (el) {
+                             if (el._id == event.postId) {
+                             el.commentsCount--;
+                             return true;
+                             }
+                             });*/
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
                         default :
                             break;
                     }
