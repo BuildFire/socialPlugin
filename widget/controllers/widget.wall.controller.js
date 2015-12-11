@@ -239,6 +239,26 @@
                     }
                 })
             };
+            WidgetWall.deletePost = function (postId) {
+                var success = function (response) {
+                    console.log('inside success of delete post', response);
+                    if (response.data.result) {
+                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_DELETED, '_id': postId});
+                        console.log('post successfully deleted');
+                        WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            return el._id != postId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                // Called when getting error from SocialDataStore.deletePost method
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+                // Deleting post having id as postId
+                SocialDataStore.deletePost(postId).then(success, error);
+            };
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Event in wall cotroller------------------------',event);
                 if (event) {

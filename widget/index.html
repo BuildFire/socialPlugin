@@ -69,6 +69,7 @@
                                         <span class="time-ago opacity-seventy">{{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}</span>
                                     </div>
                                 </div>
+                                <a href="#" class="btn-delete-icon btn-danger" ng-click="WidgetWall.deletePost(post._id)" style="float: right;margin-right: 5px;"></a>
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <p class="margin-zero cursor-pointer" ng-click="WidgetWall.goInToThread(post.uniqueLink)">{{post.text | limitTo : (post.limit || 150) :0}}
                                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
