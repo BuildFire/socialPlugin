@@ -32,7 +32,7 @@
                 return {
 
                     request: function (config) {
-                        if(config.url.indexOf('threadLikes') != -1) {
+                        if(config.url.indexOf('threadLikes') == -1) {
                             buildfire.spinner.show();
                             counter++;
                         }
