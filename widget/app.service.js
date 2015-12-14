@@ -105,8 +105,8 @@
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.comment = data.comment;
                     postDataObject.params.attachedImage = data.imageUrl;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
-                    postDataObject.userToken = null;
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
+                    postDataObject.userToken = encodeURIComponent(data.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
                     var successCallback = function (response) {
                         console.log('add Comment callback recieved--------------', response);
                         return deferred.resolve(response);

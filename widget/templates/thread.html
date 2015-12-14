@@ -62,7 +62,7 @@
 							<span class="time-ago opacity-seventy">{{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</span>
 						</div>
 					</div>
-					<a style="float: right; margin-right: 5px" ng-click="Thread.deleteComment(comment._id)" class="btn-delete-icon btn-danger"></a>
+					<a style="float: right; margin-right: 5px" ng-click="Thread.deleteComment(comment._id)" ng-if="Thread.userDetails.userId == comment.userId" class="btn-delete-icon btn-danger"></a>
 					<div class="copy padding-left-ten padding-right-ten margin-bottom-five">
 						<p class="margin-zero">{{comment.comment}}</p>
 					</div>

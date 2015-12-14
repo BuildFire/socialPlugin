@@ -286,7 +286,7 @@
              * @param imageUrl
              */
             function addComment(imageUrl) {
-                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment, imageUrl: imageUrl || null}).then(
+                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment, userToken: Thread.userDetails.userToken, imageUrl: imageUrl || null}).then(
                     function (data) {
                         console.log('Add Comment Successsss------------------', data);
                         Thread.picFile = '';
