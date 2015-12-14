@@ -20,7 +20,7 @@
                 }
             };
         }])
-        .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', '$http', 'Upload', function (Buildfire, $q, SERVER_URL, $http, Upload) {
+        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout','SERVER_URL', '$http', 'Upload', function (Buildfire, $q, $timeout,SERVER_URL, $http, Upload) {
             return {
                 createPost: function (postData) {
                     var deferred = $q.defer();
@@ -299,6 +299,29 @@
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                reportPost: function (postId) {
+                    var deferred = $q.defer();
+                    var reportPostbject = {};
+                    reportPostbject.id = '1';
+                    reportPostbject.method = 'thread/delete';
+                    reportPostbject.params = {};
+                    reportPostbject.params.threadId = postId;
+                    reportPostbject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    reportPostbject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    reportPostbject.params.secureToken = null;
+                    reportPostbject.userToken = null;
+                    var successCallback = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $timeout(function(){
+                        successCallback(200);
+                    },2000);
+
                     return deferred.promise;
                 }
             }
