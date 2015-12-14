@@ -276,6 +276,7 @@
                     return deferred.promise;
                 },
                 getThreadLikes: function (uniqueIds) {
+                    console.log('Unique Ids------------------------',uniqueIds);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -347,7 +348,7 @@
                     };
                     $timeout(function(){
                         successCallback(200);
-                    },2000);
+                    },500);
 
                     return deferred.promise;
                 },
@@ -401,5 +402,55 @@
                     return deferred.promise;
                 }
             }
+        }])
+        .factory('SocialItems',['Buildfire','$http','SERVER_URL',function(Buildfire,$http,SERVER_URL){
+            var SocialItems=function(){
+                this.items=[];
+                this.busy=false;
+                this.lastThreadId=null;
+            };
+            var instance;
+            SocialItems.prototype.posts=function(){
+                if(this.busy){
+                    return;
+                }
+                this.busy=true;
+                var postDataObject = {};
+                postDataObject.id = '1';
+                postDataObject.method = 'thread/findByPage';
+                postDataObject.params = {};
+                postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
+                postDataObject.params.lastThreadId = this.lastThreadId;
+                postDataObject.userToken = null;
+                $http({
+                    method: 'GET',
+                    url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                    headers: {'Content-Type': 'application/json'}
+                }).then(function(data){
+                    console.log('Get posts in service of SocialItems-------------------------',data);
+                    if(data && data.data && data.data.result && data.data.result.length){
+                        this.items=this.items.concat(data.data.result);
+                        this.lastThreadId=this.items[this.items.length-1]._id;
+                        this.busy=data.data.result.length<10;
+                    }
+                    else{
+                        this.busy=true;
+                    }
+
+                }.bind(this), function(err){
+                    this.busy=false;
+                    console.log('Get posts in service of SocialItems---------err----------------',err);
+                });
+
+            };
+            return {
+                getInstance: function () {
+                    if (!instance) {
+                        instance = new SocialItems();
+                    }
+                    return instance;
+                }
+            };
         }])
 })(window.angular, window.buildfire);

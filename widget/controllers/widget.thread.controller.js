@@ -2,12 +2,13 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, SocialItems) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
             Thread.comments = [];
             Thread.userDetails = {};
+            var SocialItems=SocialItems.getInstance();
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? 'Following Thread' : 'Follow Thread') : '';
@@ -251,6 +252,8 @@
                 }, function (err) {
                     console.log('Error while getting user Details--------------', err);
                 });
+            };
+            Thread.unFollow=function(){
 
             };
             /**
