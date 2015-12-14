@@ -42,6 +42,7 @@
                         WidgetWall.userDetails.appId = context.appId;
                         WidgetWall.userDetails.parentThreadId = context.appId + context.instanceId;
                         WidgetWall.userDetails.userToken = userData.userToken;
+                        WidgetWall.userDetails.userId = userData._id;
                     }
                     else {
                         Buildfire.auth.login();
@@ -54,6 +55,7 @@
                 postData.text = WidgetWall.postText;
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
+                postData.userToken = WidgetWall.userDetails.userToken;
                 var success = function (response) {
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';

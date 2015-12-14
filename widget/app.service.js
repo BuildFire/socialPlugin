@@ -31,9 +31,9 @@
                     postDataObject.params = postData || {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.secureToken = null;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDataObject.params.userToken = encodeURIComponent(postData.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
                     postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
-                    postDataObject.userToken = null;
+                    postDataObject.userToken = encodeURIComponent(postData.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
                     console.log(postDataObject);
                     if (localStorage.getItem('user'))
                         postData.params.userToken = localStorage.getItem('user').userToken;
@@ -253,7 +253,6 @@
                     postDataObject.method = 'users/saveUserSettings';
                     postDataObject.params = {};
                     postDataObject.params.userToken = encodeURIComponent(data.userToken) ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
-                    postDataObject.params.userSettings = {};
                     postDataObject.params.userSettings = {};
                     postDataObject.params.userSettings._id = data.settingsId;
                     postDataObject.params.userSettings.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
