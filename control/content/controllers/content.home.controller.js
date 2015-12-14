@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', function ($scope, SocialDataStore, Modals, Buildfire) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             var usersData = [];
@@ -94,7 +94,7 @@
 
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
-                Modals.removePopupModal(postId).then(function (data) {
+                Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deletePost(postId).then(success, error);
                 }, function (err) {
@@ -105,7 +105,7 @@
                 var success = function (response) {
                     console.log('inside success of delete post', response);
                     if (response.data.result) {
-                        Buildfire.messaging.sendMessageToWidget({'name': 'POST_DELETED', '_id': postId});
+                        Buildfire.messaging.sendMessageToWidget({'name': EVENTS.POST_DELETED, '_id': postId});
                         console.log('post successfully deleted');
                         ContentHome.posts = ContentHome.posts.filter(function (el) {
                             return el._id != postId;
@@ -120,15 +120,51 @@
                 };
             };
 
+            // Method for deleting comments of a post
+            ContentHome.deleteComment = function (post, commentId) {
+                Modals.removePopupModal({name: 'Comment'}).then(function (data) {
+                    // Deleting post having id as postId
+                    SocialDataStore.deleteComment(commentId, post._id).then(success, error);
+                }, function (err) {
+                    console.log('Error is: ', err);
+                });
+                console.log('delete comment method called');
+                // Called when getting success from SocialDataStore.deletePost method
+                var success = function (response) {
+                    console.log('inside success of delete comment', response);
+                    if (response.data.result) {
+                        Buildfire.messaging.sendMessageToWidget({
+                            'name': EVENTS.COMMENT_DELETED,
+                            '_id': commentId,
+                            'postId': post._id
+                        });
+                        console.log('comment successfully deleted');
+                        post.commentsCount--;
+                        if (post.commentsCount < 1) {
+                            post.viewComments = false;
+                        }
+                        post.comments = post.comments.filter(function (el) {
+                            return el._id != commentId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                // Called when getting error from SocialDataStore.deletePost method
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+            };
+
             // Method for banning a user by calling SocialDataStore banUser method
             ContentHome.banUser = function (userId, threadId) {
                 console.log('inside ban user controller method>>>>>>>>>>');
-                Modals.BanPopupModal().then(function (data) {
+                Modals.banPopupModal().then(function (data) {
                     if (data == 'yes') {
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
                             console.log('User successfully banned and response is :', response);
-                            Buildfire.messaging.sendMessageToWidget({'name': 'BAN_USER', '_id': userId});
+                            Buildfire.messaging.sendMessageToWidget({'name': EVENTS.BAN_USER, '_id': userId});
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el.userId != userId;
                             });
@@ -152,22 +188,24 @@
                 initialCommentsLength = (thread.comments && thread.comments.length) || null;
                 if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
                     thread.viewComments = thread.viewComments ? false : true;
-                SocialDataStore.getCommentsOfAPost({
-                    threadId: thread._id,
-                    lastCommentId: thread.comments ? thread.comments[thread.comments.length - 1]._id : null
-                }).then(
-                    function (data) {
-                        console.log('Success in Conrtent get Load more Comments---------', data);
-                        if (data && data.data && data.data.result) {
-                            thread.comments = thread.comments ? thread.comments.concat(data.data.result) : data.data.result;
-                            thread.moreComments = thread.comments && (thread.comments.length > initialCommentsLength) ? false : true;
-                            if (!$scope.$$phase)$scope.$digest();
+                if (thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
+                    SocialDataStore.getCommentsOfAPost({
+                        threadId: thread._id,
+                        lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null
+                    }).then(
+                        function (data) {
+                            console.log('Success in Conrtent get Load more Comments---------', data);
+                            if (data && data.data && data.data.result) {
+                                thread.comments = thread.comments && !viewComment ? thread.comments.concat(data.data.result) : data.data.result;
+                                thread.moreComments = thread.comments && thread.comments.length < thread.commentsCount ? false : true;
+                                if (!$scope.$$phase)$scope.$digest();
+                            }
+                        },
+                        function (err) {
+                            console.log('Error get Load More Comments----------', err);
                         }
-                    },
-                    function (err) {
-                        console.log('Error get Load More Comments----------', err);
-                    }
-                );
+                    );
+                }
             };
 
             ContentHome.seeMore = function (post) {
@@ -183,9 +221,71 @@
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Content syn called method in content.home.controller called-----', event);
-                if(event && event.name =='POST_CREATED' && event.post){
-                    ContentHome.posts.unshift(event.post);
-                    if (!$scope.$$phase)$scope.$digest();
+                if (event) {
+                    switch (event.name) {
+                        case EVENTS.POST_CREATED :
+                            if (event.post) {
+                                ContentHome.posts.unshift(event.post);
+                                if (!$scope.$$phase)$scope.$digest();
+                            }
+                            break;
+                        case EVENTS.POST_LIKED :
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.likesCount++;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.POST_UNLIKED:
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.likesCount--;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_ADDED:
+                            ContentHome.posts.some(function (el) {
+                                if (el._id == event._id) {
+                                    el.commentsCount++;
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.POST_DELETED:
+                            ContentHome.posts = ContentHome.posts.filter(function (el) {
+                                return el._id != event._id;
+                            });
+                            if (!$scope.$$phase)$scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_DELETED:
+                            console.log('Comment Deleted in Contenet home  controlled evenet called-----------', event);
+                            var post = ContentHome.posts.filter(function (el) {
+                                return el._id == event.postId;
+                            });
+                            console.log('Post in Content.home.controller---------------------------------', post);
+                            if (post && post[0] && post[0].comments && post[0].comments.length) {
+                                post[0].commentsCount--;
+                                post[0].comments = post[0].comments.filter(function (el) {
+                                    return el._id != event._id;
+                                });
+                            }
+                            /*ContentHome.posts.some(function (el) {
+                             if (el._id == event.postId) {
+                             el.commentsCount--;
+                             return true;
+                             }
+                             });*/
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
+                        default :
+                            break;
+                    }
                 }
             };
         }]);

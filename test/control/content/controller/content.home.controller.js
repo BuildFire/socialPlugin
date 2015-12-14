@@ -90,7 +90,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
     xdescribe('ContentHome.banUser', function () {
         var spy1;
         beforeEach(inject(function () {
-            spy1 = spyOn(Modals,'BanPopupModal').and.callFake(function () {
+            spy1 = spyOn(Modals,'banPopupModal').and.callFake(function () {
                 console.log(2);
                 var deferred = $q.defer();
                 deferred.resolve('');
@@ -99,7 +99,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
         }));
 
-        it('it should pass if it calls Modals.BanPopupModal', function () {
+        it('it should pass if it calls Modals.banPopupModal', function () {
             //ContentHome.posts = [{_id: 1}];
 
             ContentHome.banUser(1,1);

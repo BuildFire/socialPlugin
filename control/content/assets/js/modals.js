@@ -29,7 +29,7 @@
                     });
                     return removePopupDeferred.promise;
                 },
-                BanPopupModal: function (info) {
+                banPopupModal: function (info) {
                     var banPopupDeferred = $q.defer();
                     var banPopupModal = $modal
                         .open({
@@ -55,6 +55,7 @@
         }])
         .controller('RemovePopupCtrl', ['$scope', '$modalInstance', 'Info', function ($scope, $modalInstance, Info) {
             console.log('RemovePopup Controller called-----');
+            $scope.value=Info.name;
             $scope.ok = function () {
                 $modalInstance.close('yes');
             };

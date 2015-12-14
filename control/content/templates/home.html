@@ -25,7 +25,7 @@
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                 <div class="plugin-slide text-center">
-                    <img ng-src="{{post.imageUrl}}">
+                    <img ng-src="{{post.imageUrl | cropImage : 555 : 337}}">
                 </div>
             </div>
             <div class="social-footer padded padding-top-zero clearfix">
@@ -34,15 +34,15 @@
                         <span class="icon icon-heart"></span>
                         <span class="number">{{post.likesCount}}</span>
                     </a>
-                    <a class="social-icon margin-left-twenty">
+                    <a class="social-icon margin-left-twenty" ng-click="ContentHome.loadMoreComments(post,'viewComment')">
                         <span class="icon icon-bubble"></span>
                         <span class="number">{{post.commentsCount}}</span>
                     </a>
                 </div>
                 <div class="status col-xs-9 padding-right-zero pull-right">
                     <div class="pull-right">
-                        <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View Comments</a></p>
-                        <p class="pull-left margin-bottom-zero" ng-show="post.viewComments"><a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a></p>
+                        <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments && post.comments.length"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View Comments</a></p>
+                        <p class="pull-left margin-bottom-zero" ng-show="post.viewComments && post.comments.length"><a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a></p>
 
                         <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId, post._id)"><a class="text-danger">Ban User</a>
                         </p>
@@ -86,7 +86,7 @@
                         <div class="status col-xs-9 padding-right-zero pull-right">
                             <div class="pull-right">
                                 <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
-                                <p class="pull-left margin-bottom-zero margin-left-twenty"><a class="text-danger">Delete Post</a></p>
+                                <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.deleteComment(post, comment._id)"><a class="text-danger">Delete Comment</a></p>
                             </div>
                         </div>
                     </div>

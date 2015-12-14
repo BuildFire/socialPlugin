@@ -2,49 +2,23 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope) {
-            console.log('Thread controller is loaded');
-            console.log('$routeParams--------------------------------', $routeParams);
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire','EVENTS', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire,EVENTS) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
+            Thread.comments=[];
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
                         if (data && data.data && data.data.result) {
+                            Thread.getComments(data.data.result._id,null);
                             var uniqueIdsArray = [];
                             $rootScope.showThread=false;
                             Thread.post = data.data.result;
+                            Thread.showMore = Thread.post.commentsCount > 10 ? true : false;
                             uniqueIdsArray.push(Thread.post.uniqueLink);
                             userIds.push(Thread.post.userId);
-                            SocialDataStore.getCommentsOfAPost({threadId: Thread.post._id}).then(
-                                function (data) {
-                                    console.log('Success get Comments---------', data);
-                                    if(data && data.data && data.data.result)
-                                    Thread.comments=data.data.result;
-                                    Thread.comments.forEach(function(commentData) {
-                                        if(userIds.indexOf(commentData.userId) == -1) {
-                                            userIds.push(commentData.userId);
-                                        }
-                                    });
-                                    if(userIds && userIds.length > 0) {
-                                        SocialDataStore.getUsers(userIds).then(function (response) {
-                                            console.info('Users fetching for comments and response is: ', response.data.result);
-                                            if(response.data.error) {
-                                                console.error('Error while fetching users for comments ', response.data.error);
-                                            } else if(response.data.result) {
-                                                console.info('Users fetched successfully for comments ', response.data.result);
-                                                usersData = response.data.result;
-                                            }
-                                        }, function (err) {
-                                            console.log('Error while fetching users of comments inside thread page: ', err);
-                                        });
-                                    }
-                                },
-                                function (err) {
-                                    console.log('Error get Comments----------', err);
-                                }
-                            );
+
                             SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
                                 console.info('get thread likes response is: ', response.data.result);
                                 if(response.data.error) {
@@ -64,21 +38,55 @@
                     }
                 );
             }
+            Thread.getComments=function(postId,lastCommentId){
+                SocialDataStore.getCommentsOfAPost({threadId: postId,lastCommentId:lastCommentId}).then(
+                    function (data) {
+                        console.log('Success get Comments---------', data);
+                        if(data && data.data && data.data.result)
+                            Thread.comments=Thread.comments.concat(data.data.result);
+                        Thread.comments.forEach(function(commentData) {
+                            if(userIds.indexOf(commentData.userId) == -1) {
+                                userIds.push(commentData.userId);
+                            }
+                        });
+                        if(userIds && userIds.length > 0) {
+                            SocialDataStore.getUsers(userIds).then(function (response) {
+                                console.info('Users fetching for comments and response is: ', response.data.result);
+                                if(response.data.error) {
+                                    console.error('Error while fetching users for comments ', response.data.error);
+                                } else if(response.data.result) {
+                                    console.info('Users fetched successfully for comments ', response.data.result);
+                                    usersData = response.data.result;
+                                }
+                            }, function (err) {
+                                console.log('Error while fetching users of comments inside thread page: ', err);
+                            });
+                        }
+                    },
+                    function (err) {
+                        console.log('Error get Comments----------', err);
+                    }
+                );
+            };
             /**
              * Thread.addComment method checks whether image is present or not in comment.
              */
             Thread.addComment = function () {
-                if(Thread.picFile) {                // image post
+                if(Thread.picFile && !Thread.waitAPICompletion) {                // image post
+                    Thread.waitAPICompletion = true;
                     var success = function (response) {
                         console.log('response inside controller for image upload is: ', response);
                         addComment(response.data.result);
                     };
                     var error = function (err) {
                         console.log('Error is : ', err);
+                        Thread.picFile = '';
+                        Thread.comment = '';
                     };
                     SocialDataStore.uploadImage(Thread.picFile).then(success, error);
                 }
-                else if(Thread.comment) {
+                else if(Thread.comment && !Thread.waitAPICompletion) {
+                    Thread.waitAPICompletion = true;
                     addComment();
                 }
             };
@@ -86,22 +94,27 @@
              * loadMoreComments methods is loads the more comments of a post.
              */
             Thread.loadMoreComments = function () {
-                SocialDataStore.getCommentsOfAPost({
-                    threadId: Thread.post._id,
-                    lastCommentId: Thread.comments[Thread.comments.length - 1]._id
-                }).then(
-                    function (data) {
-                        console.log('Success get Load more Comments---------', data);
-                        if (data && data.data && data.data.result){
-                            Thread.comments=Thread.comments.concat(data.data.result);
-                            if (!$scope.$$phase)$scope.$digest();
-                            console.log('After Update comments---------------------',Thread.comments);
+                if(Thread.comments && Thread.comments.length < Thread.post.commentsCount) {
+                    SocialDataStore.getCommentsOfAPost({
+                        threadId: Thread.post._id,
+                        lastCommentId: Thread.comments[Thread.comments.length - 1]._id
+                    }).then(
+                        function (data) {
+                            console.log('Success get Load more Comments---------', data);
+                            if (data && data.data && data.data.result) {
+                                Thread.comments = Thread.comments.concat(data.data.result);
+                                Thread.showMore = Thread.comments.length < Thread.post.commentsCount ? true : false;
+                                if (!$scope.$$phase)$scope.$digest();
+                                console.log('After Update comments---------------------', Thread.comments);
+                            }
+                        },
+                        function (err) {
+                            console.log('Error get Load More Comments----------', err);
                         }
-                    },
-                    function (err) {
-                        console.log('Error get Load More Comments----------', err);
-                    }
-                );
+                    );
+                } else {
+                    Thread.showMore = false;
+                }
             };
             /**
              * getUserName method is used to get the username on the basis of userId.
@@ -158,6 +171,7 @@
                         if(response.data.result[0].isUserLikeActive) {
                             SocialDataStore.addThreadLike(post, type).then(function (res) {
                                 console.log('thread gets liked', res);
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
                                 post.likesCount++;
                                 post.waitAPICompletion = false;
                                 post.isUserLikeActive = false;
@@ -169,6 +183,7 @@
                             SocialDataStore.removeThreadLike(post, type).then(function (res) {
                                 console.log('thread like gets removed', res);
                                 if(res.data && res.data.result)
+                                    Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': Thread.post._id});
                                     post.likesCount--;
                                 post.waitAPICompletion = false;
                                 post.isUserLikeActive = true;
@@ -211,6 +226,23 @@
                 if(timestamp)
                     return moment(timestamp.toString()).fromNow();
             };
+            Thread.deleteComment=function(commentId){
+                SocialDataStore.deleteComment(commentId,Thread.post._id).then(
+                    function(data){
+                        Buildfire.messaging.sendMessageToControl({name:EVENTS.COMMENT_DELETED,_id:commentId,postId:Thread.post._id});
+                        Thread.post.commentsCount--;
+                        Thread.comments=Thread.comments.filter(function (el) {
+                            return el._id!=commentId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                        console.log('Comment deleted=============================success----------data',data);
+                    },
+                    function (err) {
+                        console.log('Comment deleted=============================Error----------err',err);
+                    }
+                );
+            };
             /**
              * addComment method is used to add the comment to a post.
              * @param imageUrl
@@ -219,11 +251,56 @@
                 SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment,imageUrl:imageUrl || null}).then(
                     function (data) {
                         console.log('Add Comment Successsss------------------', data);
+                        Thread.picFile = '';
+                        Thread.comment = '';
+                        Thread.waitAPICompletion = false;
+                        Thread.post.commentsCount++;
+                        Buildfire.messaging.sendMessageToControl({'name':EVENTS.COMMENT_ADDED,'_id':Thread.post._id})
+                        if(Thread.comments.length){
+                            Thread.getComments(Thread.post._id,Thread.comments[Thread.comments.length-1]._id);
+                        }
+                        else{
+                            Thread.getComments(Thread.post._id,null);
+                        }
                     },
                     function (err) {
                         console.log('Add Comment Error------------------', err);
+                        Thread.picFile = '';
+                        Thread.comment = '';
+                        Thread.waitAPICompletion = false;
                     }
                 );
             }
+            Buildfire.messaging.onReceivedMessage = function (event) {
+                console.log('Widget syn called method in controller Thread called-----', event);
+                if (event) {
+                    switch (event.name) {
+                        case EVENTS.POST_DELETED :
+                            $rootScope.showThread = true;
+                            $rootScope.$digest();
+                            break;
+                        case EVENTS.BAN_USER :
+                            WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                                return el.userId != event._id;
+                            });
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_DELETED:
+                            console.log('Comment Deleted in thread controlled evenet called-----------',event);
+                            if(event.postId==Thread.post._id){
+                                Thread.post.commentsCount--;
+                                Thread.comments=Thread.comments.filter(function (el) {
+                                    return el._id!=event._id;
+                                });
+                                if (!$scope.$$phase)
+                                    $scope.$digest();
+                            }
+                            break;
+                        default :
+                            break;
+                    }
+                }
+            };
         }])
 })(window.angular);

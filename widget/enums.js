@@ -9,4 +9,13 @@
             REPORT: 'Report Post',
             BLOCK: 'Delete Post'
         })
+        .constant('EVENTS',{
+            COMMENT_DELETED:"COMMENT_DELETED",
+            POST_DELETED:"POST_DELETED",
+            BAN_USER:"BAN_USER",
+            POST_UNLIKED:"POST_UNLIKED",
+            POST_LIKED:"POST_LIKED",
+            POST_CREATED:"POST_CREATED",
+            COMMENT_ADDED:"COMMENT_ADDED"
+        })
 })(window.angular);

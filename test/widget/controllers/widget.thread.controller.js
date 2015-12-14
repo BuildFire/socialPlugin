@@ -99,7 +99,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
         });
     });
 
-    describe('Thread.addComment', function () {
+    xdescribe('Thread.addComment', function () {
         var spy1;
         beforeEach(inject(function () {
             spy1 = spyOn(SocialDataStore,'addComment').and.callFake(function () {
