@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, SocialItems) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS','SocialItems', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, SocialItems) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
