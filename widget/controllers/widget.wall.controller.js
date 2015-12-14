@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location','EVENTS','MORE_MENU_POPUP','$modal', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location,EVENTS,MORE_MENU_POPUP,$modal) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location','EVENTS','MORE_MENU_POPUP','$modal','SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location,EVENTS,MORE_MENU_POPUP,$modal,SocialItems) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -15,6 +15,8 @@
             WidgetWall.picFile = '';
             WidgetWall.posts = [];
             $rootScope.showThread = true;
+            WidgetWall.SocialItems=SocialItems.getInstance();
+            //SocialItems.posts();
             WidgetWall.createPost = function () {
                 if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                     WidgetWall.waitAPICompletion = true;
