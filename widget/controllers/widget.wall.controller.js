@@ -16,6 +16,8 @@
             WidgetWall.posts = [];
             $rootScope.showThread = true;
             WidgetWall.SocialItems=SocialItems.getInstance();
+            var masterItems=WidgetWall.SocialItems.items;
+            console.log('SocialItems------------------Wall Controller------------------------',WidgetWall.SocialItems.items);
             //SocialItems.posts();
             WidgetWall.createPost = function () {
                 if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
@@ -96,7 +98,7 @@
                 SocialDataStore.createPost(postData).then(success, error);
             }
 
-            WidgetWall.getPosts = function () {
+           /* WidgetWall.getPosts = function () {
                 WidgetWall.noMore = true;
                 var lastThreadId;
                 var success = function (response) {
@@ -142,7 +144,7 @@
                 else
                     lastThreadId = null;
                 SocialDataStore.getPosts({lastThreadId: lastThreadId}).then(success, error);
-            };
+            };*/
             WidgetWall.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function (userData) {
@@ -341,5 +343,45 @@
                     }
                 }
             };
+            function getUsersAndLikes(){
+                var count=0;
+                WidgetWall.SocialItems.items.forEach(function (postData) {
+                    count++;
+                    if (userIds.indexOf(postData.userId.toString()) == -1)
+                        userIds.push(postData.userId.toString());
+                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1 && count>10)
+                    postsUniqueIds.push(postData.uniqueLink);
+                });
+                var successCallback = function (response) {
+                    if (response.data.error) {
+                        console.error('Error while fetching users ', response.data.error);
+                    } else if (response.data.result) {
+                        usersData = response.data.result;
+                    }
+                };
+                var errorCallback = function (err) {
+                    console.error('Error while fetching users details ', err);
+                };
+                SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                SocialDataStore.getThreadLikes(postsUniqueIds).then(function (response) {
+                    postsUniqueIds=[];
+                    if (response.data.error) {
+                        console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                    } else if (response.data.result) {
+                        getLikesData = response.data.result;
+                    }
+                }, function (err) {
+                    console.error('Error while fetching thread likes ', err);
+                });
+            }
+            $scope.$watch(function () {
+                return WidgetWall.SocialItems.items;
+            }, function(){
+                if(masterItems!=WidgetWall.SocialItems.items){
+                    console.log('New Items loaded----------------------------',WidgetWall.SocialItems.items);
+                    masterItems=WidgetWall.SocialItems.items;
+                    getUsersAndLikes();
+                }
+            }, true);
         }])
 })(window.angular);

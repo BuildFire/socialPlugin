@@ -249,6 +249,7 @@
 
                 },
                 getThreadLikes: function (uniqueIds) {
+                    console.log('Unique Ids------------------------',uniqueIds);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
