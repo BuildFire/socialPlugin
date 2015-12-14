@@ -5,6 +5,10 @@
         .constant('SERVER_URL', {
             link: 'http://social.kaleoapps.com/src/server.js'
         })
+        .constant('MORE_MENU_POPUP', {
+            REPORT: 'Report Post',
+            BLOCK: 'Delete Post'
+        })
         .constant('EVENTS',{
             COMMENT_DELETED:"COMMENT_DELETED",
             POST_DELETED:"POST_DELETED",

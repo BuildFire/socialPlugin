@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location','EVENTS','SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location,EVENTS,SocialItems) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location','EVENTS','MORE_MENU_POPUP','$modal','SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location,EVENTS,MORE_MENU_POPUP,$modal,SocialItems) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -163,11 +163,57 @@
                 });
                 return userImageUrl;
             };
-            WidgetWall.showMoreOptions = function () {
-                Modals.showMoreOptionsModal({}).then(function (data) {
+            WidgetWall.showMoreOptions=function(postId){
+                console.log("Post id ------------->",postId);
+                Modals.showMoreOptionsModal({})
+                    .then(function(data){
+                        console.log('Data in Success------------------data :????????????????????????????????????',data);
+
+                        switch(data){
+
+                            case MORE_MENU_POPUP.REPORT:
+
+                                var reportPostPromise=SocialDataStore.reportPost(postId);
+                                reportPostPromise.then(function(response){
+                                    $modal
+                                        .open({
+                                            templateUrl: 'templates/modals/report-generated-modal.html',
+                                            controller: 'MoreOptionsModalPopupCtrl',
+                                            controllerAs: 'MoreOptionsPopup',
+                                            size: 'sm',
+                                            resolve: {
+                                                Info: function () {
+                                                    return postId;
+                                                }
+                                            }
+                                        });
+
+                                },function(){
+
+                                });
+
+                                break;
+                            case MORE_MENU_POPUP.BLOCK:
+
+                                $modal
+                                    .open({
+                                        templateUrl: 'templates/modals/delete-post-modal.html',
+                                        controller: 'MoreOptionsModalPopupCtrl',
+                                        controllerAs: 'MoreOptionsPopup',
+                                        size: 'sm',
+                                        resolve: {
+                                            Info: function () {
+                                                return postId;
+                                            }
+                                        }
+                                    });
+                                break;
+                            default :
+                        }
+
                     },
-                    function (err) {
-                        // Do something when user cancel the popup
+                    function(err){
+                        console.log('Error in Error handler--------------------------',err);
                     });
             };
             WidgetWall.likeThread = function (post, type) {
