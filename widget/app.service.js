@@ -228,8 +228,8 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.threadId = data.threadId;
-                    postDataObject.params.userId = "55f8a6c6bed1b418e3000001" || null;
-                    postDataObject.userToken = data.userToken ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
+                    postDataObject.params.userId = data.userId || "55f8a6c6bed1b418e3000001" || null;
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -245,8 +245,35 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                saveUserSettings:function(){
-
+                saveUserSettings:function(data){
+                    console.log('data is: ========================',data);
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'users/saveUserSettings';
+                    postDataObject.params = {};
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
+                    postDataObject.params.userSettings = {};
+                    postDataObject.params.userSettings = {};
+                    postDataObject.params.userSettings._id = data.settingsId;
+                    postDataObject.params.userSettings.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.userSettings.threadId = data.threadId;
+                    postDataObject.params.userSettings.userId = data.userId || "55f8a6c6bed1b418e3000001" || null;
+                    postDataObject.params.userSettings.receivePushNotification = data.receivePushNotification;
+                    var successCallback = function (response) {
+                        console.log('get Comment callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('get Comment callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
                 },
                 getThreadLikes: function (uniqueIds) {
                     var deferred = $q.defer();

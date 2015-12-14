@@ -1,9 +1,9 @@
 <div class="holder padding-zero has-bottom">
-	<div class="social-plugin social-thread">				
-		<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
-			<a ng-click="Thread.follow()">Follow Thread</a>
-			<!--<a ng-click="Thread.unFollow()">Following Thread</a>-->
-		</div>
+	<div class="social-plugin social-thread">
+        {{Thread.receivePushNotification}}
+        <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen" >
+            <a ng-click="Thread.unFollow()" >{{Thread.getFollowingStatus()}}</a>
+        </div>
 		<div class="social-item clearfix">
 			<hr class="small">
 			<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
