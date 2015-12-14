@@ -2,16 +2,16 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS','SocialItems', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, SocialItems) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
             Thread.comments = [];
             Thread.userDetails = {};
-            var SocialItems=SocialItems.getInstance();
+            var SocialItems = SocialItems.getInstance();
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
-                return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? 'Following Thread' : 'Follow Thread') : '';
+                return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
             };
             var init = function () {
                 if ($routeParams.threadId) {
@@ -22,7 +22,7 @@
                                 var uniqueIdsArray = [];
                                 $rootScope.showThread = false;
                                 Thread.post = data.data.result;
-                                Thread.showMore = Thread.post.commentsCount > 10 ? true : false;
+                                Thread.showMore = Thread.post.commentsCount > 10;
                                 uniqueIdsArray.push(Thread.post.uniqueLink);
                                 userIds.push(Thread.post.userId);
                                 Buildfire.auth.getCurrentUser(function (err, userData) {
@@ -37,7 +37,6 @@
                                                 console.log('getUserSettings response is: ', response);
                                                 _receivePushNotification = response.data.result.receivePushNotification;
                                                 Thread.userDetails.settingsId = response.data.result._id;
-//                                                if (!$scope.$$phase)$scope.$digest();
                                             } else if (response && response.data && response.data.error) {
                                                 console.log('response error is: ', response.data.error);
                                             }
@@ -240,21 +239,21 @@
             /**
              * follow method is used to follow the thread/post.
              */
-            Thread.follow = function () {
-                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', Thread.userDetails);
-                SocialDataStore.saveUserSettings({threadId: Thread.post._id, userId: Thread.userDetails.userId, userToken: Thread.userDetails.userToken, settingsId: Thread.userDetails.settingsId, receivePushNotification: true}).then(function (data) {
-                    console.log('Get User Settings------------------', data);
-                    if (data && data.result) {
-                        Thread.receivePushNotification = data.result.receivePushNotification;
-                        console.info('thread.receivePushNotification2', Thread.receivePushNotification);
-//                        if (!$scope.$$phase)$scope.$digest();
-                    }
-                }, function (err) {
-                    console.log('Error while getting user Details--------------', err);
-                });
-            };
-            Thread.unFollow=function(){
-
+            Thread.followUnfollow = function (isFollow) {
+                var followNotification = false;
+                if(isFollow == THREAD_STATUS.FOLLOWING) {
+                    followNotification = false;
+                } else if(isFollow == THREAD_STATUS.FOLLOW) {
+                    followNotification = true;
+                }
+                    SocialDataStore.saveUserSettings({threadId: Thread.post._id, userId: Thread.userDetails.userId, userToken: Thread.userDetails.userToken, settingsId: Thread.userDetails.settingsId, receivePushNotification: followNotification}).then(function (data) {
+                        console.log('Get User Settings------------------', data);
+                        if (data && data.data && data.data.result) {
+                            _receivePushNotification = data.data.result.receivePushNotification;
+                        }
+                    }, function (err) {
+                        console.log('Error while getting user Details--------------', err);
+                    });
             };
             /**
              * getDuration method to used to show the time from current.

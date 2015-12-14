@@ -18,4 +18,8 @@
             POST_CREATED:"POST_CREATED",
             COMMENT_ADDED:"COMMENT_ADDED"
         })
+        .constant('THREAD_STATUS', {
+            FOLLOW: "Follow Thread",
+            FOLLOWING: "Following Thread"
+        })
 })(window.angular);

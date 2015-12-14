@@ -1,7 +1,7 @@
 <div class="holder padding-zero has-bottom">
 	<div class="social-plugin social-thread" ng-if="Thread.getFollowingStatus()!=''">
         <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen" >
-            <a ng-click="Thread.unFollow()" >{{Thread.getFollowingStatus()}}</a>
+            <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())" >{{Thread.getFollowingStatus()}}</a>
         </div>
 		<div class="social-item clearfix">
 			<hr class="small">
