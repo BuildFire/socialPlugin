@@ -52,9 +52,9 @@
                          class="infinite-scroll-parent">
                         <div infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
-                             infinite-scroll="WidgetWall.getPosts()"
-                             infinite-scroll-disabled="WidgetWall.noMore">
-                            <div class="social-item clearfix" ng-repeat="post in WidgetWall.posts">
+                             infinite-scroll="WidgetWall.SocialItems.posts()"
+                             infinite-scroll-disabled="WidgetWall.SocialItems.busy">
+                            <div class="social-item clearfix" ng-repeat="post in WidgetWall.SocialItems.items">
                                 <hr class="small">
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <div class="col-xs-8 pull-left">

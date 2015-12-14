@@ -2,11 +2,13 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire','EVENTS', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire,EVENTS) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals','$rootScope','Buildfire','EVENTS','SocialItems', function ($scope, $routeParams, SocialDataStore, Modals,$rootScope,Buildfire,EVENTS,SocialItems) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
             Thread.comments=[];
+            var SocialItems=SocialItems.getInstance();
+            console.log('Items-------------------Thread Controller--------',SocialItems.items);
             if ($routeParams.threadId) {
                 SocialDataStore.getThreadByUniqueLink($routeParams.threadId).then(
                     function (data) {
