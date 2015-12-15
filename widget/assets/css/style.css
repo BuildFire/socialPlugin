@@ -3,8 +3,13 @@
 	display:block;
 }
 
-/* Single Post */
+/* Group Single Post */
 .social-item:nth-child(1) > hr.small:first-child,
+.social-comment:first-child > hr.small:first-child{
+	display:none;
+}
+/* Single Post*/
+.social-thread .social-item:nth-child(2) > hr.small:first-child,
 .social-comment:first-child > hr.small:first-child{
 	display:none;
 }
