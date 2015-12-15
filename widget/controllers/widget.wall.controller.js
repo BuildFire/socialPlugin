@@ -17,7 +17,6 @@
             WidgetWall.noMore = false;
             WidgetWall.postText = '';
             WidgetWall.picFile = '';
-            WidgetWall.posts = [];
             $rootScope.showThread = true;
             WidgetWall.SocialItems=SocialItems.getInstance();
             var masterItems=WidgetWall.SocialItems.items;
@@ -83,7 +82,8 @@
                             status: 'Success',
                             post: response.data.result
                         });
-                        WidgetWall.posts.unshift(response.data.result);
+                        WidgetWall.SocialItems.items.unshift(response.data.result);
+                        if (!$scope.$$phase)$scope.$digest();
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
@@ -118,53 +118,6 @@
                 SocialDataStore.createPost(postData).then(success, error);
             }
 
-           /* WidgetWall.getPosts = function () {
-                WidgetWall.noMore = true;
-                var lastThreadId;
-                var success = function (response) {
-                        //WidgetWall.posts = response.data.result;
-                        if (response && response.data && response.data.result && response.data.result.length < 10) {
-                            WidgetWall.noMore = true;
-                        } else {
-                            WidgetWall.noMore = false;
-                        }
-                        response.data.result.forEach(function (postData) {
-                            if (userIds.indexOf(postData.userId.toString()) == -1)
-                                userIds.push(postData.userId.toString());
-                            WidgetWall.posts.push(postData);
-                            postsUniqueIds.push(postData.uniqueLink);
-                        });
-                        var successCallback = function (response) {
-                            if (response.data.error) {
-                                console.error('Error while fetching users ', response.data.error);
-                            } else if (response.data.result) {
-                                usersData = response.data.result;
-                            }
-                        };
-                        var errorCallback = function (err) {
-                            WidgetWall.noMore = false;
-                            console.error('Error while fetching users details ', err);
-                        };
-                        SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
-                        SocialDataStore.getThreadLikes(postsUniqueIds).then(function (response) {
-                            if (response.data.error) {
-                                console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                            } else if (response.data.result) {
-                                getLikesData = response.data.result;
-                            }
-                        }, function (err) {
-                            console.error('Error while fetching thread likes ', err);
-                        });
-                    }
-                    , error = function (err) {
-                        console.error('Error while getting data', err);
-                    };
-                if (WidgetWall.posts.length)
-                    lastThreadId = WidgetWall.posts[WidgetWall.posts.length - 1]._id;
-                else
-                    lastThreadId = null;
-                SocialDataStore.getPosts({lastThreadId: lastThreadId}).then(success, error);
-            };*/
             WidgetWall.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function (userData) {
@@ -319,7 +272,7 @@
                     if (response.data.result) {
                         Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_DELETED, '_id': postId});
                         console.log('post successfully deleted');
-                        WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                        WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
                             return el._id != postId;
                         });
                         if (!$scope.$$phase)
@@ -356,14 +309,14 @@
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
-                            WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
                                 return el._id != event._id;
                             });
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
                         case EVENTS.BAN_USER :
-                            WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
                             if (!$scope.$$phase)
@@ -371,7 +324,7 @@
                             break;
                         case EVENTS.COMMENT_DELETED:
                             console.log('Comment Deleted in Wall controlled evenet called-----------',event);
-                            WidgetWall.posts.some(function (el) {
+                            WidgetWall.SocialItems.items.some(function (el) {
                                 if (el._id == event.postId) {
                                     el.commentsCount--;
                                     return true;
