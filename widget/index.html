@@ -45,7 +45,7 @@
             <div class="holder padding-zero has-bottom">
                 <div class="social-plugin social-wall">
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
-                        <a>Join Group</a>
+                        <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-y: scroll"
                          ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}"

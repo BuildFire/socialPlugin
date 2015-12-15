@@ -22,4 +22,8 @@
             FOLLOW: "Follow Thread",
             FOLLOWING: "Following Thread"
         })
+        .constant('GROUP_STATUS', {
+            FOLLOW: "Join Group",
+            FOLLOWING: "Joined Group"
+        })
 })(window.angular);
