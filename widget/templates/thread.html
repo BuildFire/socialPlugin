@@ -73,13 +73,13 @@
 					</div>
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-							<a class="social-icon" ng-click="Thread.likeThread(comment, 'thread')">
+							<a class="social-icon" ng-click="Thread.likeComment(comment, 'comment')">
 								<span class="icon icon-heart"></span>
 							</a>
 						</div>
 						<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
 							<div class="pull-right">
-								<p class="pull-left margin-bottom-zero">9 Likes</p>
+								<p class="pull-left margin-bottom-zero">{{comment.likesCount?comment.likesCount:0}} Likes</p>
 
 								<!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
 								<a class="more-info">

@@ -175,6 +175,7 @@
                     return deferred.promise;
                 },
                 addThreadLike: function (post, type){
+                    console.log('Add Like Api post Data----------------------',post);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';

@@ -20,48 +20,52 @@
                     });
                     console.log(posts);
                     Thread.post = posts[0];
-                     var uniqueIdsArray = [];
-                     $rootScope.showThread = false;
-                     //Thread.post = data.data.result;
-                     Thread.showMore = Thread.post.commentsCount > 10;
-                     uniqueIdsArray.push(Thread.post.uniqueLink);
-                     userIds.push(Thread.post.userId);
-                     Buildfire.auth.getCurrentUser(function (err, userData) {
-                     console.info('Current Logged In user details are -----------------', userData);
-                     var context = Buildfire.context;
-                     if (userData) {
-                     Thread.userDetails.userId = userData._id;
-                     Thread.userDetails.userToken = userData.userToken;
-                     SocialDataStore.getUserSettings({threadId: Thread.post._id, userId: Thread.userDetails.userId, userToken: Thread.userDetails.userToken}).then(function (response) {
-                     console.log('inside getUser settings :::::::::::::', response);
-                     if (response && response.data && response.data.result) {
-                     console.log('getUserSettings response is: ', response);
-                     _receivePushNotification = response.data.result.receivePushNotification;
-                     Thread.userDetails.settingsId = response.data.result._id;
-                     //                                                if (!$scope.$$phase)$scope.$digest();
-                     } else if (response && response.data && response.data.error) {
-                     console.log('response error is: ', response.data.error);
-                     }
-                     }, function (err) {
-                     console.log('Error while logging in user is: ', err);
-                     });
-                     }
-                     else {
-                     Buildfire.auth.login();
-                     }
-                     });
+                    var uniqueIdsArray = [];
+                    $rootScope.showThread = false;
+                    //Thread.post = data.data.result;
+                    Thread.showMore = Thread.post.commentsCount > 10;
+                    uniqueIdsArray.push(Thread.post.uniqueLink);
+                    userIds.push(Thread.post.userId);
+                    Buildfire.auth.getCurrentUser(function (err, userData) {
+                        console.info('Current Logged In user details are -----------------', userData);
+                        var context = Buildfire.context;
+                        if (userData) {
+                            Thread.userDetails.userId = userData._id;
+                            Thread.userDetails.userToken = userData.userToken;
+                            SocialDataStore.getUserSettings({
+                                threadId: Thread.post._id,
+                                userId: Thread.userDetails.userId,
+                                userToken: Thread.userDetails.userToken
+                            }).then(function (response) {
+                                console.log('inside getUser settings :::::::::::::', response);
+                                if (response && response.data && response.data.result) {
+                                    console.log('getUserSettings response is: ', response);
+                                    _receivePushNotification = response.data.result.receivePushNotification;
+                                    Thread.userDetails.settingsId = response.data.result._id;
+                                    //                                                if (!$scope.$$phase)$scope.$digest();
+                                } else if (response && response.data && response.data.error) {
+                                    console.log('response error is: ', response.data.error);
+                                }
+                            }, function (err) {
+                                console.log('Error while logging in user is: ', err);
+                            });
+                        }
+                        else {
+                            Buildfire.auth.login();
+                        }
+                    });
 
-                     SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
-                     console.info('get thread likes response is: ', response.data.result);
-                     if (response.data.error) {
-                     console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                     } else if (response.data.result) {
-                     console.info('Thread likes fetched successfully', response.data.result);
-                     Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
-                     }
-                     }, function (err) {
-                     console.log('Error while fetching thread likes ', err);
-                     });
+                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
+                        console.info('get thread likes response is: ', response.data.result);
+                        if (response.data.error) {
+                            console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                        } else if (response.data.result) {
+                            console.info('Thread likes fetched successfully', response.data.result);
+                            Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
+                        }
+                    }, function (err) {
+                        console.log('Error while fetching thread likes ', err);
+                    });
                 }
             };
             init();
@@ -69,14 +73,17 @@
             Thread.getComments = function (postId, lastCommentId) {
                 SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId}).then(
                     function (data) {
+                        var uniqueLinksOfComments = [];
                         console.log('Success get Comments---------', data);
                         if (data && data.data && data.data.result)
                             Thread.comments = Thread.comments.concat(data.data.result);
                         Thread.comments.forEach(function (commentData) {
+                            uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
                             if (userIds.indexOf(commentData.userId) == -1) {
                                 userIds.push(commentData.userId);
                             }
                         });
+                        getCommentsLikeAndUpdate(uniqueLinksOfComments);
                         if (userIds && userIds.length > 0) {
                             SocialDataStore.getUsers(userIds).then(function (response) {
                                 console.info('Users fetching for comments and response is: ', response.data.result);
@@ -242,19 +249,25 @@
              */
             Thread.followUnfollow = function (isFollow) {
                 var followNotification = false;
-                if(isFollow == THREAD_STATUS.FOLLOWING) {
+                if (isFollow == THREAD_STATUS.FOLLOWING) {
                     followNotification = false;
-                } else if(isFollow == THREAD_STATUS.FOLLOW) {
+                } else if (isFollow == THREAD_STATUS.FOLLOW) {
                     followNotification = true;
                 }
-                    SocialDataStore.saveUserSettings({threadId: Thread.post._id, userId: Thread.userDetails.userId, userToken: Thread.userDetails.userToken, settingsId: Thread.userDetails.settingsId, receivePushNotification: followNotification}).then(function (data) {
-                        console.log('Get User Settings------------------', data);
-                        if (data && data.data && data.data.result) {
-                            _receivePushNotification = data.data.result.receivePushNotification;
-                        }
-                    }, function (err) {
-                        console.log('Error while getting user Details--------------', err);
-                    });
+                SocialDataStore.saveUserSettings({
+                    threadId: Thread.post._id,
+                    userId: Thread.userDetails.userId,
+                    userToken: Thread.userDetails.userToken,
+                    settingsId: Thread.userDetails.settingsId,
+                    receivePushNotification: followNotification
+                }).then(function (data) {
+                    console.log('Get User Settings------------------', data);
+                    if (data && data.data && data.data.result) {
+                        _receivePushNotification = data.data.result.receivePushNotification;
+                    }
+                }, function (err) {
+                    console.log('Error while getting user Details--------------', err);
+                });
             };
             /**
              * getDuration method to used to show the time from current.
@@ -264,6 +277,58 @@
             Thread.getDuration = function (timestamp) {
                 if (timestamp)
                     return moment(timestamp.toString()).fromNow();
+            };
+
+            Thread.likeComment = function (comment, type) {
+                if(comment.isUserLikeActive){
+                    comment.isUserLikeActive=false;
+                    var uniqueIdsArray = [];
+                    uniqueIdsArray.push(comment.threadId + "cmt" + comment._id);
+                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
+                        function (data) {
+                            console.log('Datat in Get CommentBy uniqueLink-----------------', data);
+                            data.data.result.threadId = comment.threadId;
+                            SocialDataStore.addThreadLike(data.data.result, type).then(function (res) {
+                                console.log('thread gets liked in thread page', res);
+                                if(comment.likesCount)
+                                    comment.likesCount++;
+                                else
+                                    comment.likesCount=1;
+                                if (!$scope.$$phase)$scope.$digest();
+                                /* Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
+                                 post.likesCount++;
+                                 post.waitAPICompletion = false;
+                                 post.isUserLikeActive = false;
+                                 if (!$scope.$$phase)$scope.$digest();*/
+                            }, function (err) {
+                                console.log('error while liking comment', err);
+                            });
+                        },
+                        function (err) {
+                            console.log('Get comment like ----------------error', err);
+                        }
+                    );
+                }
+                else{
+                    comment.isUserLikeActive=true;
+
+                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
+                        function (data) {
+                            console.log('Datat in Get CommentBy uniqueLink-----------------', data);
+                            data.data.result.threadId = comment.threadId;
+                            SocialDataStore.removeThreadLike( data.data.result, type).then(function (res) {
+                                console.log('Response--------------------------remove like--------',res);
+                                comment.likesCount--;
+                                if (!$scope.$$phase)$scope.$digest();
+                            }, function (err) {
+                                console.error('error while removing like of thread', err);
+                            });
+                        },
+                        function (err) {
+                            console.log('Get comment like ----------------error', err);
+                        }
+                    );
+                }
             };
             Thread.deleteComment = function (commentId) {
                 SocialDataStore.deleteComment(commentId, Thread.post._id).then(
@@ -290,8 +355,13 @@
              * addComment method is used to add the comment to a post.
              * @param imageUrl
              */
-            function addComment(imageUrl) {
-                SocialDataStore.addComment({threadId: Thread.post._id, comment: Thread.comment, userToken: Thread.userDetails.userToken, imageUrl: imageUrl || null}).then(
+            var addComment = function (imageUrl) {
+                SocialDataStore.addComment({
+                    threadId: Thread.post._id,
+                    comment: Thread.comment,
+                    userToken: Thread.userDetails.userToken,
+                    imageUrl: imageUrl || null
+                }).then(
                     function (data) {
                         console.log('Add Comment Successsss------------------', data);
                         Thread.picFile = '';
@@ -313,7 +383,28 @@
                         Thread.waitAPICompletion = false;
                     }
                 );
-            }
+            };
+            var getCommentsLikeAndUpdate = function (uniqueLinksOfComments) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
+                        console.log('Response of a post comments like-----------------', data);
+                        if(data && data.data && data.data.result && data.data.result.length){
+                            console.log('In If------------------',data.data.result)
+                            data.data.result.forEach(function (uniqueLinkData) {
+                                Thread.comments.some(function(comment){
+                                    if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
+                                        comment.likesCount=uniqueLinkData.likesCount;
+                                        comment.isUserLikeActive=uniqueLinkData.isUserLikeActive;
+                                        console.log('Updated comments data------------------',comment);
+                                        return true;
+                                    }
+                                });
+                            });
+                        }
+                    },
+                    function (err) {
+                        console.log('Response error of comment likes ------------', err);
+                    });
+            };
 
             Thread.getComments(Thread.post._id, null);
 
