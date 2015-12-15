@@ -2,12 +2,16 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location','EVENTS','MORE_MENU_POPUP','$modal','SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location,EVENTS,MORE_MENU_POPUP,$modal,SocialItems) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
             var postsUniqueIds = [];
             var getLikesData = [];
+            var _receivePushNotification;
+            WidgetWall.getFollowingStatus = function () {
+                return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
+            };
             WidgetWall.userDetails = {};
             WidgetWall.height = window.innerHeight;
             WidgetWall.noMore = false;
@@ -40,9 +44,21 @@
                     var context = Buildfire.context;
                     if (userData) {
                         WidgetWall.userDetails.appId = context.appId;
-                        WidgetWall.userDetails.parentThreadId = context.appId + context.instanceId;
+                        WidgetWall.userDetails.parentThreadId = '564f676cfbe10b9c240002ff' || context.appId + context.instanceId;
                         WidgetWall.userDetails.userToken = userData.userToken;
                         WidgetWall.userDetails.userId = userData._id;
+                        SocialDataStore.getUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken}).then(function (response) {
+                            console.log('inside getUser settings :::::::::::::', response);
+                            if (response && response.data && response.data.result) {
+                                console.log('getUserSettings response is: ', response);
+                                _receivePushNotification = response.data.result.receivePushNotification;
+                                WidgetWall.userDetails.settingsId = response.data.result._id;
+                            } else if (response && response.data && response.data.error) {
+                                console.log('response error is: ', response.data.error);
+                            }
+                        }, function (err) {
+                            console.log('Error while logging in user is: ', err);
+                        });
                     }
                     else {
                         Buildfire.auth.login();
@@ -88,6 +104,8 @@
                             if (!$scope.$$phase)$scope.$digest();
                         };
                         SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                        if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                            WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                     }
                 };
                 var error = function (err) {
@@ -232,6 +250,8 @@
                                 post.likesCount++;
                                 post.waitAPICompletion = false;
                                 WidgetWall.updateLikesData(post._id, false);
+                                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                                 if (!$scope.$$phase)$scope.$digest();
                             }, function (err) {
                                 console.error('error while liking thread', err);
@@ -242,6 +262,8 @@
                                     Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': post._id});
                                 post.likesCount--;
                                 post.waitAPICompletion = false;
+                                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                                 WidgetWall.updateLikesData(post._id, true);
                                 if (!$scope.$$phase)$scope.$digest();
                             }, function (err) {
@@ -311,6 +333,24 @@
                 // Deleting post having id as postId
                 SocialDataStore.deletePost(postId).then(success, error);
             };
+
+            WidgetWall.followUnfollow = function (isFollow) {
+                var followNotification = false;
+                if(isFollow == GROUP_STATUS.FOLLOWING) {
+                    followNotification = false;
+                } else if(isFollow == GROUP_STATUS.FOLLOW) {
+                    followNotification = true;
+                }
+                SocialDataStore.saveUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, settingsId: WidgetWall.userDetails.settingsId, receivePushNotification: followNotification}).then(function (data) {
+                    console.log('Get User Settings------------------', data);
+                    if (data && data.data && data.data.result) {
+                        _receivePushNotification = data.data.result.receivePushNotification;
+                    }
+                }, function (err) {
+                    console.log('Error while getting user Details--------------', err);
+                });
+            };
+
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Event in wall cotroller------------------------',event);
                 if (event) {
