@@ -418,11 +418,15 @@
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
+                            Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
+                                return el._id != event._id;
+                            });
+                            if(event._id==Thread.post._id)
                             $rootScope.showThread = true;
                             $rootScope.$digest();
                             break;
                         case EVENTS.BAN_USER :
-                            WidgetWall.posts = WidgetWall.posts.filter(function (el) {
+                            Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
                             if (!$scope.$$phase)

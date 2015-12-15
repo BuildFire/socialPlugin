@@ -60,8 +60,8 @@
                         });
                     }
                     else {
-                        Buildfire.auth.login(null,function(data,err){
-                            console.log('Login called---------------------------------',data,err);
+                        Buildfire.auth.login(null,function(err,user){
+                            console.log('Login called---------------------------------',user,err);
                             Location.goToHome();
                         });
                     }
