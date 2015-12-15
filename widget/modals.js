@@ -35,7 +35,7 @@
             console.log('MoreOptionsModalPopup Controller called-----');
             var MoreOptionsPopup=this;
             MoreOptionsPopup.option='';
-            MoreOptionsPopup.options=['Report Post','Delete Post'];
+            MoreOptionsPopup.options=['Report Post'];
 
             $scope.postId=Info;
 
