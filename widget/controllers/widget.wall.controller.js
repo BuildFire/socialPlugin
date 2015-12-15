@@ -379,5 +379,30 @@
                     getUsersAndLikes();
                 }
             }, true);
+            $rootScope.$on(EVENTS.COMMENT_ADDED, function () {
+                console.log('inside comment added event listener:::::::::::');
+                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
+            $rootScope.$on(EVENTS.COMMENT_LIKED, function () {
+                console.log('inside comment liked event listener:::::::::::');
+                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
+            $rootScope.$on(EVENTS.COMMENT_UNLIKED, function () {
+                console.log('inside comment unliked event listener:::::::::::');
+                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
+            $rootScope.$on(EVENTS.POST_LIKED, function () {
+                console.log('inside post liked event listener:::::::::::');
+                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
+            $rootScope.$on(EVENTS.POST_UNLIKED, function () {
+                console.log('inside post unliked event listener:::::::::::');
+                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
         }])
 })(window.angular);
