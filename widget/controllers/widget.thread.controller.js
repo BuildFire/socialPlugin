@@ -296,6 +296,7 @@
                                     comment.likesCount++;
                                 else
                                     comment.likesCount=1;
+                                $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                                 if (!$scope.$$phase)$scope.$digest();
                                 /* Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
                                  post.likesCount++;
@@ -321,6 +322,7 @@
                             SocialDataStore.removeThreadLike( data.data.result, type).then(function (res) {
                                 console.log('Response--------------------------remove like--------',res);
                                 comment.likesCount--;
+                                $rootScope.$broadcast(EVENTS.COMMENT_UNLIKED);
                                 if (!$scope.$$phase)$scope.$digest();
                             }, function (err) {
                                 console.error('error while removing like of thread', err);
