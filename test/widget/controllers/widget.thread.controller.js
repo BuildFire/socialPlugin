@@ -1,4 +1,4 @@
-describe('Unit : Controller - ThreadCtrl', function () {
+xdescribe('Unit : Controller - ThreadCtrl', function () {
 
 // load the controller's module
     beforeEach(module('socialPluginWidget'));
