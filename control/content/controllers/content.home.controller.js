@@ -11,30 +11,31 @@
             var initialCommentsLength;
             ContentHome.postText = '';
             ContentHome.posts = [];
-            var socialAppId;
+            ContentHome.socialAppId;
             var instanceId;
             var init = function () {
+                Buildfire.getContext(function (err, context) {
+                    if (err) {
+                        console.error("Error occurred while getting buildfire context");
+                    } else {
+                        console.log('buildfire get context response::: ', context);
+                        instanceId = context && context.instanceId;
+                        SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
+                            if (response && response.result) {
+                                console.log('application successfully added::::: ', response);
+                                ContentHome.socialAppId = response.result;
+                            }
+                        }, function (err) {
+                            console.error("Error is: ", err);
+                        });
+                    }
+                });
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
                 console.log('inside init method of content controller:::::::: ');
                 Buildfire.auth.getCurrentUser(function (err, userData) {
                     if(userData) {
-                        Buildfire.getContext(function (err, context) {
-                            if (err) {
-                                console.error("Error occurred while getting buildfire context");
-                            } else {
-                                console.log('buildfire get context response::: ', context);
-                                instanceId = context && context.instanceId;
-                                SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
-                                    if (response && response.result) {
-                                        console.log('application successfully added::::: ', response);
-                                        socialAppId = response.result;
-                                    }
-                                }, function (err) {
-                                    console.error("Error is: ", err);
-                                });
-                            }
-                        });
+
                     }
                 });
             };
@@ -90,7 +91,7 @@
                 else
                     lastThreadId = null;
                 // Getting posts initially and on scroll down by passing lastThreadId
-                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: socialAppId, instanceId: instanceId}).then(success, error);
+                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: ContentHome.socialAppId, instanceId: instanceId}).then(success, error);
             };
 
             // Method for getting User Name by giving userId as its argument
@@ -121,7 +122,7 @@
             ContentHome.deletePost = function (postId) {
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId, socialAppId).then(success, error);
+                    SocialDataStore.deletePost(postId, ContentHome.socialAppId).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -149,7 +150,7 @@
             ContentHome.deleteComment = function (post, commentId) {
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deleteComment(commentId, post._id, socialAppId).then(success, error);
+                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -201,7 +202,7 @@
                             console.log('Error while banning a user ', err);
                         };
                         // Calling SocialDataStore banUser method for banning a user
-                        SocialDataStore.banUser(userId, threadId, socialAppId).then(success, error);
+                        SocialDataStore.banUser(userId, threadId, ContentHome.socialAppId).then(success, error);
                     }
                 }, function (err) {
                     console.log('Error is: ', err);
@@ -217,7 +218,7 @@
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,
                         lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null,
-                        socialAppId: socialAppId
+                        socialAppId: ContentHome.socialAppId
                     }).then(
                         function (data) {
                             console.log('Success in Content get Load more Comments---------', data);
@@ -245,7 +246,7 @@
 
             var getCommentsLikeAndUpdate = function (thread, uniqueLinksOfComments) {
                 console.log('inside getCommentsLikeAndUpdate', thread, uniqueLinksOfComments);
-                SocialDataStore.getThreadLikes(uniqueLinksOfComments, socialAppId).then(function (data) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments, ContentHome.socialAppId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);

@@ -1,5 +1,5 @@
 <div ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}" style="overflow-y:scroll;" class="infinite-scroll-parent">
-    <div
+    <div ng-if="ContentHome.socialAppId"
          class="wrapper social-plugin" infinite-scroll-distance="0"
          data-infinite-container=".infinite-scroll-parent"
          infinite-scroll="ContentHome.getPosts()"
