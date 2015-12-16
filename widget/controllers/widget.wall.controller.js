@@ -9,6 +9,7 @@
             var postsUniqueIds = [];
             var getLikesData = [];
             var _receivePushNotification;
+            WidgetWall.buildfire=Buildfire;
             WidgetWall.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
             };

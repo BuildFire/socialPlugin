@@ -8,6 +8,7 @@
             var usersData = [];
             Thread.comments = [];
             Thread.userDetails = {};
+            Thread.buildfire=Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {

@@ -7,11 +7,11 @@
 			<hr class="small">
 			<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
 				<div class="col-xs-8 pull-left">
-					<div class="media-holder pull-left">
+					<div class="media-holder pull-left" ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
 						<img src="{{Thread.getUserImage(Thread.post.userId)}}">
 					</div>
 					<p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-						<a class="text-primary" href="#/userProfile/{{Thread.post.userId}}">{{Thread.getUserName(Thread.post.userId)}}</a>
+						<a class="text-primary" ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">{{Thread.getUserName(Thread.post.userId)}}</a>
 					</p>
 				</div>
 				<div class="col-xs-3 pull-right margin-top-ten text-right" ng-if="Thread.post.createdOn">
@@ -55,7 +55,7 @@
 					<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
 						<div class="col-xs-8 pull-left">
 							<p class="text-primary ellipsis margin-top-five margin-bottom-zero">
-								<a class="text-primary" href="#/userProfile/{{comment.userId}}">{{Thread.getUserName(comment.userId)}}</a>
+								<a class="text-primary" ng-click="Thread.buildfire.auth.openProfile(comment.userId)">{{Thread.getUserName(comment.userId)}}</a>
 							</p>
 						</div>
 						<div class="col-xs-3 pull-right margin-top-five text-right" ng-if="comment.createdOn">
