@@ -33,7 +33,7 @@
                         var error = function (err) {
                             console.log('Error is : ', err);
                         };
-                        SocialDataStore.uploadImage(WidgetWall.picFile).then(success, error);
+                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.userDetails.userToken, WidgetWall.userDetails.appId).then(success, error);
                     } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
@@ -44,28 +44,31 @@
                 var deferedObject=$q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
                     console.info('Current Logged In user details are -----------------', userData);
-                    var context = Buildfire.context;
                     if (userData) {
-                        deferedObject.resolve();
-                        WidgetWall.userDetails.appId = context.appId;
-                        WidgetWall.userDetails.parentThreadId = '564f676cfbe10b9c240002ff' || context.appId + context.instanceId;
-                        WidgetWall.userDetails.userToken = userData.userToken;
-                        WidgetWall.userDetails.userId = userData._id;
-                        SocialDataStore.getUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken}).then(function (response) {
-                            console.log('inside getUser settings :::::::::::::', response);
-                            if (response && response.data && response.data.result) {
-                                console.log('getUserSettings response is: ', response);
-                                _receivePushNotification = response.data.result.receivePushNotification;
-                                WidgetWall.userDetails.settingsId = response.data.result._id;
-                            } else if (response && response.data && response.data.error) {
-                                console.log('response error is: ', response.data.error);
+                        Buildfire.getContext(function (err, context) {
+                            if(err) {
+                                console.error('error inside getting buildfire context is:::::: ', err);
+                                return deferedObject.reject();
+                            } else {
+                                deferedObject.resolve();
+                                WidgetWall.userDetails.appId = context.appId;
+                                WidgetWall.userDetails.parentThreadId = context.appId + context.instanceId;
+                                WidgetWall.userDetails.userToken = userData.userToken;
+                                WidgetWall.userDetails.userId = userData._id;
+                                SocialDataStore.getUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, appId: WidgetWall.userDetails.appId}).then(function (response) {
+                                    console.log('inside getUser settings :::::::::::::', response);
+                                    if (response && response.data && response.data.result) {
+                                        console.log('getUserSettings response is: ', response);
+                                        _receivePushNotification = response.data.result.receivePushNotification;
+                                        WidgetWall.userDetails.settingsId = response.data.result._id;
+                                    } else if (response && response.data && response.data.error) {
+                                        console.log('response error is: ', response.data.error);
+                                    }
+
+                                }, function (err) {
+                                    console.log('Error while logging in user is: ', err);
+                                });
                             }
-
-                        }, function (err) {
-                            deferedObject.reject();
-                            console.log('Error while logging in user is: ', err);
-
-
                         });
                     }
                     else {
@@ -73,10 +76,7 @@
                             deferedObject.reject();
                             console.log('Login called---------------------------------',user,err);
                             Location.goToHome();
-
-
                         });
-
                     }
                 });
                return  deferedObject.promise;
@@ -121,7 +121,7 @@
                             WidgetWall.waitAPICompletion = false;
                             if (!$scope.$$phase)$scope.$digest();
                         };
-                        SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                        SocialDataStore.getUsers(userIds, WidgetWall.userDetails.userToken).then(successCallback, errorCallback);
                         if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                             WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                     }
@@ -169,7 +169,7 @@
 
                                 case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise=SocialDataStore.reportPost(postId);
+                                    var reportPostPromise=SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userToken);
                                     reportPostPromise.then(function(response){
                                         $modal
                                             .open({
@@ -314,7 +314,7 @@
                     console.log('Error while deleting post ', err);
                 };
                 // Deleting post having id as postId
-                SocialDataStore.deletePost(postId).then(success, error);
+                SocialDataStore.deletePost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userToken).then(success, error);
             };
 
             WidgetWall.followUnfollow = function (isFollow) {
@@ -324,7 +324,7 @@
                 } else if(isFollow == GROUP_STATUS.FOLLOW) {
                     followNotification = true;
                 }
-                SocialDataStore.saveUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, settingsId: WidgetWall.userDetails.settingsId, receivePushNotification: followNotification}).then(function (data) {
+                SocialDataStore.saveUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, settingsId: WidgetWall.userDetails.settingsId, appId: WidgetWall.userDetails.appId, receivePushNotification: followNotification}).then(function (data) {
                     console.log('Get User Settings------------------', data);
                     if (data && data.data && data.data.result) {
                         _receivePushNotification = data.data.result.receivePushNotification;

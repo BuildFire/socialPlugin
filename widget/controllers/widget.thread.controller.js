@@ -19,33 +19,41 @@
                 var deferred=$q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
                     console.info('Current Logged In user details are -----------------', userData);
-                    var context = Buildfire.context;
                     if (userData) {
-                        deferred.resolve();
-                        Thread.userDetails.userId = userData._id;
-                        Thread.userDetails.userToken = userData.userToken;
-                        SocialDataStore.getUserSettings({
-                            threadId: Thread.post._id,
-                            userId: Thread.userDetails.userId,
-                            userToken: Thread.userDetails.userToken
-                        }).then(function (response) {
-                            console.log('inside getUser settings :::::::::::::', response);
-                            if (response && response.data && response.data.result) {
-                                console.log('getUserSettings response is: ', response);
-                                _receivePushNotification = response.data.result.receivePushNotification;
-                                Thread.userDetails.settingsId = response.data.result._id;
-                                //                                                if (!$scope.$$phase)$scope.$digest();
-                            } else if (response && response.data && response.data.error) {
-                                console.log('response error is: ', response.data.error);
+                        Buildfire.getContext(function (err, context) {
+                            if (err) {
+                                console.error('error while getting buildfire context is::::::', err);
+                                return deferred.reject();
+                            } else {
+                                deferred.resolve();
+                                Thread.userDetails.userId = userData._id;
+                                Thread.userDetails.userToken = userData.userToken;
+                                Thread.userDetails.appId = context.appId;
+                                SocialDataStore.getUserSettings({
+                                    threadId: Thread.post._id,
+                                    userId: Thread.userDetails.userId,
+                                    userToken: Thread.userDetails.userToken,
+                                    appId: Thread.userDetails.appId
+                                }).then(function (response) {
+                                    console.log('inside getUser settings :::::::::::::', response);
+                                    if (response && response.data && response.data.result) {
+                                        console.log('getUserSettings response is: ', response);
+                                        _receivePushNotification = response.data.result.receivePushNotification;
+                                        Thread.userDetails.settingsId = response.data.result._id;
+                                        //                                                if (!$scope.$$phase)$scope.$digest();
+                                    } else if (response && response.data && response.data.error) {
+                                        console.log('response error is: ', response.data.error);
+                                    }
+                                }, function (err) {
+                                    console.log('Error while logging in user is: ', err);
+                                });
                             }
-                        }, function (err) {
-                            console.log('Error while logging in user is: ', err);
                         });
                     }
                     else {
                         deferred.reject();
-                        if(!callFromInit)
-                        Buildfire.auth.login();
+                        if (!callFromInit)
+                            Buildfire.auth.login();
                     }
                 });
                 return deferred.promise;
@@ -66,7 +74,7 @@
 
                     checkAuthenticatedUser(true);
 
-                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
+                    SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.userDetails.appId, Thread.userDetails.userId).then(function (response) {
                         console.info('get thread likes response is: ', response.data.result);
                         if (response.data.error) {
                             console.error('Error while getting likes of thread by logged in user ', response.data.error);
@@ -82,7 +90,7 @@
             init();
 
             Thread.getComments = function (postId, lastCommentId) {
-                SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId}).then(
+                SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId, userToken: Thread.userDetails.userToken, appId: Thread.userDetails.appId}).then(
                     function (data) {
                         var uniqueLinksOfComments = [];
                         console.log('Success get Comments---------', data);
@@ -96,7 +104,7 @@
                         });
                         getCommentsLikeAndUpdate(uniqueLinksOfComments);
                         if (userIds && userIds.length > 0) {
-                            SocialDataStore.getUsers(userIds).then(function (response) {
+                            SocialDataStore.getUsers(userIds, Thread.userDetails.userToken).then(function (response) {
                                 console.info('Users fetching for comments and response is: ', response.data.result);
                                 if (response.data.error) {
                                     console.error('Error while fetching users for comments ', response.data.error);
@@ -132,7 +140,7 @@
                             Thread.picFile = '';
                             Thread.comment = '';
                         };
-                        SocialDataStore.uploadImage(Thread.picFile).then(success, error);
+                        SocialDataStore.uploadImage(Thread.picFile, Thread.userDetails.userToken, Thread.userDetails.appId).then(success, error);
                     }
                     else if (Thread.comment && !Thread.waitAPICompletion) {
                         Thread.waitAPICompletion = true;
@@ -149,7 +157,9 @@
                 if (Thread.comments && Thread.comments.length < Thread.post.commentsCount) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: Thread.post._id,
-                        lastCommentId: Thread.comments[Thread.comments.length - 1]._id
+                        lastCommentId: Thread.comments[Thread.comments.length - 1]._id,
+                        userToken: Thread.userDetails.userToken,
+                        appId: Thread.userDetails.appId
                     }).then(
                         function (data) {
                             console.log('Success get Load more Comments---------', data);
@@ -227,7 +237,7 @@
                         console.log('inside success of getThreadLikes', response);
                         if (response.data && response.data.result && response.data.result.length > 0) {
                             if (response.data.result[0].isUserLikeActive) {
-                                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                                SocialDataStore.addThreadLike(post, type, Thread.userDetails.appId, Thread.userDetails.userToken).then(function (res) {
                                     console.log('thread gets liked', res);
                                     Buildfire.messaging.sendMessageToControl({
                                         'name': EVENTS.POST_LIKED,
@@ -242,7 +252,7 @@
                                     console.log('error while liking thread', err);
                                 });
                             } else {
-                                SocialDataStore.removeThreadLike(post, type).then(function (res) {
+                                SocialDataStore.removeThreadLike(post, type, Thread.userDetails.appId, Thread.userDetails.userToken).then(function (res) {
                                     console.log('thread like gets removed', res);
                                     if (res.data && res.data.result)
                                         Buildfire.messaging.sendMessageToControl({
@@ -266,7 +276,7 @@
                     };
                     if (!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
-                        SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.userDetails.appId, Thread.userDetails.userId).then(success, error);
                     }
                 });
 
@@ -286,7 +296,8 @@
                     userId: Thread.userDetails.userId,
                     userToken: Thread.userDetails.userToken,
                     settingsId: Thread.userDetails.settingsId,
-                    receivePushNotification: followNotification
+                    receivePushNotification: followNotification,
+                    appId: Thread.userDetails.appId
                 }).then(function (data) {
                     console.log('Get User Settings------------------', data);
                     if (data && data.data && data.data.result) {
@@ -312,11 +323,11 @@
                     comment.waitAPICompletion = true;
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(comment.threadId + "cmt" + comment._id);
-                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
+                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id, Thread.userDetails.appId, Thread.userDetails.userToken).then(
                         function (data) {
                             console.log('Datat in Get CommentBy uniqueLink-----------------', data);
                             data.data.result.threadId = comment.threadId;
-                            SocialDataStore.addThreadLike(data.data.result, type).then(function (res) {
+                            SocialDataStore.addThreadLike(data.data.result, type, Thread.userDetails.appId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('thread gets liked in thread page', res);
                                 if(comment.likesCount)
                                     comment.likesCount++;
@@ -344,7 +355,7 @@
                         function (data) {
                             console.log('Datat in Get CommentBy uniqueLink-----------------', data);
                             data.data.result.threadId = comment.threadId;
-                            SocialDataStore.removeThreadLike( data.data.result, type).then(function (res) {
+                            SocialDataStore.removeThreadLike( data.data.result, type, Thread.userDetails.appId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('Response--------------------------remove like--------',res);
                                 comment.likesCount--;
                                 comment.waitAPICompletion = false;
@@ -364,7 +375,7 @@
                 }
             };
             Thread.deleteComment = function (commentId) {
-                SocialDataStore.deleteComment(commentId, Thread.post._id).then(
+                SocialDataStore.deleteComment(commentId, Thread.post._id, Thread.userDetails.appId, Thread.userDetails.userToken).then(
                     function (data) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.COMMENT_DELETED,
@@ -394,7 +405,8 @@
                         threadId: Thread.post._id,
                         comment: Thread.comment,
                         userToken: Thread.userDetails.userToken,
-                        imageUrl: imageUrl || null
+                        imageUrl: imageUrl || null,
+                        appId: Thread.userDetails.appId
                     }).then(
                         function (data) {
                             console.log('Add Comment Successsss------------------', data);
@@ -422,7 +434,7 @@
 
             };
             var getCommentsLikeAndUpdate = function (uniqueLinksOfComments) {
-                SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments, Thread.userDetails.appId, Thread.userDetails.userId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);

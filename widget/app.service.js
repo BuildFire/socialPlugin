@@ -50,37 +50,14 @@
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
                     return deferred.promise;
                 },
-                getPosts: function (data) {
-                    var deferred = $q.defer();
-                    var postDataObject = {};
-                    postDataObject.id = '1';
-                    postDataObject.method = 'thread/findByPage';
-                    postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
-                    postDataObject.params.lastThreadId = data.lastThreadId;
-                    postDataObject.userToken = null;
-                    var successCallback = function (response) {
-                        return deferred.resolve(response);
-                    };
-                    var errorCallback = function (err) {
-                        return deferred.reject(err);
-                    };
-                    $http({
-                        method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                        headers: {'Content-Type': 'application/json'}
-                    }).then(successCallback, errorCallback);
-                    return deferred.promise;
-                },
-                getUsers: function (userIdsArray) {
+                getUsers: function (userIdsArray, userToken) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'users/getUsers';
                     postDataObject.params = {};
                     postDataObject.params.userIds = userIdsArray || [];
-                    postDataObject.userToken = null;
+                    postDataObject.userToken = userToken || null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
@@ -100,12 +77,12 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'threadComments/add';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = data.appId;
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.comment = data.comment;
                     postDataObject.params.attachedImage = data.imageUrl;
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
-                    postDataObject.userToken = encodeURIComponent(data.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
+                    postDataObject.userToken = encodeURIComponent(data.userToken) || null;
                     var successCallback = function (response) {
                         console.log('add Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -122,17 +99,17 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                getThreadByUniqueLink: function (threadUniqueLink) {
+                getThreadByUniqueLink: function (threadUniqueLink, appId, userToken) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/getThread';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = appId;
                     postDataObject.params.uniqueLink = threadUniqueLink;
-                    postDataObject.params.userToken = null;
+                    postDataObject.params.userToken = userToken || null;
                     postDataObject.params.title = null;
-                    postDataObject.userToken = null;
+                    postDataObject.userToken = userToken || null;
                     var successCallback = function (response) {
                         console.log('get Post callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -154,10 +131,10 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'threadComments/findByPage';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = data.appId;
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.lastCommentId = data.lastCommentId || null;
-                    postDataObject.userToken = null;
+                    postDataObject.userToken = data.userToken || null;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -173,21 +150,21 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                addThreadLike: function (post, type){
+                addThreadLike: function (post, type, appId, userToken){
                     console.log('Add Like Api post Data----------------------',post);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'threadLikes/add';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDataObject.params.userToken = userToken;
                     postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
                         refId: post._id,
-                        externalAppId: '551ae57f94ed199c3400002e' || Buildfire.context.appId
+                        externalAppId: appId
                     };
                     var successCallback = function (response) {
                         console.log('add like callback recieved--------------', response);
@@ -204,13 +181,13 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                uploadImage: function (file) {
+                uploadImage: function (file, userToken, appId) {
                     var deferred = $q.defer();
                     console.log('inside upload image method : ', file, Upload);
                     Upload.upload({
                         url: SERVER_URL.link + '?method=Image/upload',
-                        data: {'files': file, 'userToken': 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken,'secureToken': "null",
-                            'appId': "551ae57f94ed199c3400002e"}
+                        data: {'files': file, 'userToken': userToken || null,
+                            'appId': appId}
                     }).then(function (resp) {
                         console.log('Success uploaded. Response: ' + resp);
                         deferred.resolve(resp);
@@ -226,10 +203,10 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'users/getUserSettings';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = data.appId;
                     postDataObject.params.threadId = data.threadId;
-                    postDataObject.params.userId = data.userId || "55f8a6c6bed1b418e3000001" || null;
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
+                    postDataObject.params.userId = data.userId || null;
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -252,12 +229,12 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'users/saveUserSettings';
                     postDataObject.params = {};
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) ||"c2/F3n4YXQhH9qVR+NTACCUJ70lWJW3zpQQNuU+5PvI=";
+                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
                     postDataObject.params.userSettings = {};
                     postDataObject.params.userSettings._id = data.settingsId;
-                    postDataObject.params.userSettings.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.userSettings.appId = data.appId;
                     postDataObject.params.userSettings.threadId = data.threadId;
-                    postDataObject.params.userSettings.userId = data.userId || "55f8a6c6bed1b418e3000001" || null;
+                    postDataObject.params.userSettings.userId = data.userId || null;
                     postDataObject.params.userSettings.receivePushNotification = data.receivePushNotification;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
@@ -274,7 +251,7 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                getThreadLikes: function (uniqueIds) {
+                getThreadLikes: function (uniqueIds, appId, userId) {
                     console.log('Unique Ids------------------------',uniqueIds);
                     var deferred = $q.defer();
                     var postDataObject = {};
@@ -282,8 +259,8 @@
                     postDataObject.method = 'threadLikes/getLikes';
                     postDataObject.params = {};
                     postDataObject.params.uniqueIds = uniqueIds;
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    postDataObject.params.userId = "5317c378a6611c6009000001" || null;
+                    postDataObject.params.appId = appId;
+                    postDataObject.params.userId = userId || null;
                     var success = function (response) {
                         return deferred.resolve(response);
                     };
@@ -297,22 +274,22 @@
                     }).then(success, error);
                     return deferred.promise;
                 },
-                removeThreadLike: function (post, type) {
+                removeThreadLike: function (post, type, appId, userToken) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'threadLikes/unlike';
                     postDataObject.params = {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDataObject.params.userToken = encodeURIComponent(userToken) || null;
                     postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
                         refId: post._id,
-                        externalAppId: '551ae57f94ed199c3400002e' || Buildfire.context.appId
+                        externalAppId: appId
                     };
-                    postDataObject.userToken = null;
+                    postDataObject.userToken = encodeURIComponent(userToken) || null;
                     var successCallback = function (response) {
                         console.log('remove like callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -328,17 +305,17 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                reportPost: function (postId) {
+                reportPost: function (postId, appId, userToken) {
                     var deferred = $q.defer();
                     var reportPostbject = {};
                     reportPostbject.id = '1';
                     reportPostbject.method = 'thread/delete';
                     reportPostbject.params = {};
                     reportPostbject.params.threadId = postId;
-                    reportPostbject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    reportPostbject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    reportPostbject.params.appId = appId;
+                    reportPostbject.params.userToken = userToken || null;
                     reportPostbject.params.secureToken = null;
-                    reportPostbject.userToken = null;
+                    reportPostbject.userToken = userToken || null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
@@ -351,15 +328,15 @@
 
                     return deferred.promise;
                 },
-                deletePost: function (postId) {
+                deletePost: function (postId, appId, userToken) {
                     var deferred = $q.defer();
                     var postDeleteObject = {};
                     postDeleteObject.id = '1';
                     postDeleteObject.method = 'thread/delete';
                     postDeleteObject.params = {};
                     postDeleteObject.params.threadId = postId;
-                    postDeleteObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                    postDeleteObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDeleteObject.params.appId = appId;
+                    postDeleteObject.params.userToken = userToken || null;
                     postDeleteObject.params.secureToken = null;
                     postDeleteObject.userToken = null;
                     var successCallback = function (response) {
@@ -375,18 +352,18 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                deleteComment: function (commentId, threadId) {
+                deleteComment: function (commentId, threadId, appId, userToken) {
                     var deferred = $q.defer();
                     var postDeleteObject = {};
                     postDeleteObject.id = '1';
                     postDeleteObject.method = 'threadComments/delete';
                     postDeleteObject.params = {};
                     postDeleteObject.params.commentId = commentId;
-                    postDeleteObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDeleteObject.params.appId = appId;
                     postDeleteObject.params.threadId = threadId;
-                    postDeleteObject.params.userToken = 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=' || localStorage.getItem('user') && localStorage.getItem('user').userToken;
+                    postDeleteObject.params.userToken = encodeURIComponent(userToken) || null;
                     postDeleteObject.params.secureToken = null;
-                    postDeleteObject.userToken = null;
+                    postDeleteObject.userToken = encodeURIComponent(userToken) || null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
