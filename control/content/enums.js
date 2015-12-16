@@ -16,5 +16,8 @@
             COMMENT_LIKED: "COMMENT_LIKED",
             COMMENT_UNLIKED: "COMMENT_UNLIKED"
         })
+        .constant('API_KEY', {
+            value: '26a6036a9df5c1acabacfG7gInHY3x1K5nuX5d8'
+        })
 })(window.angular);
 

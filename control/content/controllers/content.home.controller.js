@@ -11,10 +11,32 @@
             var initialCommentsLength;
             ContentHome.postText = '';
             ContentHome.posts = [];
-
+            var socialAppId;
+            var instanceId;
             var init = function () {
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
+                console.log('inside init method of content controller:::::::: ');
+                Buildfire.auth.getCurrentUser(function (err, userData) {
+                    if(userData) {
+                        Buildfire.getContext(function (err, context) {
+                            if (err) {
+                                console.error("Error occurred while getting buildfire context");
+                            } else {
+                                console.log('buildfire get context response::: ', context);
+                                instanceId = context && context.instanceId;
+                                SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
+                                    if (response && response.result) {
+                                        console.log('application successfully added::::: ', response);
+                                        socialAppId = response.result;
+                                    }
+                                }, function (err) {
+                                    console.error("Error is: ", err);
+                                });
+                            }
+                        });
+                    }
+                });
             };
             init();
 
@@ -33,28 +55,31 @@
                     else {
                         ContentHome.noMore = false;
                     }
-
-                    response.data.result.forEach(function (postData) {
-                        if (userIds.indexOf(postData.userId.toString()) == -1)
-                            userIds.push(postData.userId.toString());
-                        ContentHome.posts.push(postData);
-                    });
-                    // Called when getting success from SocialDataStore getUsers method
-                    var successCallback = function (response) {
-                        console.info('Users fetching response is: ', response.data.result);
-                        if (response.data.error) {
-                            console.error('Error while creating post ', response.data.error);
-                        } else if (response.data.result) {
-                            console.info('Users fetched successfully', response.data.result);
-                            usersData = response.data.result;
-                        }
-                    };
-                    // Called when getting error from SocialDataStore getUsers method
-                    var errorCallback = function (err) {
-                        console.log('Error while fetching users details ', err);
-                    };
-                    // Getting users details of posts
-                    SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                    if(response && response.data && response.data.result) {
+                        response.data.result.forEach(function (postData) {
+                            if (userIds.indexOf(postData.userId.toString()) == -1)
+                                userIds.push(postData.userId.toString());
+                            ContentHome.posts.push(postData);
+                        });
+                        // Called when getting success from SocialDataStore getUsers method
+                        var successCallback = function (response) {
+                            console.info('Users fetching response is: ', response.data.result);
+                            if (response.data.error) {
+                                console.error('Error while creating post ', response.data.error);
+                            } else if (response.data.result) {
+                                console.info('Users fetched successfully', response.data.result);
+                                usersData = response.data.result;
+                            }
+                        };
+                        // Called when getting error from SocialDataStore getUsers method
+                        var errorCallback = function (err) {
+                            console.log('Error while fetching users details ', err);
+                        };
+                        // Getting users details of posts
+                        SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                    } else if(response && response.data && response.data.error) {
+                        console.log("error while getting posts:::::: ", response.data.error);
+                    }
                 };
                 // Called when getting error from SocialDataStore getPosts method
                 var error = function (err) {
@@ -65,7 +90,7 @@
                 else
                     lastThreadId = null;
                 // Getting posts initially and on scroll down by passing lastThreadId
-                SocialDataStore.getPosts({lastThreadId: lastThreadId}).then(success, error);
+                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: socialAppId, instanceId: instanceId}).then(success, error);
             };
 
             // Method for getting User Name by giving userId as its argument
@@ -96,7 +121,7 @@
             ContentHome.deletePost = function (postId) {
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId).then(success, error);
+                    SocialDataStore.deletePost(postId, socialAppId).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -124,7 +149,7 @@
             ContentHome.deleteComment = function (post, commentId) {
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deleteComment(commentId, post._id).then(success, error);
+                    SocialDataStore.deleteComment(commentId, post._id, socialAppId).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -176,7 +201,7 @@
                             console.log('Error while banning a user ', err);
                         };
                         // Calling SocialDataStore banUser method for banning a user
-                        SocialDataStore.banUser(userId, threadId).then(success, error);
+                        SocialDataStore.banUser(userId, threadId, socialAppId).then(success, error);
                     }
                 }, function (err) {
                     console.log('Error is: ', err);
@@ -191,7 +216,8 @@
                 if (thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,
-                        lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null
+                        lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null,
+                        socialAppId: socialAppId
                     }).then(
                         function (data) {
                             console.log('Success in Content get Load more Comments---------', data);
@@ -219,7 +245,7 @@
 
             var getCommentsLikeAndUpdate = function (thread, uniqueLinksOfComments) {
                 console.log('inside getCommentsLikeAndUpdate', thread, uniqueLinksOfComments);
-                SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments, socialAppId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);
