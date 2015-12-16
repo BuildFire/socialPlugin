@@ -156,6 +156,29 @@
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
+                },
+                getThreadLikes: function (uniqueIds) {
+                    console.log('Unique Ids------------------------',uniqueIds);
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'threadLikes/getLikes';
+                    postDataObject.params = {};
+                    postDataObject.params.uniqueIds = uniqueIds;
+                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
+                    postDataObject.params.userId = "5317c378a6611c6009000001" || null;
+                    var success = function (response) {
+                        return deferred.resolve(response);
+                    };
+                    var error = function (err) {
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(success, error);
+                    return deferred.promise;
                 }
             }
         }])

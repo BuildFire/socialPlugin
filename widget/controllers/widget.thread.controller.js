@@ -307,8 +307,9 @@
             };
 
             Thread.likeComment = function (comment, type) {
-                if(comment.isUserLikeActive){
+                if(comment.isUserLikeActive && !comment.waitAPICompletion){
                     comment.isUserLikeActive=false;
+                    comment.waitAPICompletion = true;
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(comment.threadId + "cmt" + comment._id);
                     SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
@@ -321,25 +322,24 @@
                                     comment.likesCount++;
                                 else
                                     comment.likesCount=1;
+                                comment.waitAPICompletion = false;
                                 $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                                 if (!$scope.$$phase)$scope.$digest();
-                                /* Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
-                                 post.likesCount++;
-                                 post.waitAPICompletion = false;
-                                 post.isUserLikeActive = false;
-                                 if (!$scope.$$phase)$scope.$digest();*/
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_LIKED, 'postId': comment.threadId, '_id': comment._id});
                             }, function (err) {
+                                comment.waitAPICompletion = false;
                                 console.log('error while liking comment', err);
                             });
                         },
                         function (err) {
+                            comment.waitAPICompletion = false;
                             console.log('Get comment like ----------------error', err);
                         }
                     );
                 }
-                else{
-                    comment.isUserLikeActive=true;
-
+                else if(!comment.waitAPICompletion) {
+                    comment.isUserLikeActive = true;
+                    comment.waitAPICompletion = true;
                     SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
                         function (data) {
                             console.log('Datat in Get CommentBy uniqueLink-----------------', data);
@@ -347,13 +347,17 @@
                             SocialDataStore.removeThreadLike( data.data.result, type).then(function (res) {
                                 console.log('Response--------------------------remove like--------',res);
                                 comment.likesCount--;
+                                comment.waitAPICompletion = false;
                                 $rootScope.$broadcast(EVENTS.COMMENT_UNLIKED);
                                 if (!$scope.$$phase)$scope.$digest();
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_UNLIKED, 'postId': comment.threadId, '_id': comment._id});
                             }, function (err) {
+                                comment.waitAPICompletion = false;
                                 console.error('error while removing like of thread', err);
                             });
                         },
                         function (err) {
+                            comment.waitAPICompletion = false;
                             console.log('Get comment like ----------------error', err);
                         }
                     );
@@ -421,7 +425,7 @@
                 SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
-                            console.log('In If------------------',data.data.result)
+                            console.log('In If------------------',data.data.result);
                             data.data.result.forEach(function (uniqueLinkData) {
                                 Thread.comments.some(function(comment){
                                     if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){

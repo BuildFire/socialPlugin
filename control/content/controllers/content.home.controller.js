@@ -194,10 +194,19 @@
                         lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null
                     }).then(
                         function (data) {
-                            console.log('Success in Conrtent get Load more Comments---------', data);
+                            console.log('Success in Content get Load more Comments---------', data);
                             if (data && data.data && data.data.result) {
+                                var uniqueLinksOfComments = [];
                                 thread.comments = thread.comments && !viewComment ? thread.comments.concat(data.data.result) : data.data.result;
                                 thread.moreComments = thread.comments && thread.comments.length < thread.commentsCount ? false : true;
+                                thread.comments.forEach(function (commentData) {
+                                    uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                    if (userIds.indexOf(commentData.userId) == -1) {
+                                        userIds.push(commentData.userId);
+                                    }
+                                });
+                                console.log('uniqueLinksOfComments are:::::::::', uniqueLinksOfComments);
+                                getCommentsLikeAndUpdate(thread, uniqueLinksOfComments);
                                 if (!$scope.$$phase)$scope.$digest();
                             }
                         },
@@ -206,6 +215,29 @@
                         }
                     );
                 }
+            };
+
+            var getCommentsLikeAndUpdate = function (thread, uniqueLinksOfComments) {
+                console.log('inside getCommentsLikeAndUpdate', thread, uniqueLinksOfComments);
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
+                        console.log('Response of a post comments like-----------------', data);
+                        if(data && data.data && data.data.result && data.data.result.length){
+                            console.log('In If------------------',data.data.result);
+                            data.data.result.forEach(function (uniqueLinkData) {
+                                thread.comments.some(function(comment){
+                                    if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
+                                        comment.likesCount=uniqueLinkData.likesCount;
+                                        comment.isUserLikeActive=uniqueLinkData.isUserLikeActive;
+                                        console.log('Updated comments data------------------',comment);
+                                        return true;
+                                    }
+                                });
+                            });
+                        }
+                    },
+                    function (err) {
+                        console.log('Response error of comment likes ------------', err);
+                    });
             };
 
             ContentHome.seeMore = function (post) {
@@ -263,23 +295,46 @@
                             if (!$scope.$$phase)$scope.$digest();
                             break;
                         case EVENTS.COMMENT_DELETED:
-                            console.log('Comment Deleted in Contenet home  controlled evenet called-----------', event);
-                            var post = ContentHome.posts.filter(function (el) {
-                                return el._id == event.postId;
+                            ContentHome.posts.some(function (el) {
+                                if(el._id == event.postId) {
+                                    el.commentsCount--;
+                                    el.comments = el.comments.filter(function (comment) {
+                                        return comment._id != event._id;
+                                    });
+                                    return true;
+                                }
                             });
-                            console.log('Post in Content.home.controller---------------------------------', post);
-                            if (post && post[0] && post[0].comments && post[0].comments.length) {
-                                post[0].commentsCount--;
-                                post[0].comments = post[0].comments.filter(function (el) {
-                                    return el._id != event._id;
-                                });
-                            }
-                            /*ContentHome.posts.some(function (el) {
-                             if (el._id == event.postId) {
-                             el.commentsCount--;
-                             return true;
-                             }
-                             });*/
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_UNLIKED:
+                            ContentHome.posts.some(function (el) {
+                                if(el._id == event.postId) {
+                                    el.comments = el.comments.some(function (commentData) {
+                                        if(commentData._id == event._id) {
+                                            commentData.likesCount = commentData.likesCount > 0 ? commentData.likesCount-- : 0;
+                                            return true;
+                                        }
+                                    });
+                                    return true;
+                                }
+                            });
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            break;
+                        case EVENTS.COMMENT_LIKED:
+                            console.log('comment liked in content home controller event called from widget thread page');
+                            ContentHome.posts.some(function (el) {
+                                if(el._id == event.postId) {
+                                    el.comments = el.comments.some(function (commentData) {
+                                        if(commentData._id == event._id) {
+                                            commentData.likesCount++;
+                                            return true;
+                                        }
+                                    });
+                                    return true;
+                                }
+                            });
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
