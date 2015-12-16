@@ -1,4 +1,4 @@
-describe('Unit : Controller - WidgetWallCtrl', function () {
+xdescribe('Unit : Controller - WidgetWallCtrl', function () {
 
 // load the controller's module
     beforeEach(module('socialPluginWidget'));

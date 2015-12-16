@@ -380,54 +380,61 @@
             }
         }])
         .factory('SocialItems',['Buildfire','$http','SERVER_URL',function(Buildfire,$http,SERVER_URL){
+            var _this;
             var SocialItems=function(){
-                var _this = this;
+                _this = this;
                 _this.items=[];
                 _this.busy=false;
                 _this.lastThreadId=null;
                 _this.context = {};
+
+            };
+            var instance;
+            SocialItems.prototype.posts=function(){
+                if(_this.busy){
+                    return;
+                }
+
                 Buildfire.getContext(function (err, context) {
                     if(err) {
                         console.error("Error while getting buildfire context details", err);
                     } else {
                         console.log('inside get context success::::::::::');
                         _this.context = context;
-                    }
-                })
-            };
-            var instance;
-            SocialItems.prototype.posts=function(){
-                if(this.busy){
-                    return;
-                }
-                this.busy=true;
-                var postDataObject = {};
-                postDataObject.id = '1';
-                postDataObject.method = 'thread/findByPage';
-                postDataObject.params = {};
-                postDataObject.params.appId = this.context && this.context.appId;
-                postDataObject.params.parentThreadId = this.context && (this.context.appId + this.context.instanceId);
-                postDataObject.params.lastThreadId = this.lastThreadId;
-                postDataObject.userToken = null;
-                $http({
-                    method: 'GET',
-                    url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                    headers: {'Content-Type': 'application/json'}
-                }).then(function(data){
-                    console.log('Get posts in service of SocialItems-------------------------',data);
-                    if(data && data.data && data.data.result && data.data.result.length){
-                        this.items=this.items.concat(data.data.result);
-                        this.lastThreadId=this.items[this.items.length-1]._id;
-                        this.busy=data.data.result.length<10;
-                    }
-                    else{
-                        this.busy=true;
-                    }
+                        _this.busy=true;
+                        var postDataObject = {};
+                        postDataObject.id = '1';
+                        postDataObject.method = 'thread/findByPage';
+                        postDataObject.params = {};
+                        postDataObject.params.appId = _this.context.appId;
+                        postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
+                        postDataObject.params.lastThreadId = _this.lastThreadId;
+                        postDataObject.userToken = null;
+                        console.log('Post data in services-------------------',postDataObject);
+                        $http({
+                            method: 'GET',
+                            url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                            headers: {'Content-Type': 'application/json'}
+                        }).then(function(data){
+                            console.log('Get posts in service of SocialItems-------------------------',data);
+                            if(data && data.data && data.data.result && data.data.result.length){
+                                _this.items=this.items.concat(data.data.result);
+                                _this.lastThreadId=this.items[this.items.length-1]._id;
+                                _this.busy=data.data.result.length<10;
+                            }
+                            else{
+                                _this.busy=true;
+                            }
 
-                }.bind(this), function(err){
-                    this.busy=false;
-                    console.log('Get posts in service of SocialItems---------err----------------',err);
+                        }.bind(this), function(err){
+                            _this.busy=false;
+                            console.log('Get posts in service of SocialItems---------err----------------',err);
+                        });
+                    }
                 });
+                console.log('This in Service-------------------------------------------',this);
+
+
 
             };
             return {
