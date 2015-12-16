@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems','$q', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems,$q) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -13,6 +13,43 @@
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
             };
+
+
+            var checkAuthenticatedUser=function(callFromInit){
+                var deferred=$q.defer();
+                Buildfire.auth.getCurrentUser(function (err, userData) {
+                    console.info('Current Logged In user details are -----------------', userData);
+                    var context = Buildfire.context;
+                    if (userData) {
+                        deferred.resolve();
+                        Thread.userDetails.userId = userData._id;
+                        Thread.userDetails.userToken = userData.userToken;
+                        SocialDataStore.getUserSettings({
+                            threadId: Thread.post._id,
+                            userId: Thread.userDetails.userId,
+                            userToken: Thread.userDetails.userToken
+                        }).then(function (response) {
+                            console.log('inside getUser settings :::::::::::::', response);
+                            if (response && response.data && response.data.result) {
+                                console.log('getUserSettings response is: ', response);
+                                _receivePushNotification = response.data.result.receivePushNotification;
+                                Thread.userDetails.settingsId = response.data.result._id;
+                                //                                                if (!$scope.$$phase)$scope.$digest();
+                            } else if (response && response.data && response.data.error) {
+                                console.log('response error is: ', response.data.error);
+                            }
+                        }, function (err) {
+                            console.log('Error while logging in user is: ', err);
+                        });
+                    }
+                    else {
+                        deferred.reject();
+                        if(!callFromInit)
+                        Buildfire.auth.login();
+                    }
+                });
+                return deferred.promise;
+            }
             var init = function () {
                 if ($routeParams.threadId) {
                     var posts = Thread.SocialItems.items.filter(function (el) {
@@ -26,34 +63,8 @@
                     Thread.showMore = Thread.post.commentsCount > 10;
                     uniqueIdsArray.push(Thread.post.uniqueLink);
                     userIds.push(Thread.post.userId);
-                    Buildfire.auth.getCurrentUser(function (err, userData) {
-                        console.info('Current Logged In user details are -----------------', userData);
-                        var context = Buildfire.context;
-                        if (userData) {
-                            Thread.userDetails.userId = userData._id;
-                            Thread.userDetails.userToken = userData.userToken;
-                            SocialDataStore.getUserSettings({
-                                threadId: Thread.post._id,
-                                userId: Thread.userDetails.userId,
-                                userToken: Thread.userDetails.userToken
-                            }).then(function (response) {
-                                console.log('inside getUser settings :::::::::::::', response);
-                                if (response && response.data && response.data.result) {
-                                    console.log('getUserSettings response is: ', response);
-                                    _receivePushNotification = response.data.result.receivePushNotification;
-                                    Thread.userDetails.settingsId = response.data.result._id;
-                                    //                                                if (!$scope.$$phase)$scope.$digest();
-                                } else if (response && response.data && response.data.error) {
-                                    console.log('response error is: ', response.data.error);
-                                }
-                            }, function (err) {
-                                console.log('Error while logging in user is: ', err);
-                            });
-                        }
-                        else {
-                            Buildfire.auth.login();
-                        }
-                    });
+
+                    checkAuthenticatedUser(true);
 
                     SocialDataStore.getThreadLikes(uniqueIdsArray).then(function (response) {
                         console.info('get thread likes response is: ', response.data.result);
@@ -107,23 +118,29 @@
              * Thread.addComment method checks whether image is present or not in comment.
              */
             Thread.addComment = function () {
-                if (Thread.picFile && !Thread.waitAPICompletion) {                // image post
-                    Thread.waitAPICompletion = true;
-                    var success = function (response) {
-                        console.log('response inside controller for image upload is: ', response);
-                        addComment(response.data.result);
-                    };
-                    var error = function (err) {
-                        console.log('Error is : ', err);
-                        Thread.picFile = '';
-                        Thread.comment = '';
-                    };
-                    SocialDataStore.uploadImage(Thread.picFile).then(success, error);
-                }
-                else if (Thread.comment && !Thread.waitAPICompletion) {
-                    Thread.waitAPICompletion = true;
-                    addComment();
-                }
+
+                var checkUserPromise=checkAuthenticatedUser(false);
+                checkUserPromise.then(function(){
+                    if (Thread.picFile && !Thread.waitAPICompletion) {                // image post
+                        Thread.waitAPICompletion = true;
+                        var success = function (response) {
+                            console.log('response inside controller for image upload is: ', response);
+                            addComment(response.data.result);
+                        };
+                        var error = function (err) {
+                            console.log('Error is : ', err);
+                            Thread.picFile = '';
+                            Thread.comment = '';
+                        };
+                        SocialDataStore.uploadImage(Thread.picFile).then(success, error);
+                    }
+                    else if (Thread.comment && !Thread.waitAPICompletion) {
+                        Thread.waitAPICompletion = true;
+                        addComment();
+                    }
+                })
+
+
             };
             /**
              * loadMoreComments methods is loads the more comments of a post.
@@ -185,12 +202,16 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptions = function () {
-                Modals.showMoreOptionsModal({}).then(function (data) {
-                        console.log('Data in Successs------------------data');
-                    },
-                    function (err) {
-                        console.log('Error in Error handler--------------------------', err);
-                    });
+                var checkUserPromise=checkAuthenticatedUser(false);
+                checkUserPromise.then(function(){
+                    Modals.showMoreOptionsModal({}).then(function (data) {
+                            console.log('Data in Successs------------------data');
+                        },
+                        function (err) {
+                            console.log('Error in Error handler--------------------------', err);
+                        });
+                })
+
             };
             /**
              * likeThread method is used to like a post.
@@ -198,53 +219,57 @@
              * @param type
              */
             Thread.likeThread = function (post, type) {
-                var uniqueIdsArray = [];
-                uniqueIdsArray.push(post.uniqueLink);
-                var success = function (response) {
-                    console.log('inside success of getThreadLikes', response);
-                    if (response.data && response.data.result && response.data.result.length > 0) {
-                        if (response.data.result[0].isUserLikeActive) {
-                            SocialDataStore.addThreadLike(post, type).then(function (res) {
-                                console.log('thread gets liked', res);
-                                Buildfire.messaging.sendMessageToControl({
-                                    'name': EVENTS.POST_LIKED,
-                                    '_id': Thread.post._id
-                                });
-                                post.likesCount++;
-                                post.waitAPICompletion = false;
-                                post.isUserLikeActive = false;
-                                $rootScope.$broadcast(EVENTS.POST_LIKED);
-                                if (!$scope.$$phase)$scope.$digest();
-                            }, function (err) {
-                                console.log('error while liking thread', err);
-                            });
-                        } else {
-                            SocialDataStore.removeThreadLike(post, type).then(function (res) {
-                                console.log('thread like gets removed', res);
-                                if (res.data && res.data.result)
+               var checkUserPromise= checkAuthenticatedUser(false);
+                checkUserPromise.then(function(){
+                    var uniqueIdsArray = [];
+                    uniqueIdsArray.push(post.uniqueLink);
+                    var success = function (response) {
+                        console.log('inside success of getThreadLikes', response);
+                        if (response.data && response.data.result && response.data.result.length > 0) {
+                            if (response.data.result[0].isUserLikeActive) {
+                                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                                    console.log('thread gets liked', res);
                                     Buildfire.messaging.sendMessageToControl({
-                                        'name': EVENTS.POST_UNLIKED,
+                                        'name': EVENTS.POST_LIKED,
                                         '_id': Thread.post._id
                                     });
-                                post.likesCount--;
-                                post.waitAPICompletion = false;
-                                post.isUserLikeActive = true;
-                                $rootScope.$broadcast(EVENTS.POST_UNLIKED);
-                                if (!$scope.$$phase)$scope.$digest();
-                            }, function (err) {
-                                console.log('error while removing like of thread', err);
-                            });
+                                    post.likesCount++;
+                                    post.waitAPICompletion = false;
+                                    post.isUserLikeActive = false;
+                                    $rootScope.$broadcast(EVENTS.POST_LIKED);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.log('error while liking thread', err);
+                                });
+                            } else {
+                                SocialDataStore.removeThreadLike(post, type).then(function (res) {
+                                    console.log('thread like gets removed', res);
+                                    if (res.data && res.data.result)
+                                        Buildfire.messaging.sendMessageToControl({
+                                            'name': EVENTS.POST_UNLIKED,
+                                            '_id': Thread.post._id
+                                        });
+                                    post.likesCount--;
+                                    post.waitAPICompletion = false;
+                                    post.isUserLikeActive = true;
+                                    $rootScope.$broadcast(EVENTS.POST_UNLIKED);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.log('error while removing like of thread', err);
+                                });
+                            }
                         }
+                    };
+                    var error = function (err) {
+                        post.waitAPICompletion = false;
+                        console.log('error is : ', err);
+                    };
+                    if (!post.waitAPICompletion) {
+                        post.waitAPICompletion = true;
+                        SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
                     }
-                };
-                var error = function (err) {
-                    post.waitAPICompletion = false;
-                    console.log('error is : ', err);
-                };
-                if (!post.waitAPICompletion) {
-                    post.waitAPICompletion = true;
-                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
-                }
+                });
+
             };
             /**
              * follow method is used to follow the thread/post.
@@ -364,34 +389,37 @@
              * @param imageUrl
              */
             var addComment = function (imageUrl) {
-                SocialDataStore.addComment({
-                    threadId: Thread.post._id,
-                    comment: Thread.comment,
-                    userToken: Thread.userDetails.userToken,
-                    imageUrl: imageUrl || null
-                }).then(
-                    function (data) {
-                        console.log('Add Comment Successsss------------------', data);
-                        Thread.picFile = '';
-                        Thread.comment = '';
-                        Thread.waitAPICompletion = false;
-                        Thread.post.commentsCount++;
-                        $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
-                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id})
-                        if (Thread.comments.length) {
-                            Thread.getComments(Thread.post._id, Thread.comments[Thread.comments.length - 1]._id);
+
+                    SocialDataStore.addComment({
+                        threadId: Thread.post._id,
+                        comment: Thread.comment,
+                        userToken: Thread.userDetails.userToken,
+                        imageUrl: imageUrl || null
+                    }).then(
+                        function (data) {
+                            console.log('Add Comment Successsss------------------', data);
+                            Thread.picFile = '';
+                            Thread.comment = '';
+                            Thread.waitAPICompletion = false;
+                            Thread.post.commentsCount++;
+                            $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
+                            Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id})
+                            if (Thread.comments.length) {
+                                Thread.getComments(Thread.post._id, Thread.comments[Thread.comments.length - 1]._id);
+                            }
+                            else {
+                                Thread.getComments(Thread.post._id, null);
+                            }
+                        },
+                        function (err) {
+                            console.log('Add Comment Error------------------', err);
+                            Thread.picFile = '';
+                            Thread.comment = '';
+                            Thread.waitAPICompletion = false;
                         }
-                        else {
-                            Thread.getComments(Thread.post._id, null);
-                        }
-                    },
-                    function (err) {
-                        console.log('Add Comment Error------------------', err);
-                        Thread.picFile = '';
-                        Thread.comment = '';
-                        Thread.waitAPICompletion = false;
-                    }
-                );
+                    );
+
+
             };
             var getCommentsLikeAndUpdate = function (uniqueLinksOfComments) {
                 SocialDataStore.getThreadLikes(uniqueLinksOfComments).then(function (data) {
