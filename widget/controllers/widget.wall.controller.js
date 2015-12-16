@@ -20,7 +20,7 @@
             $rootScope.showThread = true;
             WidgetWall.SocialItems=SocialItems.getInstance();
             var masterItems=WidgetWall.SocialItems.items;
-            console.log('SocialItems------------------Wall Controller------------------------',WidgetWall.SocialItems.items);
+            console.log('SocialItems------------------Wall Controller------------------------',WidgetWall.SocialItems);
             //SocialItems.posts();
             WidgetWall.createPost = function () {
                 var checkuserAuthPromise=checkUserIsAuthenticated();
@@ -39,8 +39,6 @@
                         finalPostCreation();
                     }
                 });
-
-
             };
             var checkUserIsAuthenticated = function () {
                 var deferedObject=$q.defer();
@@ -90,6 +88,7 @@
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.userDetails.userToken;
+                postData.appId = WidgetWall.SocialItems.context.appId;
                 var success = function (response) {
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
@@ -134,7 +133,7 @@
                     WidgetWall.waitAPICompletion = false;
                     if (!$scope.$$phase)$scope.$digest();
                 };
-                SocialDataStore.createPost(postData).then(success, error);
+                SocialDataStore.createPost(postData, WidgetWall.SocialItems.context.instanceId).then(success, error);
             }
 
             WidgetWall.getUserName = function (userId) {

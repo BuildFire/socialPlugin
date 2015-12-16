@@ -22,18 +22,17 @@
         }])
         .factory("SocialDataStore", ['Buildfire', '$q', '$timeout','SERVER_URL', '$http', 'Upload', function (Buildfire, $q, $timeout,SERVER_URL, $http, Upload) {
             return {
-                createPost: function (postData) {
+                createPost: function (postData, instanceId) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     console.log('buildfire is: >>>>>', Buildfire.context);
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/add';
                     postDataObject.params = postData || {};
-                    postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
                     postDataObject.params.secureToken = null;
-                    postDataObject.params.userToken = encodeURIComponent(postData.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
-                    postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
-                    postDataObject.userToken = encodeURIComponent(postData.userToken) || 'ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=';
+                    postDataObject.params.userToken = encodeURIComponent(postData.userToken);
+                    postDataObject.params.parentThreadId = postData.appId + instanceId;
+                    postDataObject.userToken = encodeURIComponent(postData.userToken);
                     console.log(postDataObject);
                     if (localStorage.getItem('user'))
                         postData.params.userToken = localStorage.getItem('user').userToken;
@@ -405,9 +404,19 @@
         }])
         .factory('SocialItems',['Buildfire','$http','SERVER_URL',function(Buildfire,$http,SERVER_URL){
             var SocialItems=function(){
-                this.items=[];
-                this.busy=false;
-                this.lastThreadId=null;
+                var _this = this;
+                _this.items=[];
+                _this.busy=false;
+                _this.lastThreadId=null;
+                _this.context = {};
+                Buildfire.getContext(function (err, context) {
+                    if(err) {
+                        console.error("Error while getting buildfire context details", err);
+                    } else {
+                        console.log('inside get context success::::::::::');
+                        _this.context = context;
+                    }
+                })
             };
             var instance;
             SocialItems.prototype.posts=function(){
@@ -419,8 +428,8 @@
                 postDataObject.id = '1';
                 postDataObject.method = 'thread/findByPage';
                 postDataObject.params = {};
-                postDataObject.params.appId = '551ae57f94ed199c3400002e' || Buildfire.context.appId;
-                postDataObject.params.parentThreadId = '564f676cfbe10b9c240002ff' || Buildfire.context.appId + Buildfire.context.instanceId;
+                postDataObject.params.appId = this.context && this.context.appId;
+                postDataObject.params.parentThreadId = this.context && (this.context.appId + this.context.instanceId);
                 postDataObject.params.lastThreadId = this.lastThreadId;
                 postDataObject.userToken = null;
                 $http({
