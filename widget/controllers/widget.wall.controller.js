@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems','$q', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems,$q) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -23,25 +23,32 @@
             console.log('SocialItems------------------Wall Controller------------------------',WidgetWall.SocialItems.items);
             //SocialItems.posts();
             WidgetWall.createPost = function () {
-                if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
-                    WidgetWall.waitAPICompletion = true;
-                    var success = function (response) {
-                        finalPostCreation(response.data.result);
-                    };
-                    var error = function (err) {
-                        console.log('Error is : ', err);
-                    };
-                    SocialDataStore.uploadImage(WidgetWall.picFile).then(success, error);
-                } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
-                    WidgetWall.waitAPICompletion = true;
-                    finalPostCreation();
-                }
+                var checkuserAuthPromise=checkUserIsAuthenticated();
+                checkuserAuthPromise.then(function(response){
+                    if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
+                        WidgetWall.waitAPICompletion = true;
+                        var success = function (response) {
+                            finalPostCreation(response.data.result);
+                        };
+                        var error = function (err) {
+                            console.log('Error is : ', err);
+                        };
+                        SocialDataStore.uploadImage(WidgetWall.picFile).then(success, error);
+                    } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
+                        WidgetWall.waitAPICompletion = true;
+                        finalPostCreation();
+                    }
+                });
+
+
             };
-            var init = function () {
+            var checkUserIsAuthenticated = function () {
+                var deferedObject=$q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
                     console.info('Current Logged In user details are -----------------', userData);
                     var context = Buildfire.context;
                     if (userData) {
+                        deferedObject.resolve();
                         WidgetWall.userDetails.appId = context.appId;
                         WidgetWall.userDetails.parentThreadId = '564f676cfbe10b9c240002ff' || context.appId + context.instanceId;
                         WidgetWall.userDetails.userToken = userData.userToken;
@@ -55,19 +62,28 @@
                             } else if (response && response.data && response.data.error) {
                                 console.log('response error is: ', response.data.error);
                             }
+
                         }, function (err) {
+                            deferedObject.reject();
                             console.log('Error while logging in user is: ', err);
+
+
                         });
                     }
                     else {
                         Buildfire.auth.login(null,function(err,user){
+                            deferedObject.reject();
                             console.log('Login called---------------------------------',user,err);
                             Location.goToHome();
+
+
                         });
+
                     }
                 });
+               return  deferedObject.promise;
             };
-            init();
+
             function finalPostCreation(imageUrl) {
                 var postData = {};
                 postData.text = WidgetWall.postText;
@@ -142,20 +158,43 @@
                 return userImageUrl;
             };
             WidgetWall.showMoreOptions=function(postId){
-                console.log("Post id ------------->",postId);
-                Modals.showMoreOptionsModal({})
-                    .then(function(data){
-                        console.log('Data in Success------------------data :????????????????????????????????????',data);
 
-                        switch(data){
+                var checkuserAuthPromise=checkUserIsAuthenticated();
+                checkuserAuthPromise.then(function(response){
+                    console.log("Post id ------------->",postId);
+                    Modals.showMoreOptionsModal({})
+                        .then(function(data){
+                            console.log('Data in Success------------------data :????????????????????????????????????',data);
 
-                            case MORE_MENU_POPUP.REPORT:
+                            switch(data){
 
-                                var reportPostPromise=SocialDataStore.reportPost(postId);
-                                reportPostPromise.then(function(response){
+                                case MORE_MENU_POPUP.REPORT:
+
+                                    var reportPostPromise=SocialDataStore.reportPost(postId);
+                                    reportPostPromise.then(function(response){
+                                        $modal
+                                            .open({
+                                                templateUrl: 'templates/modals/report-generated-modal.html',
+                                                controller: 'MoreOptionsModalPopupCtrl',
+                                                controllerAs: 'MoreOptionsPopup',
+                                                size: 'sm',
+                                                resolve: {
+                                                    Info: function () {
+                                                        return postId;
+                                                    }
+                                                }
+                                            });
+
+                                    },function(){
+
+                                    });
+
+                                    break;
+                                case MORE_MENU_POPUP.BLOCK:
+
                                     $modal
                                         .open({
-                                            templateUrl: 'templates/modals/report-generated-modal.html',
+                                            templateUrl: 'templates/modals/delete-post-modal.html',
                                             controller: 'MoreOptionsModalPopupCtrl',
                                             controllerAs: 'MoreOptionsPopup',
                                             size: 'sm',
@@ -165,77 +204,64 @@
                                                 }
                                             }
                                         });
+                                    break;
+                                default :
+                            }
 
-                                },function(){
+                        },
+                        function(err){
+                            console.log('Error in Error handler--------------------------',err);
+                        });
+                });
 
-                                });
 
-                                break;
-                            case MORE_MENU_POPUP.BLOCK:
-
-                                $modal
-                                    .open({
-                                        templateUrl: 'templates/modals/delete-post-modal.html',
-                                        controller: 'MoreOptionsModalPopupCtrl',
-                                        controllerAs: 'MoreOptionsPopup',
-                                        size: 'sm',
-                                        resolve: {
-                                            Info: function () {
-                                                return postId;
-                                            }
-                                        }
-                                    });
-                                break;
-                            default :
-                        }
-
-                    },
-                    function(err){
-                        console.log('Error in Error handler--------------------------',err);
-                    });
             };
             WidgetWall.likeThread = function (post, type) {
-                var uniqueIdsArray = [];
-                uniqueIdsArray.push(post.uniqueLink);
-                var success = function (response) {
-                    if (response.data && response.data.result && response.data.result.length > 0) {
-                        if (response.data.result[0].isUserLikeActive) {
-                            SocialDataStore.addThreadLike(post, type).then(function (res) {
-                                console.log('thread gets liked', res);
-                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': post._id});
-                                post.likesCount++;
-                                post.waitAPICompletion = false;
-                                WidgetWall.updateLikesData(post._id, false);
-                                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
-                                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                                if (!$scope.$$phase)$scope.$digest();
-                            }, function (err) {
-                                console.error('error while liking thread', err);
-                            });
-                        } else {
-                            SocialDataStore.removeThreadLike(post, type).then(function (res) {
-                                if (res.data && res.data.result)
-                                    Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': post._id});
-                                post.likesCount--;
-                                post.waitAPICompletion = false;
-                                if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
-                                    WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                                WidgetWall.updateLikesData(post._id, true);
-                                if (!$scope.$$phase)$scope.$digest();
-                            }, function (err) {
-                                console.error('error while removing like of thread', err);
-                            });
+                var checkuserAuthPromise=checkUserIsAuthenticated();
+                checkuserAuthPromise.then(function(response){
+                    var uniqueIdsArray = [];
+                    uniqueIdsArray.push(post.uniqueLink);
+                    var success = function (response) {
+                        if (response.data && response.data.result && response.data.result.length > 0) {
+                            if (response.data.result[0].isUserLikeActive) {
+                                SocialDataStore.addThreadLike(post, type).then(function (res) {
+                                    console.log('thread gets liked', res);
+                                    Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': post._id});
+                                    post.likesCount++;
+                                    post.waitAPICompletion = false;
+                                    WidgetWall.updateLikesData(post._id, false);
+                                    if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                        WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.error('error while liking thread', err);
+                                });
+                            } else {
+                                SocialDataStore.removeThreadLike(post, type).then(function (res) {
+                                    if (res.data && res.data.result)
+                                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': post._id});
+                                    post.likesCount--;
+                                    post.waitAPICompletion = false;
+                                    if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                        WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                                    WidgetWall.updateLikesData(post._id, true);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.error('error while removing like of thread', err);
+                                });
+                            }
                         }
+                    };
+                    var error = function (err) {
+                        post.waitAPICompletion = false;
+                        console.error('error is : ', err);
+                    };
+                    if (!post.waitAPICompletion) {
+                        post.waitAPICompletion = true;
+                        SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
                     }
-                };
-                var error = function (err) {
-                    post.waitAPICompletion = false;
-                    console.error('error is : ', err);
-                };
-                if (!post.waitAPICompletion) {
-                    post.waitAPICompletion = true;
-                    SocialDataStore.getThreadLikes(uniqueIdsArray).then(success, error);
-                }
+                });
+
 
             };
             WidgetWall.seeMore = function (post) {
@@ -248,10 +274,12 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
-                if (threadId)
-                    Location.go('#/thread/' + threadId);
+
+                    if (threadId)
+                        Location.go('#/thread/' + threadId);
             };
             WidgetWall.isLikedByLoggedInUser = function (postId) {
+
                 var isUserLikeActive = true;
                 getLikesData.some(function (likeData) {
                     if (likeData._id == postId) {
