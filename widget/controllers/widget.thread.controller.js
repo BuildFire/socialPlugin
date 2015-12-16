@@ -298,11 +298,7 @@
                                     comment.likesCount=1;
                                 $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                                 if (!$scope.$$phase)$scope.$digest();
-                                /* Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': Thread.post._id});
-                                 post.likesCount++;
-                                 post.waitAPICompletion = false;
-                                 post.isUserLikeActive = false;
-                                 if (!$scope.$$phase)$scope.$digest();*/
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_LIKED, 'postId': comment.threadId, '_id': comment._id});
                             }, function (err) {
                                 console.log('error while liking comment', err);
                             });
@@ -324,6 +320,7 @@
                                 comment.likesCount--;
                                 $rootScope.$broadcast(EVENTS.COMMENT_UNLIKED);
                                 if (!$scope.$$phase)$scope.$digest();
+                                Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_UNLIKED, 'postId': comment.threadId, '_id': comment._id});
                             }, function (err) {
                                 console.error('error while removing like of thread', err);
                             });
