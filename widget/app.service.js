@@ -29,9 +29,10 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/add';
                     postDataObject.params = postData || {};
+                    postDataObject.params.appId = "5671cb2f2dde96700c000001";
                     postDataObject.params.secureToken = null;
                     postDataObject.params.userToken = encodeURIComponent(postData.userToken);
-                    postDataObject.params.parentThreadId = postData.appId + instanceId;
+                    postDataObject.params.parentThreadId = "5671cb2f2dde96700c000001" + instanceId;
                     postDataObject.userToken = encodeURIComponent(postData.userToken);
                     console.log(postDataObject);
                     if (localStorage.getItem('user'))
@@ -400,36 +401,41 @@
                         console.error("Error while getting buildfire context details", err);
                     } else {
                         console.log('inside get context success::::::::::');
-                        _this.context = context;
-                        _this.busy=true;
-                        var postDataObject = {};
-                        postDataObject.id = '1';
-                        postDataObject.method = 'thread/findByPage';
-                        postDataObject.params = {};
-                        postDataObject.params.appId = _this.context.appId;
-                        postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
-                        postDataObject.params.lastThreadId = _this.lastThreadId;
-                        postDataObject.userToken = null;
-                        console.log('Post data in services-------------------',postDataObject);
-                        $http({
-                            method: 'GET',
-                            url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                            headers: {'Content-Type': 'application/json'}
-                        }).then(function(data){
-                            console.log('Get posts in service of SocialItems-------------------------',data);
-                            if(data && data.data && data.data.result && data.data.result.length){
-                                _this.items=this.items.concat(data.data.result);
-                                _this.lastThreadId=this.items[this.items.length-1]._id;
-                                _this.busy=data.data.result.length<10;
-                            }
-                            else{
-                                _this.busy=true;
-                            }
 
-                        }.bind(this), function(err){
-                            _this.busy=false;
-                            console.log('Get posts in service of SocialItems---------err----------------',err);
+                        Buildfire.datastore.get('Social', function(err,data){
+                            console.log('Get------------data--------datastore--------',err,data);
+                            _this.context = context;
+                            _this.busy=true;
+                            var postDataObject = {};
+                            postDataObject.id = '1';
+                            postDataObject.method = 'thread/findByPage';
+                            postDataObject.params = {};
+                            postDataObject.params.appId = data.data.socialAppId;
+                            postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
+                            postDataObject.params.lastThreadId = _this.lastThreadId;
+                            postDataObject.userToken = null;
+                            console.log('Post data in services-------------------',postDataObject);
+                            $http({
+                                method: 'GET',
+                                url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                                headers: {'Content-Type': 'application/json'}
+                            }).then(function(data){
+                                console.log('Get posts in service of SocialItems-------------------------',data);
+                                if(data && data.data && data.data.result && data.data.result.length){
+                                    _this.items=this.items.concat(data.data.result);
+                                    _this.lastThreadId=this.items[this.items.length-1]._id;
+                                    _this.busy=data.data.result.length<10;
+                                }
+                                else{
+                                    _this.busy=true;
+                                }
+
+                            }.bind(this), function(err){
+                                _this.busy=false;
+                                console.log('Get posts in service of SocialItems---------err----------------',err);
+                            });
                         });
+
                     }
                 });
                 console.log('This in Service-------------------------------------------',this);

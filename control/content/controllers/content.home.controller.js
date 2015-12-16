@@ -21,12 +21,15 @@
                         console.log('buildfire get context response::: ', context);
                         instanceId = context && context.instanceId;
                         SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
-                            if (response && response.result) {
-                                console.log('application successfully added::::: ', response);
-                                ContentHome.socialAppId = response.result;
+                            if (response && response.data && response.data.result) {
+                                console.log('application successfully added:::::-------------------------- ', response);
+                                ContentHome.socialAppId = response.data.result;
+                                Buildfire.datastore.insert({socialAppId:response.data.result},'Social',true,function(err,data){
+                                    console.log('Data saved using datastore-------------',err,data);
+                                });
                             }
                         }, function (err) {
-                            console.error("Error is: ", err);
+                            console.error("Error add application api is: ", err);
                         });
                     }
                 });

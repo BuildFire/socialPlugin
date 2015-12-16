@@ -17,11 +17,12 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'applications/add';
                     postDataObject.params = {};
-                    postDataObject.params._id = appId;
+                    //postDataObject.params._id = appId;
                     postDataObject.params.secureToken = dataStoreKey;
                     postDataObject.params.externalAppId = appId;
                     postDataObject.apiKey = API_KEY.value;
                     var successCallback = function (response) {
+                        console.log('Resolve in add application Api-------------------',response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
