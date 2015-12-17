@@ -189,9 +189,11 @@
                     Upload.upload({
                         url: SERVER_URL.link + '?method=Image/upload',
                         data: {
-                            'files': file, 'userToken': userToken || null,
-                            'appId': appId,
-                            'secureToken': null
+                            'files': file,
+                            'userToken': userToken,
+                            'secureToken' : null,
+                            'appId': appId
+
                         }
                     }).then(function (resp) {
                         console.log('Success uploaded. Response: ' + resp);
