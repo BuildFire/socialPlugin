@@ -215,51 +215,60 @@
             };
             WidgetWall.likeThread = function (post, type) {
                 console.log('inside Like a thread---------------------------');
-                var checkuserAuthPromise=checkUserIsAuthenticated();
-                 checkuserAuthPromise.then(function(userData){
-                var uniqueIdsArray = [];
-                uniqueIdsArray.push(post.uniqueLink);
-                var success = function (response) {
-                    console.log('Get thread likes success-------------------', response);
-                    /*if (response.data && response.data.result && response.data.result.length > 0) {
-                     if (response.data.result[0].isUserLikeActive) {*/
-                    SocialDataStore.addThreadLike(post, type, WidgetWall.SocialItems.socialAppId, "N01u5CCFqccqbHFIDUPzKcJb5hfnrjsx32gXmm9iuSE=").then(function (res) {
-                        console.log('thread gets liked------------', res);
-                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_LIKED, '_id': post._id});
-                        post.likesCount++;
+                var checkuserAuthPromise = checkUserIsAuthenticated();
+                checkuserAuthPromise.then(function (userData) {
+                    console.log('Promise Resolved-------------------------------------and userDetails are---', userData);
+                    var uniqueIdsArray = [];
+                    uniqueIdsArray.push(post.uniqueLink);
+                    var success = function (response) {
+                        console.log('Get thread likes success-------------------', response);
+                        if (response.data && response.data.result && response.data.result.length > 0) {
+                            console.log('First if in like post-----------------------',response.data.result);
+                            if (response.data.result[0].isUserLikeActive) {
+                                SocialDataStore.addThreadLike(post, type, WidgetWall.SocialItems.socialAppId, userData.userToken).then(function (res) {
+                                    console.log('thread gets liked------------', res);
+                                    Buildfire.messaging.sendMessageToControl({
+                                        'name': EVENTS.POST_LIKED,
+                                        '_id': post._id
+                                    });
+                                    post.likesCount++;
+                                    post.waitAPICompletion = false;
+                                    WidgetWall.updateLikesData(post._id, false);
+                                    if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                        WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.error('error while liking thread', err);
+                                });
+                            } else {
+                                if(response.data.result[0].likesCount)
+                                SocialDataStore.removeThreadLike(post, type, WidgetWall.SocialItems.socialAppId, userData.userToken).then(function (res) {
+                                    if (res.data && res.data.result)
+                                        Buildfire.messaging.sendMessageToControl({
+                                            'name': EVENTS.POST_UNLIKED,
+                                            '_id': post._id
+                                        });
+                                    post.likesCount--;
+                                    post.waitAPICompletion = false;
+                                    if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                        WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                                    WidgetWall.updateLikesData(post._id, true);
+                                    if (!$scope.$$phase)$scope.$digest();
+                                }, function (err) {
+                                    console.error('error while removing like of thread', err);
+                                });
+                            }
+                        }
+                    };
+                    var error = function (err) {
                         post.waitAPICompletion = false;
-                        WidgetWall.updateLikesData(post._id, false);
-                        if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
-                            WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                        if (!$scope.$$phase)$scope.$digest();
-                    }, function (err) {
-                        console.error('error while liking thread', err);
-                    });
-                    /*  } else {
-                     SocialDataStore.removeThreadLike(post, type,WidgetWall.SocialItems.socialAppId,userData.userToken).then(function (res) {
-                     if (res.data && res.data.result)
-                     Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_UNLIKED, '_id': post._id});
-                     post.likesCount--;
-                     post.waitAPICompletion = false;
-                     if(WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
-                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                     WidgetWall.updateLikesData(post._id, true);
-                     if (!$scope.$$phase)$scope.$digest();
-                     }, function (err) {
-                     console.error('error while removing like of thread', err);
-                     });
-                     }
-                     }*/
-                };
-                var error = function (err) {
-                    post.waitAPICompletion = false;
-                    console.error('error is : ', err);
-                };
-                if (!post.waitAPICompletion) {
-                    post.waitAPICompletion = true;
-                    SocialDataStore.getThreadLikes(uniqueIdsArray, WidgetWall.SocialItems.socialAppId, "5317c378a6611c6009000001").then(success, error);
-                }
-                  });
+                        console.error('error is : ', err);
+                    };
+                    if (!post.waitAPICompletion) {
+                        post.waitAPICompletion = true;
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, WidgetWall.SocialItems.socialAppId, userData.userId).then(success, error);
+                    }
+                });
 
 
             };
