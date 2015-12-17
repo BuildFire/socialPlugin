@@ -441,8 +441,9 @@
                             Buildfire.datastore.get('Social', function(err,data){
                                 console.log('Get------------data--------datastore--------',err,data);
                                 _this.socialAppId=data.data.socialAppId;
+                                _this.parentThreadId=data.data.parentThreadId;
 
-                                var obj = {};
+                               /* var obj = {};
                                 obj.id = '1';
                                 obj.method = 'thread/getThread';
                                 obj.params = {};
@@ -454,7 +455,7 @@
                                 var successCallback = function (response) {
                                     if(response && response.data && response.data.result && response.data.result._id){
                                         _this.parentThreadId=response.data.result._id;
-
+*/
                                         console.log('Inside else 2---------------------------------------this',_this);
                                         _this.busy=true;
                                         var postDataObject = {};
@@ -485,7 +486,7 @@
                                             _this.busy=false;
                                             console.log('Get posts in service of SocialItems---------err----------------',err);
                                         });
-                                    }
+                                   /* }
                                     console.log('get thread/response callback recieved--------------', response);
                                 };
                                 var errorCallback = function (err) {
@@ -496,7 +497,7 @@
                                     url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
                                     headers: {'Content-Type': 'application/json'}
                                 }).then(successCallback, errorCallback);
-
+*/
                             });
 
                         }

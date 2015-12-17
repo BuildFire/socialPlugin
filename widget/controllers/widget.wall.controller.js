@@ -34,7 +34,7 @@
                         var error = function (err) {
                             console.log('Error is : ', err);
                         };
-                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.userDetails.userToken, WidgetWall.userDetails.appId).then(success, error);
+                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.userDetails.userToken, SocialItems.socialAppId).then(success, error);
                     } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
@@ -52,11 +52,10 @@
                                 return deferedObject.reject();
                             } else {
                                 deferedObject.resolve();
-                                WidgetWall.userDetails.appId = context.appId;
                                 WidgetWall.userDetails.parentThreadId = context.appId + context.instanceId;
                                 WidgetWall.userDetails.userToken = userData.userToken;
                                 WidgetWall.userDetails.userId = userData._id;
-                                SocialDataStore.getUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, appId: WidgetWall.userDetails.appId}).then(function (response) {
+                                SocialDataStore.getUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, appId: SocialItems.socialAppId}).then(function (response) {
                                     console.log('inside getUser settings :::::::::::::', response);
                                     if (response && response.data && response.data.result) {
                                         console.log('getUserSettings response is: ', response);
@@ -326,7 +325,7 @@
                 } else if(isFollow == GROUP_STATUS.FOLLOW) {
                     followNotification = true;
                 }
-                SocialDataStore.saveUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, settingsId: WidgetWall.userDetails.settingsId, appId: WidgetWall.userDetails.appId, receivePushNotification: followNotification}).then(function (data) {
+                SocialDataStore.saveUserSettings({threadId: WidgetWall.userDetails.parentThreadId, userId: WidgetWall.userDetails.userId, userToken: WidgetWall.userDetails.userToken, settingsId: WidgetWall.userDetails.settingsId, appId: SocialItems.socialAppId, receivePushNotification: followNotification}).then(function (data) {
                     console.log('Get User Settings------------------', data);
                     if (data && data.data && data.data.result) {
                         _receivePushNotification = data.data.result.receivePushNotification;
