@@ -134,7 +134,7 @@
                     WidgetWall.waitAPICompletion = false;
                     if (!$scope.$$phase)$scope.$digest();
                 };
-                SocialDataStore.createPost(postData, WidgetWall.SocialItems.context.instanceId).then(success, error);
+                SocialDataStore.createPost(postData, WidgetWall.socialAppId).then(success, error);
             }
 
             WidgetWall.getUserName = function (userId) {
