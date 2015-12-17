@@ -20,7 +20,7 @@
                 }
             };
         }])
-        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout','SERVER_URL', '$http', 'Upload', function (Buildfire, $q, $timeout,SERVER_URL, $http, Upload) {
+        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'SERVER_URL', '$http', 'Upload', function (Buildfire, $q, $timeout, SERVER_URL, $http, Upload) {
             return {
                 createPost: function (postData) {
                     var deferred = $q.defer();
@@ -32,11 +32,11 @@
                     //postDataObject.params.appId = "5672627b935839f42b000018";
                     postDataObject.params.secureToken = null;
                     postDataObject.params.userToken = encodeURIComponent(postData.userToken);
-                   // postDataObject.params.parentThreadId = "5672628a935839f42b00001a";
+                    // postDataObject.params.parentThreadId = "5672628a935839f42b00001a";
                     postDataObject.userToken = encodeURIComponent(postData.userToken);
-                    console.log('Create post param ???????????????????????? ???????????????????? ',postDataObject);
+                    console.log('Create post param ???????????????????????? ???????????????????? ', postDataObject);
                     /*if (localStorage.getItem('user'))
-                        postData.params.userToken = localStorage.getItem('user').userToken;*/
+                     postData.params.userToken = localStorage.getItem('user').userToken;*/
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
@@ -73,7 +73,7 @@
                     return deferred.promise;
                 },
                 addComment: function (data) {
-                    console.log('params in add comment---------------??????????????????????????????',data);
+                    console.log('params in add comment---------------??????????????????????????????', data);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -93,7 +93,7 @@
                         console.log('add Comment callback recieved--Error------------', err);
                         return deferred.reject(err);
                     };
-                    console.log('Data----------------------------in add comment method--------',JSON.stringify(postDataObject));
+                    console.log('Data----------------------------in add comment method--------', JSON.stringify(postDataObject));
                     $http({
                         method: 'GET',
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
@@ -127,7 +127,7 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                getCommentsOfAPost:function(data){
+                getCommentsOfAPost: function (data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -152,8 +152,8 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                addThreadLike: function (post, type, appId, userToken){
-                    console.log('Add Like Api post Data----------------------',post);
+                addThreadLike: function (post, type, appId, userToken) {
+                    console.log('Add Like Api post Data----------------------', post);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -188,8 +188,11 @@
                     console.log('inside upload image method : ', file, Upload);
                     Upload.upload({
                         url: SERVER_URL.link + '?method=Image/upload',
-                        data: {'files': file, 'userToken': encodeURIComponent(userToken) || null,
-                            'appId': appId}
+                        data: {
+                            'files': file, 'userToken': userToken || null,
+                            'appId': appId,
+                            'secureToken': null
+                        }
                     }).then(function (resp) {
                         console.log('Success uploaded. Response: ' + resp);
                         deferred.resolve(resp);
@@ -199,7 +202,7 @@
                     });
                     return deferred.promise;
                 },
-                getUserSettings:function(data){
+                getUserSettings: function (data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -224,8 +227,8 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                saveUserSettings:function(data){
-                    console.log('data is: ========================',data);
+                saveUserSettings: function (data) {
+                    console.log('data is: ========================', data);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -254,7 +257,7 @@
                     return deferred.promise;
                 },
                 getThreadLikes: function (uniqueIds, appId, userId) {
-                    console.log('Unique Ids------------------------',uniqueIds);
+                    console.log('Unique Ids------------------------', uniqueIds);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -324,9 +327,9 @@
                     var errorCallback = function (err) {
                         return deferred.reject(err);
                     };
-                    $timeout(function(){
+                    $timeout(function () {
                         successCallback(200);
-                    },500);
+                    }, 500);
 
                     return deferred.promise;
                 },
@@ -349,7 +352,7 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data='+ JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -374,33 +377,33 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data='+ JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 }
             }
         }])
-        .factory('SocialItems',['Buildfire','$http','SERVER_URL',function(Buildfire,$http,SERVER_URL){
+        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', function (Buildfire, $http, SERVER_URL) {
             var _this;
-            var SocialItems=function(){
+            var SocialItems = function () {
                 _this = this;
-                _this.items=[];
-                _this.busy=false;
-                _this.lastThreadId=null;
+                _this.items = [];
+                _this.busy = false;
+                _this.lastThreadId = null;
                 _this.context = {};
-                _this.parentThreadId=null;
-                _this.socialAppId=null;
+                _this.parentThreadId = null;
+                _this.socialAppId = null;
 
             };
             var instance;
-            SocialItems.prototype.posts=function(){
-                if(_this.busy){
+            SocialItems.prototype.posts = function () {
+                if (_this.busy) {
                     return;
                 }
-                if(_this.parentThreadId && _this.socialAppId){
-                    console.log('Inside if---------------------------------------this',_this);
-                    _this.busy=true;
+                if (_this.parentThreadId && _this.socialAppId) {
+                    console.log('Inside if---------------------------------------this', _this);
+                    _this.busy = true;
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/findByPage';
@@ -409,96 +412,96 @@
                     postDataObject.params.parentThreadId = _this.parentThreadId;
                     postDataObject.params.lastThreadId = _this.lastThreadId;
                     postDataObject.userToken = null;
-                    console.log('Post data in services-------------------',postDataObject);
+                    console.log('Post data in services-------------------', postDataObject);
                     $http({
                         method: 'GET',
                         url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                         headers: {'Content-Type': 'application/json'}
-                    }).then(function(data){
-                        console.log('Get posts in service of SocialItems-------------------------',data);
-                        if(data && data.data && data.data.result && data.data.result.length){
-                            _this.items=this.items.concat(data.data.result);
-                            _this.lastThreadId=this.items[this.items.length-1]._id;
-                            _this.busy=data.data.result.length<10;
+                    }).then(function (data) {
+                        console.log('Get posts in service of SocialItems-------------------------', data);
+                        if (data && data.data && data.data.result && data.data.result.length) {
+                            _this.items = this.items.concat(data.data.result);
+                            _this.lastThreadId = this.items[this.items.length - 1]._id;
+                            _this.busy = data.data.result.length < 10;
                         }
-                        else{
-                            _this.busy=true;
+                        else {
+                            _this.busy = true;
                         }
 
-                    }.bind(this), function(err){
-                        _this.busy=false;
-                        console.log('Get posts in service of SocialItems---------err----------------',err);
+                    }.bind(this), function (err) {
+                        _this.busy = false;
+                        console.log('Get posts in service of SocialItems---------err----------------', err);
                     });
 
                 }
-                else{
-                    console.log('Inside else 1---------------------------------------this',_this);
+                else {
+                    console.log('Inside else 1---------------------------------------this', _this);
                     Buildfire.getContext(function (err, context) {
-                        if(err) {
+                        if (err) {
                             console.error("Error while getting buildfire context details", err);
                         } else {
                             console.log('inside get context success::::::::::');
                             _this.context = context;
-                            Buildfire.datastore.get('Social', function(err,data){
-                                console.log('Get------------data--------datastore--------',err,data);
-                                _this.socialAppId=data.data.socialAppId;
-                                _this.parentThreadId=data.data.parentThreadId;
+                            Buildfire.datastore.get('Social', function (err, data) {
+                                console.log('Get------------data--------datastore--------', err, data);
+                                _this.socialAppId = data.data.socialAppId;
+                                _this.parentThreadId = data.data.parentThreadId;
 
-                               /* var obj = {};
-                                obj.id = '1';
-                                obj.method = 'thread/getThread';
-                                obj.params = {};
-                                obj.params.appId =  _this.socialAppId;
-                                obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
-                                obj.params.userToken =  null;
-                                obj.params.title = null;
-                                obj.userToken = null;
-                                var successCallback = function (response) {
-                                    if(response && response.data && response.data.result && response.data.result._id){
-                                        _this.parentThreadId=response.data.result._id;
-*/
-                                        console.log('Inside else 2---------------------------------------this',_this);
-                                        _this.busy=true;
-                                        var postDataObject = {};
-                                        postDataObject.id = '1';
-                                        postDataObject.method = 'thread/findByPage';
-                                        postDataObject.params = {};
-                                        postDataObject.params.appId = _this.socialAppId;
-                                        postDataObject.params.parentThreadId = _this.parentThreadId;
-                                        postDataObject.params.lastThreadId = _this.lastThreadId;
-                                        postDataObject.userToken = null;
-                                        console.log('Post data in services-------------------',postDataObject);
-                                        $http({
-                                            method: 'GET',
-                                            url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                                            headers: {'Content-Type': 'application/json'}
-                                        }).then(function(data){
-                                            console.log('Get posts in service of SocialItems-------------------------',data);
-                                            if(data && data.data && data.data.result && data.data.result.length){
-                                                _this.items=_this.items.concat(data.data.result);
-                                                _this.lastThreadId=_this.items[_this.items.length-1]._id;
-                                                _this.busy=data.data.result.length<10;
-                                            }
-                                            else{
-                                                _this.busy=true;
-                                            }
-
-                                        }.bind(this), function(err){
-                                            _this.busy=false;
-                                            console.log('Get posts in service of SocialItems---------err----------------',err);
-                                        });
-                                   /* }
-                                    console.log('get thread/response callback recieved--------------', response);
-                                };
-                                var errorCallback = function (err) {
-                                    console.log('get thread/response  callback recieved--Error------------', err);
-                                };
+                                /* var obj = {};
+                                 obj.id = '1';
+                                 obj.method = 'thread/getThread';
+                                 obj.params = {};
+                                 obj.params.appId =  _this.socialAppId;
+                                 obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
+                                 obj.params.userToken =  null;
+                                 obj.params.title = null;
+                                 obj.userToken = null;
+                                 var successCallback = function (response) {
+                                 if(response && response.data && response.data.result && response.data.result._id){
+                                 _this.parentThreadId=response.data.result._id;
+                                 */
+                                console.log('Inside else 2---------------------------------------this', _this);
+                                _this.busy = true;
+                                var postDataObject = {};
+                                postDataObject.id = '1';
+                                postDataObject.method = 'thread/findByPage';
+                                postDataObject.params = {};
+                                postDataObject.params.appId = _this.socialAppId;
+                                postDataObject.params.parentThreadId = _this.parentThreadId;
+                                postDataObject.params.lastThreadId = _this.lastThreadId;
+                                postDataObject.userToken = null;
+                                console.log('Post data in services-------------------', postDataObject);
                                 $http({
                                     method: 'GET',
-                                    url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
+                                    url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
                                     headers: {'Content-Type': 'application/json'}
-                                }).then(successCallback, errorCallback);
-*/
+                                }).then(function (data) {
+                                    console.log('Get posts in service of SocialItems-------------------------', data);
+                                    if (data && data.data && data.data.result && data.data.result.length) {
+                                        _this.items = _this.items.concat(data.data.result);
+                                        _this.lastThreadId = _this.items[_this.items.length - 1]._id;
+                                        _this.busy = data.data.result.length < 10;
+                                    }
+                                    else {
+                                        _this.busy = true;
+                                    }
+
+                                }.bind(this), function (err) {
+                                    _this.busy = false;
+                                    console.log('Get posts in service of SocialItems---------err----------------', err);
+                                });
+                                /* }
+                                 console.log('get thread/response callback recieved--------------', response);
+                                 };
+                                 var errorCallback = function (err) {
+                                 console.log('get thread/response  callback recieved--Error------------', err);
+                                 };
+                                 $http({
+                                 method: 'GET',
+                                 url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
+                                 headers: {'Content-Type': 'application/json'}
+                                 }).then(successCallback, errorCallback);
+                                 */
                             });
 
                         }
@@ -506,73 +509,72 @@
 
                 }
 
-               /* Buildfire.getContext(function (err, context) {
-                    if(err) {
-                        console.error("Error while getting buildfire context details", err);
-                    } else {
-                        console.log('inside get context success::::::::::');
-                        _this.context = context;
-                        Buildfire.datastore.get('Social', function(err,data){
-                            console.log('Get------------data--------datastore--------',err,data);
+                /* Buildfire.getContext(function (err, context) {
+                 if(err) {
+                 console.error("Error while getting buildfire context details", err);
+                 } else {
+                 console.log('inside get context success::::::::::');
+                 _this.context = context;
+                 Buildfire.datastore.get('Social', function(err,data){
+                 console.log('Get------------data--------datastore--------',err,data);
 
-                            var obj = {};
-                            obj.id = '1';
-                            obj.method = 'thread/getThread';
-                            obj.params = {};
-                            obj.params.appId = data.data.socialAppId;
-                            obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
-                            obj.params.userToken =  null;
-                            obj.params.title = null;
-                            obj.userToken = null;
-                            var successCallback = function (response) {
-                                console.log('get thread/response callback recieved--------------', response);
-                            };
-                            var errorCallback = function (err) {
-                                console.log('get thread/response  callback recieved--Error------------', err);
-                            };
-                            $http({
-                                method: 'GET',
-                                url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
-                                headers: {'Content-Type': 'application/json'}
-                            }).then(successCallback, errorCallback);
+                 var obj = {};
+                 obj.id = '1';
+                 obj.method = 'thread/getThread';
+                 obj.params = {};
+                 obj.params.appId = data.data.socialAppId;
+                 obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
+                 obj.params.userToken =  null;
+                 obj.params.title = null;
+                 obj.userToken = null;
+                 var successCallback = function (response) {
+                 console.log('get thread/response callback recieved--------------', response);
+                 };
+                 var errorCallback = function (err) {
+                 console.log('get thread/response  callback recieved--Error------------', err);
+                 };
+                 $http({
+                 method: 'GET',
+                 url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
+                 headers: {'Content-Type': 'application/json'}
+                 }).then(successCallback, errorCallback);
 
 
-                           /!* _this.context = context;
-                            _this.busy=true;
-                            var postDataObject = {};
-                            postDataObject.id = '1';
-                            postDataObject.method = 'thread/findByPage';
-                            postDataObject.params = {};
-                            postDataObject.params.appId = data.data.socialAppId;
-                            postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
-                            postDataObject.params.lastThreadId = _this.lastThreadId;
-                            postDataObject.userToken = null;
-                            console.log('Post data in services-------------------',postDataObject);
-                            $http({
-                                method: 'GET',
-                                url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                                headers: {'Content-Type': 'application/json'}
-                            }).then(function(data){
-                                console.log('Get posts in service of SocialItems-------------------------',data);
-                                if(data && data.data && data.data.result && data.data.result.length){
-                                    _this.items=this.items.concat(data.data.result);
-                                    _this.lastThreadId=this.items[this.items.length-1]._id;
-                                    _this.busy=data.data.result.length<10;
-                                }
-                                else{
-                                    _this.busy=true;
-                                }
+                 /!* _this.context = context;
+                 _this.busy=true;
+                 var postDataObject = {};
+                 postDataObject.id = '1';
+                 postDataObject.method = 'thread/findByPage';
+                 postDataObject.params = {};
+                 postDataObject.params.appId = data.data.socialAppId;
+                 postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
+                 postDataObject.params.lastThreadId = _this.lastThreadId;
+                 postDataObject.userToken = null;
+                 console.log('Post data in services-------------------',postDataObject);
+                 $http({
+                 method: 'GET',
+                 url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                 headers: {'Content-Type': 'application/json'}
+                 }).then(function(data){
+                 console.log('Get posts in service of SocialItems-------------------------',data);
+                 if(data && data.data && data.data.result && data.data.result.length){
+                 _this.items=this.items.concat(data.data.result);
+                 _this.lastThreadId=this.items[this.items.length-1]._id;
+                 _this.busy=data.data.result.length<10;
+                 }
+                 else{
+                 _this.busy=true;
+                 }
 
-                            }.bind(this), function(err){
-                                _this.busy=false;
-                                console.log('Get posts in service of SocialItems---------err----------------',err);
-                            });*!/
-                        });
+                 }.bind(this), function(err){
+                 _this.busy=false;
+                 console.log('Get posts in service of SocialItems---------err----------------',err);
+                 });*!/
+                 });
 
-                    }
-                });*/
-                console.log('This in Service-------------------------------------------',this);
-
+                 }
+                 });*/
+                console.log('This in Service-------------------------------------------', this);
 
 
             };
