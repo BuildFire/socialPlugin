@@ -17,11 +17,12 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'applications/add';
                     postDataObject.params = {};
-                    postDataObject.params._id = appId;
+                    //postDataObject.params._id = appId;
                     postDataObject.params.secureToken = dataStoreKey;
                     postDataObject.params.externalAppId = appId;
                     postDataObject.apiKey = API_KEY.value;
                     var successCallback = function (response) {
+                        console.log('Resolve in add application Api-------------------',response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
@@ -34,6 +35,32 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
+                getThreadByUniqueLink: function (socialAppId, context) {
+                    var deferred = $q.defer();
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'thread/getThread';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = socialAppId;
+                    postDataObject.params.uniqueLink =  encodeURIComponent(context.appId + context.instanceId);
+                    postDataObject.params.userToken = null;
+                    postDataObject.params.title = null;
+                    postDataObject.userToken =  null;
+                    var successCallback = function (response) {
+                        console.log('thread/getThread in content callback recieved--------------', response);
+                        return deferred.resolve(response);
+                    };
+                    var errorCallback = function (err) {
+                        console.log('thread/getThread in content Post callback recieved--Error------------', err);
+                        return deferred.reject(err);
+                    };
+                    $http({
+                        method: 'GET',
+                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
                 getPosts: function (data) {
                     var deferred = $q.defer();
                     var postDataObject = {};
@@ -41,13 +68,16 @@
                     postDataObject.method = 'thread/findByPage';
                     postDataObject.params = {};
                     postDataObject.params.appId =  data.socialAppId;
-                    postDataObject.params.parentThreadId = data.socialAppId + data.instanceId;
+                    postDataObject.params.parentThreadId = data.parentThreadId;
                     postDataObject.params.lastThreadId = data.lastThreadId;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
+
+                        console.log('Get items---------------------------in content',response);
                         return deferred.resolve(response);
                     };
                     var errorCallback = function (err) {
+                        console.log('Get items----------error-----------------in content',err);
                         return deferred.reject(err);
                     };
                     $http({
@@ -78,7 +108,7 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                deletePost: function (postId, socialAppId) {
+                deletePost: function (postId, socialAppId,secureToken) {
                     var deferred = $q.defer();
                     var postDeleteObject = {};
                     postDeleteObject.id = '1';
@@ -87,7 +117,7 @@
                     postDeleteObject.params.threadId = postId;
                     postDeleteObject.params.appId = socialAppId;
                     postDeleteObject.params.userToken = null;
-                    postDeleteObject.params.secureToken = null;
+                    postDeleteObject.params.secureToken = secureToken;
                     postDeleteObject.userToken = null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);

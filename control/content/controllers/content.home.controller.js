@@ -11,14 +11,23 @@
             var initialCommentsLength;
             ContentHome.postText = '';
             ContentHome.posts = [];
-            var socialAppId;
+            ContentHome.socialAppId;
+            ContentHome.parentThreadId;
+            var datastoreWriteKey;
             var instanceId;
             var init = function () {
-                ContentHome.height = window.innerHeight;
-                ContentHome.noMore = false;
-                console.log('inside init method of content controller:::::::: ');
-                Buildfire.auth.getCurrentUser(function (err, userData) {
-                    if(userData) {
+                Buildfire.getContext(function(err,context){
+                    datastoreWriteKey=context.datastoreWriteKey;
+                });
+                Buildfire.datastore.get('Social',function(err,data){
+                    console.log('Get data in content section socail App Id------------------',err,data);
+                    if(data && data.data && data.data.socialAppId){
+                        ContentHome.socialAppId=data.data.socialAppId;
+                        ContentHome.parentThreadId=data.data.parentThreadId;
+                        $scope.$digest();
+                        console.log('Content------------------------social App id, parent id',ContentHome.socialAppId,ContentHome.parentThreadId);
+                    }
+                    else{
                         Buildfire.getContext(function (err, context) {
                             if (err) {
                                 console.error("Error occurred while getting buildfire context");
@@ -26,17 +35,40 @@
                                 console.log('buildfire get context response::: ', context);
                                 instanceId = context && context.instanceId;
                                 SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
-                                    if (response && response.result) {
-                                        console.log('application successfully added::::: ', response);
-                                        socialAppId = response.result;
+                                    if (response && response.data && response.data.result) {
+                                        console.log('application successfully added:::::-------------------------- ', response);
+                                        ContentHome.socialAppId = response.data.result;
+                                        SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId,context).then(
+                                            function(parentThreadRes){
+                                                console.log('Parent ThreadId -------success----',parentThreadRes);
+                                                if(parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id){
+                                                    ContentHome.parentThreadId=parentThreadRes.data.result._id;
+                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',true,function(err,data){
+                                                        console.log('Data saved using datastore-------------',err,data);
+                                                    });
+                                                }
+                                            },
+                                            function(error){
+                                                console.log('Parent thread callback error------',error);
+                                            }
+                                        );
                                     }
                                 }, function (err) {
-                                    console.error("Error is: ", err);
+                                    console.error("Error add application api is: ", err);
                                 });
                             }
                         });
                     }
                 });
+
+                ContentHome.height = window.innerHeight;
+                ContentHome.noMore = false;
+                console.log('inside init method of content controller:::::::: ');
+                /*Buildfire.auth.getCurrentUser(function (err, userData) {
+                    if(userData) {
+
+                    }
+                });*/
             };
             init();
 
@@ -90,7 +122,7 @@
                 else
                     lastThreadId = null;
                 // Getting posts initially and on scroll down by passing lastThreadId
-                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: socialAppId, instanceId: instanceId}).then(success, error);
+                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: ContentHome.socialAppId, parentThreadId: ContentHome.parentThreadId}).then(success, error);
             };
 
             // Method for getting User Name by giving userId as its argument
@@ -121,7 +153,7 @@
             ContentHome.deletePost = function (postId) {
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId, socialAppId).then(success, error);
+                    SocialDataStore.deletePost(postId, ContentHome.socialAppId,datastoreWriteKey).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -149,7 +181,7 @@
             ContentHome.deleteComment = function (post, commentId) {
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deleteComment(commentId, post._id, socialAppId).then(success, error);
+                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -201,7 +233,7 @@
                             console.log('Error while banning a user ', err);
                         };
                         // Calling SocialDataStore banUser method for banning a user
-                        SocialDataStore.banUser(userId, threadId, socialAppId).then(success, error);
+                        SocialDataStore.banUser(userId, threadId, ContentHome.socialAppId).then(success, error);
                     }
                 }, function (err) {
                     console.log('Error is: ', err);
@@ -217,7 +249,7 @@
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,
                         lastCommentId: thread.comments && !viewComment ? thread.comments[thread.comments.length - 1]._id : null,
-                        socialAppId: socialAppId
+                        socialAppId: ContentHome.socialAppId
                     }).then(
                         function (data) {
                             console.log('Success in Content get Load more Comments---------', data);
@@ -245,7 +277,7 @@
 
             var getCommentsLikeAndUpdate = function (thread, uniqueLinksOfComments) {
                 console.log('inside getCommentsLikeAndUpdate', thread, uniqueLinksOfComments);
-                SocialDataStore.getThreadLikes(uniqueLinksOfComments, socialAppId).then(function (data) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments, ContentHome.socialAppId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);
@@ -336,7 +368,8 @@
                         case EVENTS.COMMENT_UNLIKED:
                             ContentHome.posts.some(function (el) {
                                 if(el._id == event.postId) {
-                                    el.comments = el.comments.some(function (commentData) {
+                                    if(el.comments && el.comments.length)
+                                    el.comments.some(function (commentData) {
                                         if(commentData._id == event._id) {
                                             commentData.likesCount = commentData.likesCount > 0 ? commentData.likesCount-- : 0;
                                             return true;
@@ -352,7 +385,8 @@
                             console.log('comment liked in content home controller event called from widget thread page');
                             ContentHome.posts.some(function (el) {
                                 if(el._id == event.postId) {
-                                    el.comments = el.comments.some(function (commentData) {
+                                    if(el.comments && el.comments.length)
+                                     el.comments.some(function (commentData) {
                                         if(commentData._id == event._id) {
                                             commentData.likesCount++;
                                             return true;
