@@ -21,7 +21,7 @@
             $rootScope.showThread = true;
             WidgetWall.SocialItems=SocialItems.getInstance();
             var masterItems=WidgetWall.SocialItems.items;
-            console.log('SocialItems------------------Wall Controller------------------------',WidgetWall.SocialItems);
+            console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----',WidgetWall.SocialItems);
             //SocialItems.posts();
             WidgetWall.createPost = function () {
                 var checkuserAuthPromise=checkUserIsAuthenticated();
@@ -89,7 +89,8 @@
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.userDetails.userToken;
-                postData.appId = WidgetWall.SocialItems.context.appId;
+                postData.appId = WidgetWall.SocialItems.socialAppId;
+                postData.parentThreadId = WidgetWall.SocialItems.parentThreadId;
                 var success = function (response) {
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
@@ -134,7 +135,7 @@
                     WidgetWall.waitAPICompletion = false;
                     if (!$scope.$$phase)$scope.$digest();
                 };
-                SocialDataStore.createPost(postData, WidgetWall.socialAppId).then(success, error);
+                SocialDataStore.createPost(postData).then(success, error);
             }
 
             WidgetWall.getUserName = function (userId) {
