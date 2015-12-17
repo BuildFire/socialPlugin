@@ -323,7 +323,7 @@
                     console.log('Error while deleting post ', err);
                 };
                 // Deleting post having id as postId
-                SocialDataStore.deletePost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userToken).then(success, error);
+                SocialDataStore.deletePost(postId, WidgetWall.SocialItems.socialAppId, WidgetWall.userDetails.userToken).then(success, error);
             };
 
             WidgetWall.followUnfollow = function (isFollow) {
