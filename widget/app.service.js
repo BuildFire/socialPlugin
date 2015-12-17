@@ -73,6 +73,7 @@
                     return deferred.promise;
                 },
                 addComment: function (data) {
+                    console.log('params in add comment---------------??????????????????????????????',data);
                     var deferred = $q.defer();
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -108,9 +109,9 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = appId;
                     postDataObject.params.uniqueLink = threadUniqueLink;
-                    postDataObject.params.userToken = userToken || null;
+                    postDataObject.params.userToken = encodeURIComponent(userToken) || null;
                     postDataObject.params.title = null;
-                    postDataObject.userToken = userToken || null;
+                    postDataObject.userToken = encodeURIComponent(userToken) || null;
                     var successCallback = function (response) {
                         console.log('get Post callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -160,7 +161,7 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = userToken;
+                    postDataObject.params.userToken = encodeURIComponent(userToken);
                     postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
@@ -284,13 +285,13 @@
                     postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
                     postDataObject.params.userToken = encodeURIComponent(userToken) || null;
-                    postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
+                    //postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
                         refId: post._id,
                         externalAppId: appId
                     };
-                    postDataObject.userToken = encodeURIComponent(userToken) || null;
+                    postDataObject.userToken = null;
                     var successCallback = function (response) {
                         console.log('remove like callback recieved--------------', response);
                         return deferred.resolve(response);

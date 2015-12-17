@@ -33,7 +33,7 @@
                                     threadId: Thread.post._id,
                                     userId: Thread.userDetails.userId,
                                     userToken: Thread.userDetails.userToken,
-                                    appId: SocialItems.socialAppId
+                                    appId: Thread.SocialItems.socialAppId
                                 }).then(function (response) {
                                     console.log('inside getUser settings :::::::::::::', response);
                                     if (response && response.data && response.data.result) {
@@ -65,6 +65,7 @@
                     });
                     console.log(posts);
                     Thread.post = posts[0];
+                    console.log('Single post----------------------------------------------------------',Thread.post);
                     var uniqueIdsArray = [];
                     $rootScope.showThread = false;
                     //Thread.post = data.data.result;
@@ -74,7 +75,7 @@
 
                     checkAuthenticatedUser(true);
 
-                    SocialDataStore.getThreadLikes(uniqueIdsArray, SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
+                    SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
                         console.info('get thread likes response is: ', response.data.result);
                         if (response.data.error) {
                             console.error('Error while getting likes of thread by logged in user ', response.data.error);
@@ -90,7 +91,7 @@
             init();
 
             Thread.getComments = function (postId, lastCommentId) {
-                SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId, userToken: Thread.userDetails.userToken, appId: SocialItems.socialAppId}).then(
+                SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId, userToken: Thread.userDetails.userToken, appId: Thread.SocialItems.socialAppId}).then(
                     function (data) {
                         var uniqueLinksOfComments = [];
                         console.log('Success get Comments---------', data);
@@ -140,7 +141,7 @@
                             Thread.picFile = '';
                             Thread.comment = '';
                         };
-                        SocialDataStore.uploadImage(Thread.picFile, Thread.userDetails.userToken, SocialItems.socialAppId).then(success, error);
+                        SocialDataStore.uploadImage(Thread.picFile, Thread.userDetails.userToken, Thread.SocialItems.socialAppId).then(success, error);
                     }
                     else if (Thread.comment && !Thread.waitAPICompletion) {
                         Thread.waitAPICompletion = true;
@@ -159,7 +160,7 @@
                         threadId: Thread.post._id,
                         lastCommentId: Thread.comments[Thread.comments.length - 1]._id,
                         userToken: Thread.userDetails.userToken,
-                        appId: SocialItems.socialAppId
+                        appId: Thread.SocialItems.socialAppId
                     }).then(
                         function (data) {
                             console.log('Success get Load more Comments---------', data);
@@ -237,7 +238,7 @@
                         console.log('inside success of getThreadLikes', response);
                         if (response.data && response.data.result && response.data.result.length > 0) {
                             if (response.data.result[0].isUserLikeActive) {
-                                SocialDataStore.addThreadLike(post, type, SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
+                                SocialDataStore.addThreadLike(post, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                     console.log('thread gets liked', res);
                                     Buildfire.messaging.sendMessageToControl({
                                         'name': EVENTS.POST_LIKED,
@@ -252,7 +253,7 @@
                                     console.log('error while liking thread', err);
                                 });
                             } else {
-                                SocialDataStore.removeThreadLike(post, type, SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
+                                SocialDataStore.removeThreadLike(post, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                     console.log('thread like gets removed', res);
                                     if (res.data && res.data.result)
                                         Buildfire.messaging.sendMessageToControl({
@@ -276,7 +277,7 @@
                     };
                     if (!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
-                        SocialDataStore.getThreadLikes(uniqueIdsArray, SocialItems.socialAppId, Thread.userDetails.userId).then(success, error);
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(success, error);
                     }
                 });
 
@@ -297,7 +298,7 @@
                     userToken: Thread.userDetails.userToken,
                     settingsId: Thread.userDetails.settingsId,
                     receivePushNotification: followNotification,
-                    appId: SocialItems.socialAppId
+                    appId: Thread.SocialItems.socialAppId
                 }).then(function (data) {
                     console.log('Get User Settings------------------', data);
                     if (data && data.data && data.data.result) {
@@ -323,11 +324,11 @@
                     comment.waitAPICompletion = true;
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(comment.threadId + "cmt" + comment._id);
-                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id, SocialItems.socialAppId, Thread.userDetails.userToken).then(
+                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(
                         function (data) {
                             console.log('Datat in Get CommentBy uniqueLink-----------------', data);
                             data.data.result.threadId = comment.threadId;
-                            SocialDataStore.addThreadLike(data.data.result, type, SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
+                            SocialDataStore.addThreadLike(data.data.result, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('thread gets liked in thread page', res);
                                 if(comment.likesCount)
                                     comment.likesCount++;
@@ -351,11 +352,11 @@
                 else if(!comment.waitAPICompletion) {
                     comment.isUserLikeActive = true;
                     comment.waitAPICompletion = true;
-                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id).then(
+                    SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id,Thread.SocialItems.socialAppId,Thread.userDetails.userToken).then(
                         function (data) {
                             console.log('Datat in Get CommentBy uniqueLink-----------------', data);
                             data.data.result.threadId = comment.threadId;
-                            SocialDataStore.removeThreadLike( data.data.result, type, SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
+                            SocialDataStore.removeThreadLike( data.data.result, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('Response--------------------------remove like--------',res);
                                 comment.likesCount--;
                                 comment.waitAPICompletion = false;
@@ -375,7 +376,7 @@
                 }
             };
             Thread.deleteComment = function (commentId) {
-                SocialDataStore.deleteComment(commentId, Thread.post._id, SocialItems.socialAppId, Thread.userDetails.userToken).then(
+                SocialDataStore.deleteComment(commentId, Thread.post._id, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(
                     function (data) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.COMMENT_DELETED,
@@ -406,7 +407,7 @@
                         comment: Thread.comment,
                         userToken: Thread.userDetails.userToken,
                         imageUrl: imageUrl || null,
-                        appId: SocialItems.socialAppId
+                        appId: Thread.SocialItems.socialAppId
                     }).then(
                         function (data) {
                             console.log('Add Comment Successsss------------------', data);
@@ -434,7 +435,7 @@
 
             };
             var getCommentsLikeAndUpdate = function (uniqueLinksOfComments) {
-                SocialDataStore.getThreadLikes(uniqueLinksOfComments, SocialItems.socialAppId, Thread.userDetails.userId).then(function (data) {
+                SocialDataStore.getThreadLikes(uniqueLinksOfComments, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);

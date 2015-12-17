@@ -13,8 +13,12 @@
             ContentHome.posts = [];
             ContentHome.socialAppId;
             ContentHome.parentThreadId;
+            var datastoreWriteKey;
             var instanceId;
             var init = function () {
+                Buildfire.getContext(function(err,context){
+                    datastoreWriteKey=context.datastoreWriteKey;
+                });
                 Buildfire.datastore.get('Social',function(err,data){
                     console.log('Get data in content section socail App Id------------------',err,data);
                     if(data && data.data && data.data.socialAppId){
@@ -149,7 +153,7 @@
             ContentHome.deletePost = function (postId) {
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId, ContentHome.socialAppId).then(success, error);
+                    SocialDataStore.deletePost(postId, ContentHome.socialAppId,datastoreWriteKey).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -364,7 +368,8 @@
                         case EVENTS.COMMENT_UNLIKED:
                             ContentHome.posts.some(function (el) {
                                 if(el._id == event.postId) {
-                                    el.comments = el.comments.some(function (commentData) {
+                                    if(el.comments && el.comments.length)
+                                    el.comments.some(function (commentData) {
                                         if(commentData._id == event._id) {
                                             commentData.likesCount = commentData.likesCount > 0 ? commentData.likesCount-- : 0;
                                             return true;
@@ -380,7 +385,8 @@
                             console.log('comment liked in content home controller event called from widget thread page');
                             ContentHome.posts.some(function (el) {
                                 if(el._id == event.postId) {
-                                    el.comments = el.comments.some(function (commentData) {
+                                    if(el.comments && el.comments.length)
+                                     el.comments.some(function (commentData) {
                                         if(commentData._id == event._id) {
                                             commentData.likesCount++;
                                             return true;
