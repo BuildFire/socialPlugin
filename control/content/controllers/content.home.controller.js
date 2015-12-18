@@ -316,6 +316,25 @@
                         case EVENTS.POST_CREATED :
                             if (event.post) {
                                 ContentHome.posts.unshift(event.post);
+                                // Called when getting success from SocialDataStore getUsers method
+                                var successCallback = function (response) {
+                                    console.info('Users fetching response is: ', response.data.result);
+                                    if (response.data.error) {
+                                        console.error('Error while creating post ', response.data.error);
+                                    } else if (response.data.result) {
+                                        console.info('Users fetched successfully', response.data.result);
+                                        usersData.push(response.data.result);
+                                    }
+                                };
+                                // Called when getting error from SocialDataStore getUsers method
+                                var errorCallback = function (err) {
+                                    console.log('Error while fetching users details ', err);
+                                };
+                                if (userIds.indexOf(event.post.userId) == -1) {
+                                    userIds.push(event.post.userId);
+                                    // Getting users details of posts
+                                    SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
+                                }
                                 if (!$scope.$$phase)$scope.$digest();
                             }
                             break;
