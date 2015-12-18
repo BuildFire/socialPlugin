@@ -324,6 +324,7 @@
                                     } else if (response.data.result) {
                                         console.info('Users fetched successfully', response.data.result);
                                         usersData.push(response.data.result);
+                                        if (!$scope.$$phase)$scope.$digest();
                                     }
                                 };
                                 // Called when getting error from SocialDataStore getUsers method
@@ -335,7 +336,6 @@
                                     // Getting users details of posts
                                     SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
                                 }
-                                if (!$scope.$$phase)$scope.$digest();
                             }
                             break;
                         case EVENTS.POST_LIKED :
@@ -360,6 +360,26 @@
                             ContentHome.posts.some(function (el) {
                                 if (el._id == event._id) {
                                     el.commentsCount++;
+                                    // Called when getting success from SocialDataStore getUsers method
+                                    var successCallback = function (response) {
+                                        console.info('Users fetching response is: ', response.data.result);
+                                        if (response.data.error) {
+                                            console.error('Error while creating post ', response.data.error);
+                                        } else if (response.data.result) {
+                                            console.info('Users fetched successfully', response.data.result);
+                                            usersData.push(response.data.result);
+                                        }
+                                        if (!$scope.$$phase)$scope.$digest();
+                                    };
+                                    // Called when getting error from SocialDataStore getUsers method
+                                    var errorCallback = function (err) {
+                                        console.log('Error while fetching users details ', err);
+                                    };
+                                    if (userIds.indexOf(el.userId) == -1) {
+                                        userIds.push(el.userId);
+                                        // Getting users details of posts
+                                        SocialDataStore.getUsers([el.userId]).then(successCallback, errorCallback);
+                                    }
                                     return true;
                                 }
                             });

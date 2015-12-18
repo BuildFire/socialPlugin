@@ -416,7 +416,7 @@
                             Thread.waitAPICompletion = false;
                             Thread.post.commentsCount++;
                             $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
-                            Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id})
+                            Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id, 'userId': Thread.userDetails.userId});
                             if (Thread.comments.length) {
                                 Thread.getComments(Thread.post._id, Thread.comments[Thread.comments.length - 1]._id);
                             }
