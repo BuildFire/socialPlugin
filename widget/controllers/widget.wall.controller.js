@@ -138,7 +138,7 @@
                 var userName = '';
                 usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
-                        userName = userData.userObject.displayName || '';
+                        userName = userData.userObject.displayName || 'No Name';
                         return true;
                     }
                 });
