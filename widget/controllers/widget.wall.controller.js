@@ -8,10 +8,10 @@
             var userIds = [];
             var postsUniqueIds = [];
             var getLikesData = [];
-            var _receivePushNotification;
+//            var _receivePushNotification;
             WidgetWall.buildfire = Buildfire;
             WidgetWall.getFollowingStatus = function () {
-                return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
+                return (typeof WidgetWall.SocialItems._receivePushNotification !== 'undefined') ? (WidgetWall.SocialItems._receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
             };
             WidgetWall.userDetails = {};
             WidgetWall.height = window.innerHeight;
@@ -23,6 +23,7 @@
             var masterItems = WidgetWall.SocialItems.items;
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
             //SocialItems.posts();
+            WidgetWall.SocialItems.loggedInUserDetails();
             WidgetWall.createPost = function () {
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
@@ -34,7 +35,7 @@
                         var error = function (err) {
                             console.log('Error is : ', err);
                         };
-                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.userDetails.userToken, WidgetWall.SocialItems.socialAppId).then(success, error);
+                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.SocialItems.userDetails.userToken, WidgetWall.SocialItems.socialAppId).then(success, error);
                     } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
@@ -42,24 +43,24 @@
                 });
             };
             var checkUserIsAuthenticated = function () {
-                var deferedObject = $q.defer();
+                var deferredObject = $q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
                     console.info('Current Logged In user details are -----------------', userData);
                     if (userData) {
-                        WidgetWall.userDetails.userToken = userData.userToken;
-                        WidgetWall.userDetails.userId = userData._id;
-                        deferedObject.resolve(userData);
+                        WidgetWall.SocialItems.userDetails.userToken = userData.userToken;
+                        WidgetWall.SocialItems.userDetails.userId = userData._id;
+                        deferredObject.resolve(userData);
                         SocialDataStore.getUserSettings({
-                            threadId: SocialItems.parentThreadId,
-                            userId: WidgetWall.userDetails.userId,
-                            userToken: WidgetWall.userDetails.userToken,
+                            threadId: WidgetWall.SocialItems.parentThreadId,
+                            userId: WidgetWall.SocialItems.userDetails.userId,
+                            userToken: WidgetWall.SocialItems.userDetails.userToken,
                             appId: WidgetWall.SocialItems.socialAppId
                         }).then(function (response) {
                             console.log('inside getUser settings :::::::::::::', response);
                             if (response && response.data && response.data.result) {
                                 console.log('getUserSettings response is: ', response);
-                                _receivePushNotification = response.data.result.receivePushNotification;
-                                WidgetWall.userDetails.settingsId = response.data.result._id;
+                                WidgetWall.SocialItems._receivePushNotification = response.data.result.receivePushNotification;
+                                WidgetWall.SocialItems.userDetails.settingsId = response.data.result._id;
                             } else if (response && response.data && response.data.error) {
                                 console.log('response error is: ', response.data.error);
                             }
@@ -70,13 +71,13 @@
                     }
                     else {
                         Buildfire.auth.login(null, function (err, user) {
-                            deferedObject.reject();
+                            deferredObject.reject();
                             console.log('Login called---------------------------------', user, err);
                             Location.goToHome();
                         });
                     }
                 });
-                return deferedObject.promise;
+                return deferredObject.promise;
             };
 
             function finalPostCreation(imageUrl) {
@@ -84,7 +85,7 @@
                 postData.text = WidgetWall.postText;
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
-                postData.userToken = WidgetWall.userDetails.userToken;
+                postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
                 postData.appId = WidgetWall.SocialItems.socialAppId;
                 postData.parentThreadId = WidgetWall.SocialItems.parentThreadId;
                 var success = function (response) {
@@ -119,7 +120,7 @@
                             WidgetWall.waitAPICompletion = false;
                             if (!$scope.$$phase)$scope.$digest();
                         };
-                        SocialDataStore.getUsers(userIds, WidgetWall.userDetails.userToken).then(successCallback, errorCallback);
+                        SocialDataStore.getUsers(userIds, WidgetWall.SocialItems.userDetails.userToken).then(successCallback, errorCallback);
                         if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                             WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                     }
@@ -167,7 +168,7 @@
 
                                 case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise = SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userToken);
+                                    var reportPostPromise = SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
                                     reportPostPromise.then(function (response) {
                                         $modal
                                             .open({
@@ -216,8 +217,8 @@
             WidgetWall.likeThread = function (post, type) {
                 console.log('inside Like a thread---------------------------');
                 var checkuserAuthPromise = checkUserIsAuthenticated();
-                checkuserAuthPromise.then(function (userData) {
-                    console.log('Promise Resolved-------------------------------------and userDetails are---', userData);
+                checkuserAuthPromise.then(function () {
+                    console.log('Promise Resolved-------------------------------------and userDetails are---');
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(post.uniqueLink);
                     var success = function (response) {
@@ -225,7 +226,7 @@
                         if (response.data && response.data.result && response.data.result.length > 0) {
                             console.log('First if in like post-----------------------',response.data.result);
                             if (response.data.result[0].isUserLikeActive) {
-                                SocialDataStore.addThreadLike(post, type, WidgetWall.SocialItems.socialAppId, userData.userToken).then(function (res) {
+                                SocialDataStore.addThreadLike(post, type, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(function (res) {
                                     console.log('thread gets liked------------', res);
                                     Buildfire.messaging.sendMessageToControl({
                                         'name': EVENTS.POST_LIKED,
@@ -242,7 +243,7 @@
                                 });
                             } else {
                                 if(response.data.result[0].likesCount)
-                                SocialDataStore.removeThreadLike(post, type, WidgetWall.SocialItems.socialAppId, userData.userToken).then(function (res) {
+                                SocialDataStore.removeThreadLike(post, type, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(function (res) {
                                     if (res.data && res.data.result)
                                         Buildfire.messaging.sendMessageToControl({
                                             'name': EVENTS.POST_UNLIKED,
@@ -266,7 +267,7 @@
                     };
                     if (!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
-                        SocialDataStore.getThreadLikes(uniqueIdsArray, WidgetWall.SocialItems.socialAppId, userData.userId).then(success, error);
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(success, error);
                     }
                 });
 
@@ -323,7 +324,7 @@
                     console.log('Error while deleting post ', err);
                 };
                 // Deleting post having id as postId
-                SocialDataStore.deletePost(postId, WidgetWall.SocialItems.socialAppId, WidgetWall.userDetails.userToken).then(success, error);
+                SocialDataStore.deletePost(postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(success, error);
             };
 
             WidgetWall.followUnfollow = function (isFollow) {
@@ -334,16 +335,16 @@
                     followNotification = true;
                 }
                 SocialDataStore.saveUserSettings({
-                    threadId: SocialItems.parentThreadId,
-                    userId: WidgetWall.userDetails.userId,
-                    userToken: WidgetWall.userDetails.userToken,
-                    settingsId: WidgetWall.userDetails.settingsId,
+                    threadId: WidgetWall.SocialItems.parentThreadId,
+                    userId: WidgetWall.SocialItems.userDetails.userId,
+                    userToken: WidgetWall.SocialItems.userDetails.userToken,
+                    settingsId: WidgetWall.SocialItems.userDetails.settingsId,
                     appId: WidgetWall.SocialItems.socialAppId,
                     receivePushNotification: followNotification
                 }).then(function (data) {
                     console.log('Get User Settings------------------', data);
                     if (data && data.data && data.data.result) {
-                        _receivePushNotification = data.data.result.receivePushNotification;
+                        WidgetWall.SocialItems._receivePushNotification = data.data.result.receivePushNotification;
                     }
                 }, function (err) {
                     console.log('Error while getting user Details--------------', err);

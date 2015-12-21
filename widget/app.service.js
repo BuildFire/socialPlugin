@@ -386,7 +386,7 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', function (Buildfire, $http, SERVER_URL) {
+        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', 'Location', function (Buildfire, $http, SERVER_URL, Location) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -396,6 +396,11 @@
                 _this.context = {};
                 _this.parentThreadId = null;
                 _this.socialAppId = null;
+                _this.userDetails = {};
+                _this.userDetails.userToken = null;
+                _this.userDetails.userId = null;
+                _this.userDetails.settingsId = null;
+                _this._receivePushNotification;
 
             };
             var instance;
@@ -446,22 +451,8 @@
                             _this.context = context;
                             Buildfire.datastore.get('Social', function (err, data) {
                                 console.log('Get------------data--------datastore--------', err, data);
-                                _this.socialAppId = data.data.socialAppId;
-                                _this.parentThreadId = data.data.parentThreadId;
-
-                                /* var obj = {};
-                                 obj.id = '1';
-                                 obj.method = 'thread/getThread';
-                                 obj.params = {};
-                                 obj.params.appId =  _this.socialAppId;
-                                 obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
-                                 obj.params.userToken =  null;
-                                 obj.params.title = null;
-                                 obj.userToken = null;
-                                 var successCallback = function (response) {
-                                 if(response && response.data && response.data.result && response.data.result._id){
-                                 _this.parentThreadId=response.data.result._id;
-                                 */
+                                _this.socialAppId = data && data.data && data.data.socialAppId;
+                                _this.parentThreadId = data && data.data && data.data.parentThreadId;
                                 console.log('Inside else 2---------------------------------------this', _this);
                                 _this.busy = true;
                                 var postDataObject = {};
@@ -492,93 +483,90 @@
                                     _this.busy = false;
                                     console.log('Get posts in service of SocialItems---------err----------------', err);
                                 });
-                                /* }
-                                 console.log('get thread/response callback recieved--------------', response);
-                                 };
-                                 var errorCallback = function (err) {
-                                 console.log('get thread/response  callback recieved--Error------------', err);
-                                 };
-                                 $http({
-                                 method: 'GET',
-                                 url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
-                                 headers: {'Content-Type': 'application/json'}
-                                 }).then(successCallback, errorCallback);
-                                 */
                             });
-
                         }
                     });
 
                 }
-
-                /* Buildfire.getContext(function (err, context) {
-                 if(err) {
-                 console.error("Error while getting buildfire context details", err);
-                 } else {
-                 console.log('inside get context success::::::::::');
-                 _this.context = context;
-                 Buildfire.datastore.get('Social', function(err,data){
-                 console.log('Get------------data--------datastore--------',err,data);
-
-                 var obj = {};
-                 obj.id = '1';
-                 obj.method = 'thread/getThread';
-                 obj.params = {};
-                 obj.params.appId = data.data.socialAppId;
-                 obj.params.uniqueLink = encodeURIComponent(_this.context.appId + _this.context.instanceId);
-                 obj.params.userToken =  null;
-                 obj.params.title = null;
-                 obj.userToken = null;
-                 var successCallback = function (response) {
-                 console.log('get thread/response callback recieved--------------', response);
-                 };
-                 var errorCallback = function (err) {
-                 console.log('get thread/response  callback recieved--Error------------', err);
-                 };
-                 $http({
-                 method: 'GET',
-                 url: SERVER_URL.link + '?data=' + JSON.stringify(obj),
-                 headers: {'Content-Type': 'application/json'}
-                 }).then(successCallback, errorCallback);
-
-
-                 /!* _this.context = context;
-                 _this.busy=true;
-                 var postDataObject = {};
-                 postDataObject.id = '1';
-                 postDataObject.method = 'thread/findByPage';
-                 postDataObject.params = {};
-                 postDataObject.params.appId = data.data.socialAppId;
-                 postDataObject.params.parentThreadId = _this.context && (_this.context.appId + _this.context.instanceId);
-                 postDataObject.params.lastThreadId = _this.lastThreadId;
-                 postDataObject.userToken = null;
-                 console.log('Post data in services-------------------',postDataObject);
-                 $http({
-                 method: 'GET',
-                 url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                 headers: {'Content-Type': 'application/json'}
-                 }).then(function(data){
-                 console.log('Get posts in service of SocialItems-------------------------',data);
-                 if(data && data.data && data.data.result && data.data.result.length){
-                 _this.items=this.items.concat(data.data.result);
-                 _this.lastThreadId=this.items[this.items.length-1]._id;
-                 _this.busy=data.data.result.length<10;
-                 }
-                 else{
-                 _this.busy=true;
-                 }
-
-                 }.bind(this), function(err){
-                 _this.busy=false;
-                 console.log('Get posts in service of SocialItems---------err----------------',err);
-                 });*!/
-                 });
-
-                 }
-                 });*/
                 console.log('This in Service-------------------------------------------', this);
+            };
 
+            SocialItems.prototype.loggedInUserDetails = function () {
+                Buildfire.datastore.get('Social', function (err, data) {
+                    console.log('Get------------data--------datastore--------', err, data);
+                    _this.socialAppId = data && data.data && data.data.socialAppId;
+                    _this.parentThreadId = data && data.data && data.data.parentThreadId;
+                    Buildfire.auth.getCurrentUser(function (err, userData) {
+                        console.info('Current Logged In user details are -----------------', userData);
+                        if (userData) {
+                            _this.userDetails.userToken = userData.userToken;
+                            _this.userDetails.userId = userData._id;
+                            var postDataObject = {};
+                            postDataObject.id = '1';
+                            postDataObject.method = 'users/getUserSettings';
+                            postDataObject.params = {};
+                            postDataObject.params.appId = _this.socialAppId;
+                            postDataObject.params.threadId = _this.parentThreadId;
+                            postDataObject.params.userId = _this.userDetails.userId || null;
+                            postDataObject.params.userToken = encodeURIComponent(_this.userDetails.userToken) || null;
+                            $http({
+                                method: 'GET',
+                                url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                                headers: {'Content-Type': 'application/json'}
+                            }).then(function (response) {
+                                console.log('inside getUser settings :::::::::::::', response);
+                                if (response && response.data && response.data.result) {
+                                    console.log('getUserSettings response is: ', response);
+                                    _this._receivePushNotification = response.data.result.receivePushNotification;
+                                    _this.userDetails.settingsId = response.data.result._id;
+                                } else if (response && response.data && response.data.error) {
+                                    console.log('response error is: ', response.data.error);
+                                }
 
+                            }, function (err) {
+                                console.log('Error while logging in user is: ', err);
+                            });
+                        }
+                        else {
+                            Buildfire.auth.login(null, function (err, user) {
+                                console.log('Login called---------------------------------', user, err);
+                                Buildfire.auth.getCurrentUser(function (err, userData) {
+                                    console.info('Current Logged In user details are -----------------', userData);
+                                    if (userData) {
+                                        _this.userDetails.userToken = userData.userToken;
+                                        _this.userDetails.userId = userData._id;
+                                        var postDataObject = {};
+                                        postDataObject.id = '1';
+                                        postDataObject.method = 'users/getUserSettings';
+                                        postDataObject.params = {};
+                                        postDataObject.params.appId = _this.socialAppId;
+                                        postDataObject.params.threadId = _this.parentThreadId;
+                                        postDataObject.params.userId = _this.userDetails.userId || null;
+                                        postDataObject.params.userToken = encodeURIComponent(_this.userDetails.userToken) || null;
+                                        $http({
+                                            method: 'GET',
+                                            url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                                            headers: {'Content-Type': 'application/json'}
+                                        }).then(function (response) {
+                                            console.log('inside getUser settings :::::::::::::', response);
+                                            if (response && response.data && response.data.result) {
+                                                console.log('getUserSettings response is: ', response);
+                                                _this._receivePushNotification = response.data.result.receivePushNotification;
+                                                _this.userDetails.settingsId = response.data.result._id;
+                                            } else if (response && response.data && response.data.error) {
+                                                console.log('response error is: ', response.data.error);
+                                            }
+
+                                        }, function (err) {
+                                            console.log('Error while logging in user is: ', err);
+                                        });
+                                    }
+                                });
+                                Location.goToHome();
+                            });
+                        }
+                    });
+                });
             };
             return {
                 getInstance: function () {

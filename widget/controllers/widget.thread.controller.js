@@ -53,11 +53,19 @@
                     else {
                         deferred.reject();
                         if (!callFromInit)
-                            Buildfire.auth.login();
+                            Buildfire.auth.login(null, function (err, data) {
+                                console.log('----------================',data);
+                                var promise = checkAuthenticatedUser();
+                                promise.then(function (response) {
+                                    console.log('success of getting user details after login');
+                                }, function (err) {
+                                    console.log('error is:::', err);
+                                });
+                            });
                     }
                 });
                 return deferred.promise;
-            }
+            };
             var init = function () {
                 if ($routeParams.threadId) {
                     var posts = Thread.SocialItems.items.filter(function (el) {
