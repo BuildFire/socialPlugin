@@ -47,9 +47,7 @@
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-y: scroll"
-                         ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}"
-                         class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: scroll;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}" class="infinite-scroll-parent">
                         <div infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
@@ -73,9 +71,8 @@
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <p class="margin-zero cursor-pointer" ng-click="WidgetWall.goInToThread(post.uniqueLink)">{{post.text | limitTo : (post.limit || 150) :0}}
                                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
-                                        <a ng-if="(post.text.length>150 && !post.seeMore)"
-                                           ng-click="WidgetWall.seeMore(post)">Read
-                                            More</a></p>
+                                        <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="WidgetWall.seeMore(post)">Read More</a>
+									</p>
                                 </div>
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                                     <div class="plugin-slide text-center">
@@ -94,10 +91,7 @@
                                     <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                         <div class="pull-right">
                                             <p class="pull-left margin-bottom-zero">{{post.likesCount}} Likes</p>
-
-                                            <p class="pull-left margin-bottom-zero margin-left-twenty">
-                                                {{post.commentsCount}}
-                                                Comments</p>
+                                            <p class="pull-left margin-bottom-zero margin-left-twenty">{{post.commentsCount}} Comments</p>
                                             <a class="more-info" ng-click="WidgetWall.showMoreOptions(post._id)">
                                                 <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                             </a>
