@@ -337,6 +337,7 @@
                                     SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
                                 }
                             }
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_LIKED :
                             ContentHome.posts.some(function (el) {
@@ -345,7 +346,7 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -354,7 +355,7 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                            /*if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_ADDED:
                             ContentHome.posts.some(function (el) {
@@ -389,7 +390,7 @@
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el._id != event._id;
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
@@ -401,8 +402,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -417,8 +418,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_LIKED:
                             console.log('comment liked in content home controller event called from widget thread page');
@@ -434,12 +435,14 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                            /*if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         default :
                             break;
                     }
+                    if (!$scope.$$phase)
+                        $scope.$digest();
                 }
             };
         }]);
