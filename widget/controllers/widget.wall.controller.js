@@ -457,6 +457,7 @@
                 console.log('----------- on Update ----',err,response);
                 WidgetWall.SocialItems.parentThreadId = response && response.data.parentThreadId;
                 WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
+                Location.goToHome();
             });
         }])
 })(window.angular);
