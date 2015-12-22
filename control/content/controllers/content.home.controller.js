@@ -129,7 +129,7 @@
             ContentHome.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
                     }
@@ -141,7 +141,7 @@
             ContentHome.getUserImage = function (userId) {
                 var userImageUrl = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl || '';
                         return true;
                     }
@@ -321,9 +321,9 @@
                                     console.info('Users fetching response is: ', response.data.result);
                                     if (response.data.error) {
                                         console.error('Error while creating post ', response.data.error);
-                                    } else if (response.data.result) {
+                                    } else if (response.data.result && response.data.result.length > 0) {
                                         console.info('Users fetched successfully', response.data.result);
-                                        usersData.push(response.data.result);
+                                        usersData.push(response.data.result[0]);
                                         if (!$scope.$$phase)$scope.$digest();
                                     }
                                 };
@@ -362,12 +362,12 @@
                                     el.commentsCount++;
                                     // Called when getting success from SocialDataStore getUsers method
                                     var successCallback = function (response) {
-                                        console.info('Users fetching response is: ', response.data.result);
+                                        console.info('Users fetching response inside add comments:  ', response.data.result);
                                         if (response.data.error) {
                                             console.error('Error while creating post ', response.data.error);
-                                        } else if (response.data.result) {
-                                            console.info('Users fetched successfully', response.data.result);
-                                            usersData.push(response.data.result);
+                                        } else if (response.data.result && response.data.result.length) {
+                                            console.info('Users fetched successfully in comment added', response.data.result);
+                                            usersData.push(response.data.result[0]);
                                         }
                                         if (!$scope.$$phase)$scope.$digest();
                                     };
