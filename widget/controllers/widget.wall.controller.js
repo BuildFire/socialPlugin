@@ -8,7 +8,7 @@
             var userIds = [];
             var postsUniqueIds = [];
             var getLikesData = [];
-//            var _receivePushNotification;
+            //            var _receivePushNotification;
             WidgetWall.buildfire = Buildfire;
             WidgetWall.getFollowingStatus = function () {
                 return (typeof WidgetWall.SocialItems._receivePushNotification !== 'undefined') ? (WidgetWall.SocialItems._receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
@@ -24,6 +24,7 @@
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
             //SocialItems.posts();
             WidgetWall.SocialItems.loggedInUserDetails();
+
             WidgetWall.createPost = function () {
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
@@ -451,6 +452,11 @@
                 console.log('inside post unliked event listener:::::::::::');
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+            });
+            Buildfire.datastore.onUpdate(function (err, response) {
+                console.log('----------- on Update ----',err,response);
+                WidgetWall.SocialItems.parentThreadId = response && response.data.parentThreadId;
+                WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
             });
         }])
 })(window.angular);
