@@ -43,7 +43,7 @@
                                                 console.log('Parent ThreadId -------success----',parentThreadRes);
                                                 if(parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id){
                                                     ContentHome.parentThreadId=parentThreadRes.data.result._id;
-                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',true,function(err,data){
+                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',false,function(err,data){
                                                         console.log('Data saved using datastore-------------',err,data);
                                                     });
                                                 }
