@@ -316,20 +316,21 @@
                         case EVENTS.POST_CREATED :
                             if (event.post) {
                                 ContentHome.posts.unshift(event.post);
+                                console.log('Post created control home controller 121244324424--------------------------',ContentHome.posts);
                                 // Called when getting success from SocialDataStore getUsers method
                                 var successCallback = function (response) {
-                                    console.info('Users fetching response is: ', response.data.result);
+                                    console.info(' Post created--------------------Users fetching response is: ', response.data.result);
                                     if (response.data.error) {
-                                        console.error('Error while creating post ', response.data.error);
+                                        console.error('Post created--------------------Error while creating post ', response.data.error);
                                     } else if (response.data.result) {
-                                        console.info('Users fetched successfully', response.data.result);
+                                        console.info('Post created--------------------Users fetched successfully', response.data.result);
                                         usersData.push(response.data.result);
                                         if (!$scope.$$phase)$scope.$digest();
                                     }
                                 };
                                 // Called when getting error from SocialDataStore getUsers method
                                 var errorCallback = function (err) {
-                                    console.log('Error while fetching users details ', err);
+                                    console.log('Post created--------------------Error while fetching users details ', err);
                                 };
                                 if (userIds.indexOf(event.post.userId) == -1) {
                                     userIds.push(event.post.userId);
@@ -337,6 +338,7 @@
                                     SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
                                 }
                             }
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_LIKED :
                             ContentHome.posts.some(function (el) {
@@ -345,7 +347,7 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -354,7 +356,7 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                            /*if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_ADDED:
                             ContentHome.posts.some(function (el) {
@@ -389,7 +391,7 @@
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el._id != event._id;
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
@@ -401,8 +403,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -417,8 +419,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_LIKED:
                             console.log('comment liked in content home controller event called from widget thread page');
@@ -434,12 +436,14 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                            /*if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         default :
                             break;
                     }
+                    if (!$scope.$$phase)
+                        $scope.$digest();
                 }
             };
         }]);
