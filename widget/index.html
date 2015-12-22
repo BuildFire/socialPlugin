@@ -123,8 +123,8 @@
                     </a>
                 </div>
                 <div class="add-message pull-left">
-                    <input type="text" class="form-control" placeholder="Type your message..." name="text"
-                           ng-model="WidgetWall.postText">
+                    <textarea rows="1" cols="30" placeholder="Type your message..." name="text"
+                           ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
                 </div>
                 <div class="send-message">
                     <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost()">
