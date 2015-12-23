@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -112,6 +112,12 @@
                                 console.info('Users fetched successfully', response.data.result);
                                 usersData = response.data.result;
                                 WidgetWall.waitAPICompletion = false;
+                                // the element you wish to scroll to.
+                                $location.hash('top');
+
+                                // call $anchorScroll()
+                                $anchorScroll();
+                                Buildfire.navigation.scrollTop();
                             }
                         };
                         var errorCallback = function (err) {

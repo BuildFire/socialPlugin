@@ -1,6 +1,6 @@
 'use strict';
 
-(function (angular, buildfire) {
+(function (angular, buildfire, location) {
     angular.module('socialPluginWidget')
         .provider('Buildfire', [function () {
             var Buildfire = this;
@@ -563,4 +563,4 @@
                 }
             };
         }])
-})(window.angular, window.buildfire);
+})(window.angular, window.buildfire, window.location);
