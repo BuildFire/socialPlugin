@@ -82,7 +82,7 @@
                                 <div class="footer margin-bottom-ten clearfix">
                                     <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
                                         <a class="social-icon" ng-click="WidgetWall.likeThread(post, 'thread')">
-                                            <span class="icon icon-heart" ng-class="{active: !WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
+                                            <span class="icon icon-heart" ng-class="{inactive: WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
                                         </a>
                                         <a href="#/thread/{{post.uniqueLink}}" class="social-icon margin-left-twenty">
                                             <span class="icon icon-bubble"></span>
