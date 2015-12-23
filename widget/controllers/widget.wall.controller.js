@@ -399,7 +399,7 @@
                     count++;
                     if (userIds.indexOf(postData.userId.toString()) == -1)
                         userIds.push(postData.userId.toString());
-                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1 && count > 10)
+                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1)
                         postsUniqueIds.push(postData.uniqueLink);
                 });
                 var successCallback = function (response) {
