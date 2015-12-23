@@ -343,7 +343,7 @@
                     postDeleteObject.params = {};
                     postDeleteObject.params.threadId = postId;
                     postDeleteObject.params.appId = appId;
-                    postDeleteObject.params.userToken = userToken || null;
+                    postDeleteObject.params.userToken = encodeURIComponent(userToken);
                     postDeleteObject.params.secureToken = null;
                     postDeleteObject.userToken = null;
                     var successCallback = function (response) {

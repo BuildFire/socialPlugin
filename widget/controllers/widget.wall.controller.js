@@ -324,6 +324,7 @@
                 var error = function (err) {
                     console.log('Error while deleting post ', err);
                 };
+                console.log('Post id appid usertoken-- in delete ---------------',postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken);
                 // Deleting post having id as postId
                 SocialDataStore.deletePost(postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(success, error);
             };
