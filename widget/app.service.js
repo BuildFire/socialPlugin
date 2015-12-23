@@ -267,7 +267,7 @@
                     postDataObject.params = {};
                     postDataObject.params.uniqueIds = uniqueIds;
                     postDataObject.params.appId = appId;
-                    postDataObject.params.userId = userId || null;
+                    postDataObject.params.userId = userId;
                     var success = function (response) {
                         return deferred.resolve(response);
                     };

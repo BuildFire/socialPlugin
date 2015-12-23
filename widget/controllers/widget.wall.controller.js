@@ -414,7 +414,7 @@
                     console.error('Error while fetching users details ', err);
                 };
                 SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
-                SocialDataStore.getThreadLikes(postsUniqueIds).then(function (response) {
+                SocialDataStore.getThreadLikes(postsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
                     postsUniqueIds = [];
                     if (response.data.error) {
                         console.error('Error while getting likes of thread by logged in user ', response.data.error);
