@@ -29,7 +29,7 @@
 			<div class="footer margin-bottom-ten clearfix">
 				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
 					<a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
-						<span class="icon icon-heart" ng-class="{active: !Thread.post.isUserLikeActive}"></span>
+						<span class="icon icon-heart" ng-class="{inactive: Thread.post.isUserLikeActive}"></span>
 					</a>
 					<a class="social-icon margin-left-twenty">
 						<span class="icon icon-bubble"></span>
@@ -74,7 +74,7 @@
 					<div class="footer margin-bottom-ten clearfix">
 						<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
 							<a class="social-icon" ng-click="Thread.likeComment(comment, 'comment')">
-								<span class="icon icon-heart" ng-class="{active: !comment.isUserLikeActive}"></span>
+								<span class="icon icon-heart" ng-class="{inactive: comment.isUserLikeActive}"></span>
 							</a>
 						</div>
 						<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">

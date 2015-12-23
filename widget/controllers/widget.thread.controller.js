@@ -53,11 +53,19 @@
                     else {
                         deferred.reject();
                         if (!callFromInit)
-                            Buildfire.auth.login();
+                            Buildfire.auth.login(null, function (err, data) {
+                                console.log('----------================',data);
+                                var promise = checkAuthenticatedUser();
+                                promise.then(function (response) {
+                                    console.log('success of getting user details after login');
+                                }, function (err) {
+                                    console.log('error is:::', err);
+                                });
+                            });
                     }
                 });
                 return deferred.promise;
-            }
+            };
             var init = function () {
                 if ($routeParams.threadId) {
                     var posts = Thread.SocialItems.items.filter(function (el) {
@@ -188,7 +196,7 @@
                 var userName = '';
                 usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
-                        userName = userData.userObject.displayName || '';
+                        userName = userData.userObject.displayName || 'No Name';
                         return true;
                     }
                 });
@@ -416,7 +424,7 @@
                             Thread.waitAPICompletion = false;
                             Thread.post.commentsCount++;
                             $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
-                            Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id})
+                            Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id, 'userId': Thread.userDetails.userId});
                             if (Thread.comments.length) {
                                 Thread.getComments(Thread.post._id, Thread.comments[Thread.comments.length - 1]._id);
                             }

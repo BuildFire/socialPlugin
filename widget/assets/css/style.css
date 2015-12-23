@@ -30,6 +30,9 @@
 .footer .icon{
 	font-size:18px;
 }
+.footer .icon.inactive{
+	color:#777 !important;
+}
 .footer .status p{
 	font-size:13px;
 	line-height:20px;
@@ -98,4 +101,12 @@
 	p{
 		font-size:13px;
 	}
+}
+
+.text-area-custom{
+	border: none;
+	height: 38px !important;
+	resize: none;
+	padding: 2.5% 2%;
+	line-height:25px;
 }

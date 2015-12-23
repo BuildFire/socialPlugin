@@ -43,7 +43,7 @@
                                                 console.log('Parent ThreadId -------success----',parentThreadRes);
                                                 if(parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id){
                                                     ContentHome.parentThreadId=parentThreadRes.data.result._id;
-                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',true,function(err,data){
+                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',false,function(err,data){
                                                         console.log('Data saved using datastore-------------',err,data);
                                                     });
                                                 }
@@ -129,8 +129,8 @@
             ContentHome.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
-                        userName = userData.userObject.displayName || '';
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
+                        userName = userData.userObject.displayName || 'No Name';
                         return true;
                     }
                 });
@@ -141,7 +141,7 @@
             ContentHome.getUserImage = function (userId) {
                 var userImageUrl = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl || '';
                         return true;
                     }
@@ -316,8 +316,28 @@
                         case EVENTS.POST_CREATED :
                             if (event.post) {
                                 ContentHome.posts.unshift(event.post);
-                                if (!$scope.$$phase)$scope.$digest();
+                                // Called when getting success from SocialDataStore getUsers method
+                                var successCallback = function (response) {
+                                    console.info('Users fetching response is: ', response.data.result);
+                                    if (response.data.error) {
+                                        console.error('Error while creating post ', response.data.error);
+                                    } else if (response.data.result && response.data.result.length > 0) {
+                                        console.info('Users fetched successfully', response.data.result);
+                                        usersData.push(response.data.result[0]);
+                                        if (!$scope.$$phase)$scope.$digest();
+                                    }
+                                };
+                                // Called when getting error from SocialDataStore getUsers method
+                                var errorCallback = function (err) {
+                                    console.log('Error while fetching users details ', err);
+                                };
+                                if (userIds.indexOf(event.post.userId) == -1) {
+                                    userIds.push(event.post.userId);
+                                    // Getting users details of posts
+                                    SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
+                                }
                             }
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_LIKED :
                             ContentHome.posts.some(function (el) {
@@ -326,7 +346,7 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -335,12 +355,32 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                            /*if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_ADDED:
                             ContentHome.posts.some(function (el) {
                                 if (el._id == event._id) {
                                     el.commentsCount++;
+                                    // Called when getting success from SocialDataStore getUsers method
+                                    var successCallback = function (response) {
+                                        console.info('Users fetching response inside add comments:  ', response.data.result);
+                                        if (response.data.error) {
+                                            console.error('Error while creating post ', response.data.error);
+                                        } else if (response.data.result && response.data.result.length) {
+                                            console.info('Users fetched successfully in comment added', response.data.result);
+                                            usersData.push(response.data.result[0]);
+                                        }
+                                        if (!$scope.$$phase)$scope.$digest();
+                                    };
+                                    // Called when getting error from SocialDataStore getUsers method
+                                    var errorCallback = function (err) {
+                                        console.log('Error while fetching users details ', err);
+                                    };
+                                    if (userIds.indexOf(el.userId) == -1) {
+                                        userIds.push(el.userId);
+                                        // Getting users details of posts
+                                        SocialDataStore.getUsers([el.userId]).then(successCallback, errorCallback);
+                                    }
                                     return true;
                                 }
                             });
@@ -350,11 +390,11 @@
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el._id != event._id;
                             });
-                            if (!$scope.$$phase)$scope.$digest();
+                           /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
-                                if(el._id == event.postId) {
+                                if (el._id == event.postId && el.comments) {
                                     el.commentsCount--;
                                     el.comments = el.comments.filter(function (comment) {
                                         return comment._id != event._id;
@@ -362,8 +402,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -378,8 +418,8 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                           /* if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_LIKED:
                             console.log('comment liked in content home controller event called from widget thread page');
@@ -395,12 +435,14 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+                            /*if (!$scope.$$phase)
+                                $scope.$digest();*/
                             break;
                         default :
                             break;
                     }
+                    if (!$scope.$$phase)
+                        $scope.$digest();
                 }
             };
         }]);
