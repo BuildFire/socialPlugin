@@ -42,7 +42,8 @@
                         finalPostCreation();
                     }
                 });
-                $event.target.blur();
+                console.log('---------------->',$event);
+                $event.currentTarget.blur();
             };
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();

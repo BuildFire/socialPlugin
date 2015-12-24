@@ -6,7 +6,9 @@
         .filter('convertTimeFormat', [function () {
             return function (time) {
                 var formattedTime = time;
-                if (time && time.indexOf('a second ago') != -1) {
+                if (time && time.indexOf('a few seconds ago') != -1) {
+                    formattedTime = formattedTime.replace('a few seconds ago', 'just now');
+                } else if (time && time.indexOf('a second ago') != -1) {
                     formattedTime = formattedTime.replace('a second ago', '1s');
                 } else if (time && time.indexOf(' seconds ago') != -1) {
                     formattedTime = formattedTime.replace(' seconds ago', 's');
