@@ -468,5 +468,14 @@
                 WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
                 Location.goToHome();
             });
+            // On Login
+            Buildfire.auth.onLogin(function(user){
+                console.log('New user loggedIN---------------------------------------',user);
+                if(user && user._id){
+                    WidgetWall.SocialItems.userDetails.userToken=user.userToken;
+                    WidgetWall.SocialItems.userDetails.userId=user._id;
+                    $scope.$digest();
+                }
+            });
         }])
 })(window.angular);

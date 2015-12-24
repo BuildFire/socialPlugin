@@ -32,6 +32,7 @@
                 return {
 
                     request: function (config) {
+                        console.log('config-------------------------',config,config.url.indexOf('threadLikes'));
                         if(config.url.indexOf('threadLikes') == -1) {
                             buildfire.spinner.show();
                             counter++;
@@ -39,6 +40,7 @@
                         return config;
                     },
                     response: function (response) {
+                        console.log('Counter----------------------------------',counter, 'rseponse--------------------',response);
                         counter = counter > 0 ? counter-- : 0;
                         if (counter === 0) {
                             buildfire.spinner.hide();
@@ -46,6 +48,7 @@
                         return response;
                     },
                     responseError: function (rejection) {
+                        console.log('Counter----------------------------------',counter,'error------------------',rejection);
                         counter--;
                         if (counter === 0) {
                             buildfire.spinner.hide();
