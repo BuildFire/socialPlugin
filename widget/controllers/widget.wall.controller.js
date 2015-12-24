@@ -25,7 +25,7 @@
             //SocialItems.posts();
             WidgetWall.SocialItems.loggedInUserDetails();
 
-            WidgetWall.createPost = function () {
+            WidgetWall.createPost = function ($event) {
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
@@ -42,6 +42,8 @@
                         finalPostCreation();
                     }
                 });
+                console.log('---------------->',$event);
+                $event.currentTarget.blur();
             };
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
