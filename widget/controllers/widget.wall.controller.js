@@ -25,7 +25,7 @@
             //SocialItems.posts();
             WidgetWall.SocialItems.loggedInUserDetails();
 
-            WidgetWall.createPost = function () {
+            WidgetWall.createPost = function ($event) {
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
@@ -42,6 +42,8 @@
                         finalPostCreation();
                     }
                 });
+                console.log('---------------->',$event);
+                $event.currentTarget.blur();
             };
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
@@ -465,6 +467,15 @@
                 WidgetWall.SocialItems.parentThreadId = response && response.data.parentThreadId;
                 WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
                 Location.goToHome();
+            });
+            // On Login
+            Buildfire.auth.onLogin(function(user){
+                console.log('New user loggedIN---------------------------------------',user);
+                if(user && user._id){
+                    WidgetWall.SocialItems.userDetails.userToken=user.userToken;
+                    WidgetWall.SocialItems.userDetails.userId=user._id;
+                    $scope.$digest();
+                }
             });
         }])
 })(window.angular);

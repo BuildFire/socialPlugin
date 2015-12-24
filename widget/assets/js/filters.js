@@ -6,7 +6,9 @@
         .filter('convertTimeFormat', [function () {
             return function (time) {
                 var formattedTime = time;
-                if (time && time.indexOf('a second ago') != -1) {
+                if (time && time.indexOf('a few seconds ago') != -1) {
+                    formattedTime = formattedTime.replace('a few seconds ago', 'just now');
+                } else if (time && time.indexOf('a second ago') != -1) {
                     formattedTime = formattedTime.replace('a second ago', '1s');
                 } else if (time && time.indexOf(' seconds ago') != -1) {
                     formattedTime = formattedTime.replace(' seconds ago', 's');
@@ -49,6 +51,17 @@
                     width: width,
                     height: height
                 });
+            };
+        }])
+        .filter('newLine', ['$sce', function ($sce) {
+            return function (html) {
+                if (html) {
+                    html = html.replace(/\n/g, '<br />');
+                    return $sce.trustAsHtml(html);
+                }
+                else {
+                    return "";
+                }
             };
         }])
 })(window.angular, window.location);

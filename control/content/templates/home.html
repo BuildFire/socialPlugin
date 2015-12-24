@@ -1,7 +1,8 @@
 <div ng-if="!ContentHome.socialAppId || !ContentHome.posts.length">
     <h3>Welcome To Social Plugin</h3>
 </div>
-<div ng-if="ContentHome.socialAppId" ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}" style="overflow-y:scroll;" class="infinite-scroll-parent">
+<div ng-if="ContentHome.socialAppId" ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}"
+     style="overflow-y:scroll;" class="infinite-scroll-parent">
     <div class="wrapper social-plugin" infinite-scroll-distance="0"
          data-infinite-container=".infinite-scroll-parent"
          infinite-scroll="ContentHome.getPosts()"
@@ -22,7 +23,10 @@
                     </div>
                 </div>
                 <div class="copy margin-bottom-fifteen">
-                    <p class="margin-zero">{{post.text | limitTo : (post.limit || 150) :0}}</a><snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap><a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a></p>
+                    <p class="margin-zero" ng-bind-html="(post.text | limitTo : (post.limit || 150) :0) | newLine"></a>
+                        <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
+                        <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read
+                            More</a></p>
                 </div>
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
@@ -36,17 +40,24 @@
                         <span class="icon icon-heart"></span>
                         <span class="number">{{post.likesCount}}</span>
                     </a>
-                    <a class="social-icon margin-left-twenty" ng-click="ContentHome.loadMoreComments(post,'viewComment')">
+                    <a class="social-icon margin-left-twenty"
+                       ng-click="ContentHome.loadMoreComments(post,'viewComment')">
                         <span class="icon icon-bubble"></span>
                         <span class="number">{{post.commentsCount}}</span>
                     </a>
                 </div>
                 <div class="status col-xs-9 padding-right-zero pull-right">
                     <div class="pull-right">
-                        <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments && post.comments.length"><a class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View Comments</a></p>
-                        <p class="pull-left margin-bottom-zero" ng-show="post.viewComments && post.comments.length"><a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a></p>
+                        <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments && post.comments.length"><a
+                                class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View
+                            Comments</a></p>
 
-                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId, post._id)"><a class="text-danger">Ban User</a>
+                        <p class="pull-left margin-bottom-zero" ng-show="post.viewComments && post.comments.length"><a
+                                class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide
+                            Comments</a></p>
+
+                        <p class="pull-left margin-bottom-zero margin-left-twenty"
+                           ng-click="ContentHome.banUser(post.userId, post._id)"><a class="text-danger">Ban User</a>
                         </p>
 
                         <p class="pull-left margin-bottom-zero margin-left-twenty"
@@ -55,7 +66,8 @@
                 </div>
             </div>
             <hr class="small margin-zero">
-            <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments" class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
+            <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments"
+                 class="padding-top-ten head-btn text-center border-bottom-grey padding-bottom-ten">
                 <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
             </div>
             <div class="comments-list" ng-if="post.comments.length && post.viewComments">
@@ -71,7 +83,7 @@
                         </div>
                     </div>
                     <div class="copy margin-bottom-five">
-                        <p class="margin-zero">{{comment.comment}}</p>
+                        <p class="margin-zero" ng-bind-html="(comment.comment) | newLine"></p>
                     </div>
                     <div class="plugin-banner clearfix margin-top-ten margin-bottom-fifteen">
                         <div class="plugin-slide text-center">
@@ -88,7 +100,10 @@
                         <div class="status col-xs-9 padding-right-zero pull-right">
                             <div class="pull-right">
                                 <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
-                                <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.deleteComment(post, comment._id)"><a class="text-danger">Delete Comment</a></p>
+
+                                <p class="pull-left margin-bottom-zero margin-left-twenty"
+                                   ng-click="ContentHome.deleteComment(post, comment._id)"><a class="text-danger">Delete
+                                    Comment</a></p>
                             </div>
                         </div>
                     </div>
