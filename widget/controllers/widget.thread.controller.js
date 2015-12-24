@@ -8,6 +8,7 @@
             var usersData = [];
             Thread.comments = [];
             Thread.userDetails = {};
+            Thread.height = window.innerHeight;
             Thread.buildfire=Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
             var _receivePushNotification;
