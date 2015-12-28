@@ -85,7 +85,7 @@
 
             function finalPostCreation(imageUrl) {
                 var postData = {};
-                postData.text = WidgetWall.postText;
+                postData.text = WidgetWall.postText.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)});
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.SocialItems.userDetails.userToken;

@@ -413,7 +413,7 @@
 
                     SocialDataStore.addComment({
                         threadId: Thread.post._id,
-                        comment: Thread.comment,
+                        comment: Thread.comment.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}),
                         userToken: Thread.userDetails.userToken,
                         imageUrl: imageUrl || null,
                         appId: Thread.SocialItems.socialAppId
