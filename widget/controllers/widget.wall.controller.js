@@ -20,7 +20,7 @@
             WidgetWall.picFile = '';
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
-            var masterItems = WidgetWall.SocialItems.items;
+            var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
             //SocialItems.posts();
             WidgetWall.SocialItems.loggedInUserDetails();
@@ -444,7 +444,7 @@
             }, function () {
                 if (masterItems != WidgetWall.SocialItems.items) {
                     console.log('New Items loaded----------------------------', WidgetWall.SocialItems.items);
-                    masterItems = WidgetWall.SocialItems.items;
+                    masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
                     getUsersAndLikes();
                 }
             }, true);
