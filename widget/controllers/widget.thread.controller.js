@@ -8,6 +8,7 @@
             var usersData = [];
             Thread.comments = [];
             Thread.userDetails = {};
+            Thread.height = window.innerHeight;
             Thread.buildfire=Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
             var _receivePushNotification;
@@ -501,5 +502,14 @@
                     }
                 }
             };
+            // On Login
+            Buildfire.auth.onLogin(function(user){
+                console.log('New user loggedIN---------------------------------------',user);
+                if(user && user._id){
+                    Thread.userDetails.userToken=user.userToken;
+                    Thread.userDetails.userId=user._id;
+                    $scope.$digest();
+                }
+            });
         }])
 })(window.angular);

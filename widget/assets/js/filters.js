@@ -53,4 +53,15 @@
                 });
             };
         }])
+        .filter('newLine', ['$sce', function ($sce) {
+            return function (html) {
+                if (html) {
+                    html = html.replace(/\n/g, '<br />');
+                    return $sce.trustAsHtml(html);
+                }
+                else {
+                    return "";
+                }
+            };
+        }])
 })(window.angular, window.location);
