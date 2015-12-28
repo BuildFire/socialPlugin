@@ -25,11 +25,11 @@
                         Buildfire.getContext(function (err, context) {
                             if (err) {
                                 console.error('error while getting buildfire context is::::::', err);
-                                return deferred.reject();
+                                return deferred.reject(err);
                             } else {
-                                deferred.resolve();
                                 Thread.userDetails.userId = userData._id;
                                 Thread.userDetails.userToken = userData.userToken;
+                                deferred.resolve();
                                 SocialDataStore.getUserSettings({
                                     threadId: Thread.post._id,
                                     userId: Thread.userDetails.userId,
@@ -52,12 +52,12 @@
                         });
                     }
                     else {
-                        deferred.reject();
+                        deferred.reject(err);
                         if (!callFromInit)
                             Buildfire.auth.login(null, function (err, data) {
                                 console.log('----------================',data);
                                 var promise = checkAuthenticatedUser();
-                                promise.then(function (response) {
+                                promise.then(function () {
                                     console.log('success of getting user details after login');
                                 }, function (err) {
                                     console.log('error is:::', err);
@@ -82,18 +82,22 @@
                     uniqueIdsArray.push(Thread.post.uniqueLink);
                     userIds.push(Thread.post.userId);
 
-                    checkAuthenticatedUser(true);
+                    var checkUserPromise = checkAuthenticatedUser(true);
 
-                    SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
-                        console.info('get thread likes response is: ', response.data.result);
-                        if (response.data.error) {
-                            console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                        } else if (response.data.result) {
-                            console.info('Thread likes fetched successfully', response.data.result);
-                            Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
-                        }
+                    checkUserPromise.then(function() {
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
+                            console.info('get thread likes response is: ', response.data.result);
+                            if (response.data.error) {
+                                console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                            } else if (response.data.result) {
+                                console.info('Thread likes fetched successfully', response.data.result);
+                                Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
+                            }
+                        }, function (err) {
+                            console.log('Error while fetching thread likes ', err);
+                        });
                     }, function (err) {
-                        console.log('Error while fetching thread likes ', err);
+                        console.log('error is ------', err);
                     });
                 }
             };
@@ -156,7 +160,9 @@
                         Thread.waitAPICompletion = true;
                         addComment();
                     }
-                })
+                }, function (err) {
+                    console.log('error is::::', err);
+                });
 
 
             };
@@ -230,7 +236,9 @@
                         function (err) {
                             console.log('Error in Error handler--------------------------', err);
                         });
-                })
+                }, function (err) {
+                    console.log('Error is--------------------------', err);
+                });
 
             };
             /**
@@ -288,6 +296,8 @@
                         post.waitAPICompletion = true;
                         SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(success, error);
                     }
+                }, function (err) {
+                    console.log('Error is:::::::', err);
                 });
 
             };
