@@ -504,12 +504,19 @@
             };
             // On Login
             Buildfire.auth.onLogin(function(user){
-                console.log('New user loggedIN---------------------------------------',user);
+                console.log('New user loggedIN from Widget Thread Page',user);
                 if(user && user._id){
                     Thread.userDetails.userToken=user.userToken;
                     Thread.userDetails.userId=user._id;
                     $scope.$digest();
                 }
+            });
+            // On Logout
+            Buildfire.auth.onLogout(function () {
+                console.log('User loggedOut from Widget Thread page');
+                Thread.userDetails.userToken = null;
+                Thread.userDetails.userId = null;
+                $scope.$digest();
             });
         }])
 })(window.angular);

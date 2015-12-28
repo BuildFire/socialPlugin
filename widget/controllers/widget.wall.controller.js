@@ -481,12 +481,19 @@
             });
             // On Login
             Buildfire.auth.onLogin(function(user){
-                console.log('New user loggedIN---------------------------------------',user);
+                console.log('New user loggedIN from Widget Wall Page',user);
                 if(user && user._id){
                     WidgetWall.SocialItems.userDetails.userToken=user.userToken;
                     WidgetWall.SocialItems.userDetails.userId=user._id;
                     $scope.$digest();
                 }
+            });
+            // On Logout
+            Buildfire.auth.onLogout(function () {
+                console.log('User loggedOut from Widget Wall Page');
+                WidgetWall.SocialItems.userDetails.userToken = null;
+                WidgetWall.SocialItems.userDetails.userId = null;
+                $scope.$digest();
             });
         }])
 })(window.angular);
