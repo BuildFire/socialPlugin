@@ -44,7 +44,7 @@
                 });
                 console.log('---------------->',$event);
                 $event.currentTarget.blur();
-                hideKeyboardhideKeyboard();
+                hideKeyboard();
             };
 
             var hideKeyboard = function() {
