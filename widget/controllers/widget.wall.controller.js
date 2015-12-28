@@ -44,7 +44,17 @@
                 });
                 console.log('---------------->',$event);
                 $event.currentTarget.blur();
+                hideKeyboardhideKeyboard();
             };
+
+            var hideKeyboard = function() {
+                document.activeElement.blur();
+                var inputs = document.querySelectorAll('input');
+                for(var i=0; i < inputs.length; i++) {
+                    inputs[i].blur();
+                }
+            };
+
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
@@ -96,6 +106,7 @@
                     WidgetWall.picFile = '';
                     if (response.data.error) {
                         console.error('Error while creating post ', response.data.error);
+                        WidgetWall.waitAPICompletion = false;
                     } else if (response.data.result) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.POST_CREATED,
