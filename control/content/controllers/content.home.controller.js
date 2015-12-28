@@ -376,10 +376,11 @@
                                     var errorCallback = function (err) {
                                         console.log('Error while fetching users details ', err);
                                     };
-                                    if (userIds.indexOf(el.userId) == -1) {
-                                        userIds.push(el.userId);
+                                    console.log('userIds', userIds, event.userId);
+                                    if (userIds.indexOf(event.userId) == -1) {
+                                        userIds.push(event.userId);
                                         // Getting users details of posts
-                                        SocialDataStore.getUsers([el.userId]).then(successCallback, errorCallback);
+                                        SocialDataStore.getUsers([event.userId]).then(successCallback, errorCallback);
                                     }
                                     return true;
                                 }
