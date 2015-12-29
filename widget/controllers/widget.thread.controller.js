@@ -488,12 +488,13 @@
 
             Thread.cancelImageSelect = function () {
                 Thread.imageName = Thread.imageName + ' - Cancelled';
-                Thread.imageSelected = false;
-                Thread.imageName = '';
-                Thread.picFile = '';
-                /*$timeout(function () {
-
-                },500);*/
+                $timeout(function () {
+                    Thread.imageSelected = false;
+                    Thread.imageName = '';
+                    Thread.picFile = '';
+                    if (!$scope.$$phase)
+                        $scope.$digest();
+                },500);
             };
 
             Thread.getComments(Thread.post._id, null);

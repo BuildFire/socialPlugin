@@ -129,7 +129,7 @@
                     <input type="button" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
                 </div>
                 <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
-                    <div class="uploadifive-queue-item"><a href="#" ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
+                    <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
                         <div><span class="filename">{{WidgetWall.imageName}}</span></div>
                         <div class="progress">
                             <div class="progress-bar"></div>
