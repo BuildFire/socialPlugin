@@ -132,7 +132,7 @@
     height: 16px;
     /* margin-top: -120px; */
     width: 16px;
-    color: #333;
+    color: #333 !important;
     z-index: 1 !important;
 }
 .image-upload-queue {
