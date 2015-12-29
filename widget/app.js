@@ -50,7 +50,7 @@
 
                     request: function (config) {
                         console.log('config-------------------------', config, config.url.indexOf('threadLikes'));
-                        if (config.url.indexOf('threadLikes') == -1) {
+                        if (config.url.indexOf('threadLikes') == -1 && config.url.indexOf('thread/add') == -1 && config.url.indexOf('Image/upload') == -1) {
                             increaseCounter();
                             toggleSpinner();
                         }
