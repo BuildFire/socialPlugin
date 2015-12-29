@@ -45,19 +45,11 @@
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
                     }
+
                 });
-                console.log('---------------->',$event);
-                $event.currentTarget.blur();
-                hideKeyboard();
+
             };
 
-            var hideKeyboard = function() {
-                document.activeElement.blur();
-                var inputs = document.querySelectorAll('input');
-                for(var i=0; i < inputs.length; i++) {
-                    inputs[i].blur();
-                }
-            };
 
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
@@ -156,7 +148,29 @@
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
                     WidgetWall.waitAPICompletion = false;
+                    if(err.status==0){
+                    console.log('------------->INTERNET CONNECTION PROBLEM')
+                        $modal
+                            .open({
+                                template: '    <div class="padded clearfix">\
+                                                <div class="content text-center">\
+                                                <p>No internet connection was found. please try again later</p>\
+                                                <a class="margin-zero"  ng-click="ok(option)">OK</a>\
+                                                </div>\
+                                                </div>',
+                                controller: 'MoreOptionsModalPopupCtrl',
+                                controllerAs: 'MoreOptionsPopup',
+                                size: 'sm',
+                                resolve: {
+                                    Info: function () {
+                                        return {};
+                                    }
+                                }
+                            });
+
+                    }
                     if (!$scope.$$phase)$scope.$digest();
+
                 };
                 SocialDataStore.createPost(postData).then(success, error);
             }
