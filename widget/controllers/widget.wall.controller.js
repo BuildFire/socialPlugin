@@ -41,21 +41,11 @@
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
                     }
-                });
-                console.log('---------------->',$event);
-              /*  $event.currentTarget.blur();
-                hideKeyboard();*/
-            };
-/*
-            var hideKeyboard = function() {
 
-                document.activeElement.blur();
-                var inputs = document.querySelectorAll('input');
-                console.log('==================>KEYBOARD HIDE CALLED<===================:',inputs);
-                for(var i=0; i < inputs.length; i++) {
-                    inputs[i].blur();
-                }
-            };*/
+                });
+
+            };
+
 
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();

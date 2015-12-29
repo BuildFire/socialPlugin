@@ -109,8 +109,9 @@
             </div>
 
         </div>
-        <div class="holder padding-zero bottom-post bodyBackgroundTheme" ng-if="WidgetWall.SocialItems.socialAppId">
+            <div class="holder padding-zero bottom-post bodyBackgroundTheme" ng-if="WidgetWall.SocialItems.socialAppId">
             <hr class="small">
+                <form ng-submit="run()" handle-phone-submit>
             <div class="post-holder clearfix">
                 <div class="add-media">
                     <a>
@@ -121,13 +122,14 @@
                     </a>
                 </div>
                 <div class="add-message pull-left">
-                    <textarea rows="1" cols="30" placeholder="Type your message..." name="text"
+                    <textarea  id="textAreaWidget" rows="1" cols="30" placeholder="Type your message..." name="text"
                            ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
                 </div>
                 <div class="send-message">
-                    <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost($event)">
+                    <input type="submit" class="text-primary" value="Send" ng-click="WidgetWall.createPost($event)">
                 </div>
             </div>
+                </form>
         </div>
     </div>
     <div class="content" ng-view="" ng-hide="showThread"></div>
