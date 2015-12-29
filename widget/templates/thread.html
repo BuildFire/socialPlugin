@@ -104,12 +104,12 @@
         </div>
     </div>
 </div>
-<div class="holder padding-zero bottom-post bodyBackgroundTheme">
+<div class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
     <hr class="small">
     <div class="post-holder clearfix">
         <div class="add-media">
             <a>
-                <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage()" ng-model="Thread.picFile"
+                <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage($file)" ng-model="Thread.picFile"
                       ngf-pattern="'image/*'" ngf-multiple="false" ngf-accept="'image/*'" accept="image/*"
                       ngf-max-size="10MB" ngf-allow-dir="true" name="files"></span>
             </a>
@@ -121,7 +121,15 @@
                     ng-model="Thread.comment">-->
         </div>
         <div class="send-message">
-            <input type="submit" class="text-primary" value="Send" ng-click="Thread.addComment()">
+            <input type="submit" class="text-primary send-btn" value="Send" ng-click="Thread.addComment()">
+        </div>
+        <div class="image-upload-queue" ng-if="Thread.imageSelected">
+            <div class="uploadifive-queue-item"><a href="#" ng-click="Thread.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
+                <div><span class="filename">{{Thread.imageName}}</span></div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

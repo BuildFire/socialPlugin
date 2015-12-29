@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -18,9 +18,11 @@
             WidgetWall.noMore = false;
             WidgetWall.postText = '';
             WidgetWall.picFile = '';
+            WidgetWall.imageSelected = false;
+            WidgetWall.imageName = '';
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
-            var masterItems = WidgetWall.SocialItems.items;
+            var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
             //SocialItems.posts();
             WidgetWall.SocialItems.loggedInUserDetails();
@@ -31,6 +33,8 @@
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
+                            WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
+//                            WidgetWall.progress = 100;
                             finalPostCreation(response.data.result);
                         };
                         var error = function (err) {
@@ -41,10 +45,12 @@
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
                     }
+
                 });
-                console.log('---------------->',$event);
-                $event.currentTarget.blur();
+
             };
+
+
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
                 Buildfire.auth.getCurrentUser(function (err, userData) {
@@ -85,7 +91,7 @@
 
             function finalPostCreation(imageUrl) {
                 var postData = {};
-                postData.text = WidgetWall.postText;
+                postData.text = WidgetWall.postText.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)});
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
@@ -96,12 +102,15 @@
                     WidgetWall.picFile = '';
                     if (response.data.error) {
                         console.error('Error while creating post ', response.data.error);
+                        WidgetWall.waitAPICompletion = false;
                     } else if (response.data.result) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.POST_CREATED,
                             status: 'Success',
                             post: response.data.result
                         });
+                        WidgetWall.imageName = '';
+                        WidgetWall.imageSelected = false;
                         WidgetWall.SocialItems.items.unshift(response.data.result);
                         if (!$scope.$$phase)$scope.$digest();
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
@@ -139,7 +148,29 @@
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
                     WidgetWall.waitAPICompletion = false;
+                    if(err.status==0){
+                    console.log('------------->INTERNET CONNECTION PROBLEM')
+                        $modal
+                            .open({
+                                template: '    <div class="padded clearfix">\
+                                                <div class="content text-center">\
+                                                <p>No internet connection was found. please try again later</p>\
+                                                <a class="margin-zero"  ng-click="ok(option)">OK</a>\
+                                                </div>\
+                                                </div>',
+                                controller: 'MoreOptionsModalPopupCtrl',
+                                controllerAs: 'MoreOptionsPopup',
+                                size: 'sm',
+                                resolve: {
+                                    Info: function () {
+                                        return {};
+                                    }
+                                }
+                            });
+
+                    }
                     if (!$scope.$$phase)$scope.$digest();
+
                 };
                 SocialDataStore.createPost(postData).then(success, error);
             }
@@ -428,12 +459,29 @@
                 });
             }
 
+            WidgetWall.uploadImage = function (file) {
+                console.log('inside select image method',file);
+                WidgetWall.imageSelected = true;
+                WidgetWall.imageName = file && file.name;
+            };
+
+            WidgetWall.cancelImageSelect = function () {
+                WidgetWall.imageName = WidgetWall.imageName + ' - Cancelled';
+                $timeout(function () {
+                    WidgetWall.imageSelected = false;
+                    WidgetWall.imageName = '';
+                    WidgetWall.picFile = '';
+                    if (!$scope.$$phase)
+                        $scope.$digest();
+                },500);
+            };
+
             $scope.$watch(function () {
                 return WidgetWall.SocialItems.items;
             }, function () {
                 if (masterItems != WidgetWall.SocialItems.items) {
                     console.log('New Items loaded----------------------------', WidgetWall.SocialItems.items);
-                    masterItems = WidgetWall.SocialItems.items;
+                    masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
                     getUsersAndLikes();
                 }
             }, true);
@@ -470,12 +518,19 @@
             });
             // On Login
             Buildfire.auth.onLogin(function(user){
-                console.log('New user loggedIN---------------------------------------',user);
+                console.log('New user loggedIN from Widget Wall Page',user);
                 if(user && user._id){
                     WidgetWall.SocialItems.userDetails.userToken=user.userToken;
                     WidgetWall.SocialItems.userDetails.userId=user._id;
                     $scope.$digest();
                 }
+            });
+            // On Logout
+            Buildfire.auth.onLogout(function () {
+                console.log('User loggedOut from Widget Wall Page');
+                WidgetWall.SocialItems.userDetails.userToken = null;
+                WidgetWall.SocialItems.userDetails.userId = null;
+                $scope.$digest();
             });
         }])
 })(window.angular);

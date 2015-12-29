@@ -83,5 +83,5 @@
                 else
                     Buildfire.navigation.navigateHome();
             }
-        }]);
+        }])
 })(window.angular, window.buildfire);

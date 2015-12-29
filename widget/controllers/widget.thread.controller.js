@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems','$q', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems,$q) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems, $q, $timeout) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -11,6 +11,8 @@
             Thread.height = window.innerHeight;
             Thread.buildfire=Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
+            Thread.imageSelected = false;
+            Thread.imageName = '';
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -25,11 +27,11 @@
                         Buildfire.getContext(function (err, context) {
                             if (err) {
                                 console.error('error while getting buildfire context is::::::', err);
-                                return deferred.reject();
+                                return deferred.reject(err);
                             } else {
-                                deferred.resolve();
                                 Thread.userDetails.userId = userData._id;
                                 Thread.userDetails.userToken = userData.userToken;
+                                deferred.resolve();
                                 SocialDataStore.getUserSettings({
                                     threadId: Thread.post._id,
                                     userId: Thread.userDetails.userId,
@@ -52,12 +54,12 @@
                         });
                     }
                     else {
-                        deferred.reject();
+                        deferred.reject(err);
                         if (!callFromInit)
                             Buildfire.auth.login(null, function (err, data) {
                                 console.log('----------================',data);
                                 var promise = checkAuthenticatedUser();
-                                promise.then(function (response) {
+                                promise.then(function () {
                                     console.log('success of getting user details after login');
                                 }, function (err) {
                                     console.log('error is:::', err);
@@ -82,18 +84,22 @@
                     uniqueIdsArray.push(Thread.post.uniqueLink);
                     userIds.push(Thread.post.userId);
 
-                    checkAuthenticatedUser(true);
+                    var checkUserPromise = checkAuthenticatedUser(true);
 
-                    SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
-                        console.info('get thread likes response is: ', response.data.result);
-                        if (response.data.error) {
-                            console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                        } else if (response.data.result) {
-                            console.info('Thread likes fetched successfully', response.data.result);
-                            Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
-                        }
+                    checkUserPromise.then(function() {
+                        SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
+                            console.info('get thread likes response is: ', response.data.result);
+                            if (response.data.error) {
+                                console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                            } else if (response.data.result) {
+                                console.info('Thread likes fetched successfully', response.data.result);
+                                Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
+                            }
+                        }, function (err) {
+                            console.log('Error while fetching thread likes ', err);
+                        });
                     }, function (err) {
-                        console.log('Error while fetching thread likes ', err);
+                        console.log('error is ------', err);
                     });
                 }
             };
@@ -143,6 +149,7 @@
                         Thread.waitAPICompletion = true;
                         var success = function (response) {
                             console.log('response inside controller for image upload is: ', response);
+                            Thread.imageName = Thread.imageName + ' - 100%';
                             addComment(response.data.result);
                         };
                         var error = function (err) {
@@ -156,7 +163,9 @@
                         Thread.waitAPICompletion = true;
                         addComment();
                     }
-                })
+                }, function (err) {
+                    console.log('error is::::', err);
+                });
 
 
             };
@@ -230,7 +239,9 @@
                         function (err) {
                             console.log('Error in Error handler--------------------------', err);
                         });
-                })
+                }, function (err) {
+                    console.log('Error is--------------------------', err);
+                });
 
             };
             /**
@@ -288,6 +299,8 @@
                         post.waitAPICompletion = true;
                         SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(success, error);
                     }
+                }, function (err) {
+                    console.log('Error is:::::::', err);
                 });
 
             };
@@ -413,7 +426,7 @@
 
                     SocialDataStore.addComment({
                         threadId: Thread.post._id,
-                        comment: Thread.comment,
+                        comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}) : '',
                         userToken: Thread.userDetails.userToken,
                         imageUrl: imageUrl || null,
                         appId: Thread.SocialItems.socialAppId
@@ -424,6 +437,8 @@
                             Thread.comment = '';
                             Thread.waitAPICompletion = false;
                             Thread.post.commentsCount++;
+                            Thread.imageSelected = false;
+                            Thread.imageName = '';
                             $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
                             Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id, 'userId': Thread.userDetails.userId});
                             if (Thread.comments.length) {
@@ -465,6 +480,22 @@
                     });
             };
 
+            Thread.uploadImage = function (file) {
+                console.log('inside select image method',file);
+                Thread.imageSelected = true;
+                Thread.imageName = file && file.name;
+            };
+
+            Thread.cancelImageSelect = function () {
+                Thread.imageName = Thread.imageName + ' - Cancelled';
+                Thread.imageSelected = false;
+                Thread.imageName = '';
+                Thread.picFile = '';
+                /*$timeout(function () {
+
+                },500);*/
+            };
+
             Thread.getComments(Thread.post._id, null);
 
             Buildfire.messaging.onReceivedMessage = function (event) {
@@ -504,12 +535,19 @@
             };
             // On Login
             Buildfire.auth.onLogin(function(user){
-                console.log('New user loggedIN---------------------------------------',user);
+                console.log('New user loggedIN from Widget Thread Page',user);
                 if(user && user._id){
                     Thread.userDetails.userToken=user.userToken;
                     Thread.userDetails.userId=user._id;
                     $scope.$digest();
                 }
+            });
+            // On Logout
+            Buildfire.auth.onLogout(function () {
+                console.log('User loggedOut from Widget Thread page');
+                Thread.userDetails.userToken = null;
+                Thread.userDetails.userId = null;
+                $scope.$digest();
             });
         }])
 })(window.angular);

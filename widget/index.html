@@ -26,6 +26,7 @@
     <script src="assets/js/ng-infinite-scroll.custom.js"
             type="application/javascript"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
+    <script src="app.directives.js"></script>
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
@@ -48,6 +49,9 @@
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-x:hidden; width:100%; overflow-y: scroll;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}" class="infinite-scroll-parent">
+                        <div ng-if=" !WidgetWall.SocialItems.items.length">
+                            <h4 style="text-align: center;">You do not have any posts yet</h4>
+                        </div>
                         <div id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
@@ -106,12 +110,12 @@
             </div>
 
         </div>
-        <div class="holder padding-zero bottom-post bodyBackgroundTheme" ng-if="WidgetWall.SocialItems.socialAppId">
+        <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container" ng-if="WidgetWall.SocialItems.socialAppId">
             <hr class="small">
             <div class="post-holder clearfix">
                 <div class="add-media">
                     <a>
-                    <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage()"
+                    <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage($file)"
                           ng-model="WidgetWall.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
                           ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true"
                           name="files"></span>
@@ -122,12 +126,23 @@
                            ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
                 </div>
                 <div class="send-message">
-                    <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost($event)">
+                    <input type="button" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
+                </div>
+                <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
+                    <div class="uploadifive-queue-item"><a href="#" ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
+                        <div><span class="filename">{{WidgetWall.imageName}}</span></div>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <h1>hello {{showThread}}</h1>
     <div class="content" ng-view="" ng-hide="showThread"></div>
+
+
 </div>
 </body>
 </html>
