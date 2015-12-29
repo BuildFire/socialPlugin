@@ -144,3 +144,6 @@
 .post-container {
     height: inherit !important;
 }
+.filename {
+    color: #555555 !important;
+}
