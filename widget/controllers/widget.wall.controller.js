@@ -48,8 +48,10 @@
             };
 
             var hideKeyboard = function() {
+
                 document.activeElement.blur();
                 var inputs = document.querySelectorAll('input');
+                console.log('==================>KEYBOARD HIDE CALLED<===================:',inputs);
                 for(var i=0; i < inputs.length; i++) {
                     inputs[i].blur();
                 }
@@ -150,7 +152,24 @@
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
                     WidgetWall.waitAPICompletion = false;
+                    if(err.status==0){
+                    console.log('------------->INTERNET CONNECTION PROBLEM')
+                        $modal
+                            .open({
+                                templateUrl: 'templates/modals/network-failed-modal.html',
+                                controller: 'MoreOptionsModalPopupCtrl',
+                                controllerAs: 'MoreOptionsPopup',
+                                size: 'sm',
+                                resolve: {
+                                    Info: function () {
+                                        return {};
+                                    }
+                                }
+                            });
+
+                    }
                     if (!$scope.$$phase)$scope.$digest();
+
                 };
                 SocialDataStore.createPost(postData).then(success, error);
             }
