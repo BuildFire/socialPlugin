@@ -43,10 +43,10 @@
                     }
                 });
                 console.log('---------------->',$event);
-                $event.currentTarget.blur();
-                hideKeyboard();
+              /*  $event.currentTarget.blur();
+                hideKeyboard();*/
             };
-
+/*
             var hideKeyboard = function() {
 
                 document.activeElement.blur();
@@ -55,7 +55,7 @@
                 for(var i=0; i < inputs.length; i++) {
                     inputs[i].blur();
                 }
-            };
+            };*/
 
             var checkUserIsAuthenticated = function () {
                 var deferredObject = $q.defer();
