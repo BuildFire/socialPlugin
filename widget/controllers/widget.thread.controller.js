@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems','$q', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems,$q) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems, $q, $timeout) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -11,6 +11,8 @@
             Thread.height = window.innerHeight;
             Thread.buildfire=Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
+            Thread.imageSelected = false;
+            Thread.imageName = '';
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -147,6 +149,7 @@
                         Thread.waitAPICompletion = true;
                         var success = function (response) {
                             console.log('response inside controller for image upload is: ', response);
+                            Thread.imageName = Thread.imageName + ' - 100%';
                             addComment(response.data.result);
                         };
                         var error = function (err) {
@@ -423,7 +426,7 @@
 
                     SocialDataStore.addComment({
                         threadId: Thread.post._id,
-                        comment: Thread.comment.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}),
+                        comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}) : '',
                         userToken: Thread.userDetails.userToken,
                         imageUrl: imageUrl || null,
                         appId: Thread.SocialItems.socialAppId
@@ -434,6 +437,8 @@
                             Thread.comment = '';
                             Thread.waitAPICompletion = false;
                             Thread.post.commentsCount++;
+                            Thread.imageSelected = false;
+                            Thread.imageName = '';
                             $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
                             Buildfire.messaging.sendMessageToControl({'name': EVENTS.COMMENT_ADDED, '_id': Thread.post._id, 'userId': Thread.userDetails.userId});
                             if (Thread.comments.length) {
@@ -473,6 +478,22 @@
                     function (err) {
                         console.log('Response error of comment likes ------------', err);
                     });
+            };
+
+            Thread.uploadImage = function (file) {
+                console.log('inside select image method',file);
+                Thread.imageSelected = true;
+                Thread.imageName = file && file.name;
+            };
+
+            Thread.cancelImageSelect = function () {
+                Thread.imageName = Thread.imageName + ' - Cancelled';
+                Thread.imageSelected = false;
+                Thread.imageName = '';
+                Thread.picFile = '';
+                /*$timeout(function () {
+
+                },500);*/
             };
 
             Thread.getComments(Thread.post._id, null);

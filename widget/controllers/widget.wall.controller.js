@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -18,6 +18,8 @@
             WidgetWall.noMore = false;
             WidgetWall.postText = '';
             WidgetWall.picFile = '';
+            WidgetWall.imageSelected = false;
+            WidgetWall.imageName = '';
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
@@ -31,6 +33,8 @@
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
+                            WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
+//                            WidgetWall.progress = 100;
                             finalPostCreation(response.data.result);
                         };
                         var error = function (err) {
@@ -113,6 +117,8 @@
                             status: 'Success',
                             post: response.data.result
                         });
+                        WidgetWall.imageName = '';
+                        WidgetWall.imageSelected = false;
                         WidgetWall.SocialItems.items.unshift(response.data.result);
                         if (!$scope.$$phase)$scope.$digest();
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
@@ -438,6 +444,23 @@
                     console.error('Error while fetching thread likes ', err);
                 });
             }
+
+            WidgetWall.uploadImage = function (file) {
+                console.log('inside select image method',file);
+                WidgetWall.imageSelected = true;
+                WidgetWall.imageName = file && file.name;
+            };
+
+            WidgetWall.cancelImageSelect = function () {
+                WidgetWall.imageName = WidgetWall.imageName + ' - Cancelled';
+                $timeout(function () {
+                    WidgetWall.imageSelected = false;
+                    WidgetWall.imageName = '';
+                    WidgetWall.picFile = '';
+                    if (!$scope.$$phase)
+                        $scope.$digest();
+                },500);
+            };
 
             $scope.$watch(function () {
                 return WidgetWall.SocialItems.items;
