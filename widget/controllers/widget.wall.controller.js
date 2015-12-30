@@ -47,7 +47,7 @@
                     }
 
                 });
-
+                $event.preventDefault();
             };
 
 
