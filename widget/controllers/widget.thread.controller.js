@@ -475,7 +475,7 @@
                                     comment.isUserLikeActive = true;
                                 }
                             });
-                        } else if(data && data.data && data.data.result == null) {
+                        } else if(data && data.data && data.data.result == null && Thread.comments && Thread.comments.length > 0) {
                             Thread.comments.forEach(function (comment) {
                                 comment.isUserLikeActive = true;
                             });
