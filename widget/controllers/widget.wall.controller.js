@@ -28,13 +28,13 @@
             WidgetWall.SocialItems.loggedInUserDetails();
 
             WidgetWall.createPost = function ($event) {
+
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
                             WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
-//                            WidgetWall.progress = 100;
                             finalPostCreation(response.data.result);
                         };
                         var error = function (err) {

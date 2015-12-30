@@ -84,4 +84,14 @@
                     Buildfire.navigation.navigateHome();
             }
         }])
+        .directive('handlePhoneSubmit', function () {
+            return function (scope, element, attr) {
+                var textFields = $(element).children('textarea[name="text"]');
+                console.log("---------------------------------->",textFields);
+                $(element).submit(function() {
+                    console.log('form was submitted');
+                    textFields.blur();
+                });
+            };
+        });
 })(window.angular, window.buildfire);

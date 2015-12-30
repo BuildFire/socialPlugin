@@ -111,6 +111,7 @@
         </div>
         <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container" ng-if="WidgetWall.SocialItems.socialAppId">
             <hr class="small">
+            <form ng-submit="" handle-phone-submit  >
             <div class="post-holder clearfix">
                 <div class="add-media">
                     <a>
@@ -125,7 +126,7 @@
                            ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
                 </div>
                 <div class="send-message">
-                    <input type="button" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
+                    <input type="submit" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
                 </div>
                 <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
                     <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
@@ -136,6 +137,7 @@
                     </div>
                 </div>
             </div>
+                </form>
         </div>
     </div>
     <div class="content" ng-view="" ng-hide="showThread"></div>
