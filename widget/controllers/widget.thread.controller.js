@@ -463,7 +463,24 @@
                         console.log('Response of a post comments like-----------------', data);
                         if(data && data.data && data.data.result && data.data.result.length){
                             console.log('In If------------------',data.data.result);
-                            data.data.result.forEach(function (uniqueLinkData) {
+                            Thread.comments.forEach(function (comment) {
+                                data.data.result.forEach(function (uniqueLinkData) {
+                                    if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
+                                        comment.likesCount=uniqueLinkData.likesCount;
+                                        comment.isUserLikeActive=uniqueLinkData.isUserLikeActive;
+                                        console.log('Updated comments data------------------',comment);
+                                    }
+                                });
+                                if(typeof comment.isUserLikeActive == 'undefined') {
+                                    comment.isUserLikeActive = true;
+                                }
+                            });
+                        } else if(data && data.data && data.data.result == null) {
+                            Thread.comments.forEach(function (comment) {
+                                comment.isUserLikeActive = true;
+                            });
+                        }
+                            /*data.data.result.forEach(function (uniqueLinkData) {
                                 Thread.comments.some(function(comment){
                                     if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
                                         comment.likesCount=uniqueLinkData.likesCount;
@@ -472,8 +489,7 @@
                                         return true;
                                     }
                                 });
-                            });
-                        }
+                            });*/
                     },
                     function (err) {
                         console.log('Response error of comment likes ------------', err);

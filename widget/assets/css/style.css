@@ -111,6 +111,7 @@
 	line-height:25px;
 }
 
+/* BOF Upload image section with uploader and cross */
 .uploadifive-queue-item {
     background-color: #F5F5F5;
     border-bottom: 1px dotted #D5D5D5;
@@ -147,3 +148,4 @@
 .filename {
     color: #555555 !important;
 }
+/* EOF Upload image section with uploader and cross */
