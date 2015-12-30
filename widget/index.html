@@ -109,12 +109,12 @@
             </div>
 
         </div>
-        <div class="holder padding-zero bottom-post bodyBackgroundTheme" ng-if="WidgetWall.SocialItems.socialAppId">
+        <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container" ng-if="WidgetWall.SocialItems.socialAppId">
             <hr class="small">
             <div class="post-holder clearfix">
                 <div class="add-media">
                     <a>
-                    <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage()"
+                    <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage($file)"
                           ng-model="WidgetWall.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
                           ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true"
                           name="files"></span>
@@ -125,7 +125,15 @@
                            ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
                 </div>
                 <div class="send-message">
-                    <input type="button" class="text-primary" value="Send" ng-click="WidgetWall.createPost($event)">
+                    <input type="button" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
+                </div>
+                <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
+                    <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
+                        <div><span class="filename">{{WidgetWall.imageName}}</span></div>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

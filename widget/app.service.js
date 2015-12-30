@@ -201,6 +201,11 @@
                     }, function (resp) {
                         console.log('Error status: ' + resp.status);
                         deferred.reject(resp);
+                    }, function (evt) {
+                        file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+//                        deferred.notify(file.progress);
+                        angular.element('.progress-bar').css('width', file.progress+'%');
+                        angular.element('.filename').text(file.name + ' -' + file.progress + '%');
                     });
                     return deferred.promise;
                 },
