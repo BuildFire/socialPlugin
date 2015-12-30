@@ -111,6 +111,7 @@
 	line-height:25px;
 }
 
+/* BOF Upload image section with uploader and cross */
 .uploadifive-queue-item {
     background-color: #F5F5F5;
     border-bottom: 1px dotted #D5D5D5;
@@ -132,7 +133,7 @@
     height: 16px;
     /* margin-top: -120px; */
     width: 16px;
-    color: #333;
+    color: #333 !important;
     z-index: 1 !important;
 }
 .image-upload-queue {
@@ -144,3 +145,7 @@
 .post-container {
     height: inherit !important;
 }
+.filename {
+    color: #555555 !important;
+}
+/* EOF Upload image section with uploader and cross */

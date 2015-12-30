@@ -28,13 +28,13 @@
             WidgetWall.SocialItems.loggedInUserDetails();
 
             WidgetWall.createPost = function ($event) {
+
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         WidgetWall.waitAPICompletion = true;
                         var success = function (response) {
                             WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
-//                            WidgetWall.progress = 100;
                             finalPostCreation(response.data.result);
                         };
                         var error = function (err) {
@@ -91,7 +91,7 @@
 
             function finalPostCreation(imageUrl) {
                 var postData = {};
-                postData.text = WidgetWall.postText.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)});
+                postData.text = WidgetWall.postText ? WidgetWall.postText.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}) : '';
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
@@ -152,12 +152,14 @@
                     console.log('------------->INTERNET CONNECTION PROBLEM')
                         $modal
                             .open({
-                                template: '    <div class="padded clearfix">\
-                                                <div class="content text-center">\
-                                                <p>No internet connection was found. please try again later</p>\
-                                                <a class="margin-zero"  ng-click="ok(option)">OK</a>\
-                                                </div>\
-                                                </div>',
+                                template: [
+                                                             '<div class="padded clearfix">',
+                                                                '<div class="content text-center">',
+                                                              '<p>No internet connection was found. please try again later</p>',
+                                                               '<a class="margin-zero"  ng-click="ok(option)">OK</a>',
+                                                               '</div>',
+                                                               '</div></div>'
+                                                                  ].join(''),
                                 controller: 'MoreOptionsModalPopupCtrl',
                                 controllerAs: 'MoreOptionsPopup',
                                 size: 'sm',
