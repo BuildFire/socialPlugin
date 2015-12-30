@@ -146,12 +146,7 @@
                     console.log('------------->INTERNET CONNECTION PROBLEM')
                         $modal
                             .open({
-                                template: '    <div class="padded clearfix">\
-                                                <div class="content text-center">\
-                                                <p>No internet connection was found. please try again later</p>\
-                                                <a class="margin-zero"  ng-click="ok(option)">OK</a>\
-                                                </div>\
-                                                </div>',
+                                templateUrl: 'templates/modals/network-failed-modal.html',
                                 controller: 'MoreOptionsModalPopupCtrl',
                                 controllerAs: 'MoreOptionsPopup',
                                 size: 'sm',
