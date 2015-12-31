@@ -1,15 +1,15 @@
 describe('Unit : Controller - ContentHomeCtrl', function () {
 
 // load the controller's module
+
+    var ContentHome, scope, Modals, SocialDataStore, $timeout, $q, Buildfire, EVENTS;
+
     beforeEach(module('socialPluginContent'));
 
-    var
-        ContentHome, scope, Modals, SocialDataStore, $timeout, $q;
-
-    beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _SocialDataStore_, _$timeout_, _$q_) {
+    beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_) {
             scope = _$rootScope_.$new();
-            Modals = _Modals_;
-            SocialDataStore = _SocialDataStore_;
+            Modals = jasmine.createSpyObj('Modals',['removePopupModal']);
+            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers']);
             $timeout = _$timeout_;
             $q = _$q_;
             ContentHome = $controller('ContentHomeCtrl', {
@@ -17,9 +17,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                 Modals: Modals,
                 SocialDataStore: SocialDataStore
             });
-        })
-    )
-    ;
+        }));
 
     describe('Units: units should be Defined', function () {
         it('it should pass if ContentHome is defined', function () {
@@ -33,44 +31,107 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
+    describe('ContentHome.getPosts', function () {
+        describe('Should pass when SocialDataStore.getPosts and SocialDataStore.getUsers return success', function () {
+            beforeEach(function(){
+                SocialDataStore.getPosts.and.callFake(function () {
+                    var deferred = $q.defer();
+                    deferred.resolve({data: {result: [{_id: 2, userId: 0}]}});
+                    return deferred.promise;
+                });
+                SocialDataStore.getUsers.and.callFake(function () {
+                    var deferred = $q.defer();
+                    deferred.resolve({data: {result: []}});
+                    return deferred.promise;
+                });
+            });
 
-    xdescribe('ContentHome.getPosts', function () {
+            it('when ContentHome.posts.length>0 ', function () {
+            ContentHome.posts = [{_id: 3, userId: 15}];
+            ContentHome.getPosts();
+            scope.$digest();
+            expect(ContentHome.posts.length).toBeGreaterThan(0);
+            });
+            it('when ContentHome.posts.length=0 ', function () {
+            ContentHome.posts = [];
+            ContentHome.getPosts();
+            scope.$digest();
+            expect(ContentHome.posts.length).toBeGreaterThan(0);
+        });
+        });
 
-        var spy;
-        beforeEach(inject(function () {
-            spy = spyOn(SocialDataStore, 'getPosts').and.callFake(function () {
+        it('it should pass if SocialDataStore.getPosts return success and SocialDataStore.getUsers returns result.error', function () {
+            ContentHome.posts = [];
+            SocialDataStore.getPosts.and.callFake(function () {
                 var deferred = $q.defer();
                 deferred.resolve({data: {result: [{_id: 2, userId: 0}]}});
                 return deferred.promise;
             });
-        }));
-
-        it('it should pass if SocialDataStore.getPosts is called with null when ContentHome.posts is empty', function () {
+            SocialDataStore.getUsers.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve({data: {error: []}});
+                return deferred.promise;
+            });
+            ContentHome.getPosts();
+            scope.$digest();
+            expect(ContentHome.posts.length).toBeGreaterThan(0);
+        });
+        it('it should pass if SocialDataStore.getPosts return success and SocialDataStore.getUsers returns failure', function () {
             ContentHome.posts = [];
+            SocialDataStore.getPosts.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve({data: {result: [{_id: 2, userId: 0}]}});
+                return deferred.promise;
+            });
+            SocialDataStore.getUsers.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.reject('401, unauthorized');
+                return deferred.promise;
+            });
             ContentHome.getPosts();
-            expect(spy).toHaveBeenCalledWith({lastThreadId: null});
+            scope.$digest();
+            expect(ContentHome.posts.length).toBeGreaterThan(0);
         });
+        it('it should pass if SocialDataStore.getPosts returns result.error', function () {
+            ContentHome.posts = [];
+            SocialDataStore.getPosts.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve({data: {error: {}}});
+                return deferred.promise;
+            });
 
-        it('it should pass if SocialDataStore.getPosts is called with last element id when ContentHome.posts is not empty', function () {
-            ContentHome.posts = [{_id: 1}];
             ContentHome.getPosts();
-            expect(spy).toHaveBeenCalledWith({lastThreadId: 1});
+            scope.$digest();
+            expect(ContentHome.posts.length).toEqual(0);
         });
+        it('it should pass if SocialDataStore.getPosts returns failure', function () {
+            ContentHome.posts = [];
+            SocialDataStore.getPosts.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.reject('401, unauthorized');
+                return deferred.promise;
+            });
 
-        it('it should pass if SocialDataStore.getPosts adds to ContentHome.posts in case of success', function () {
-            ContentHome.posts = [{_id: 1}];
             ContentHome.getPosts();
-            expect(ContentHome.posts.length).toEqual(2);
+            scope.$digest();
+            expect(ContentHome.posts.length).toEqual(0);
         });
+    });
+
+    xdescribe('ContentHome.getUserName', function () {
+        var username=ContentHome.getUserName(12121212);
+        scope.$digest();
+        expect(username).toEqual('');
+
     });
 
     xdescribe('ContentHome.deletePost', function () {
 
         var spy1, spySocial;
-        beforeEach(inject(function () {
+       /* beforeEach(inject(function () {
             spy1 = spyOn(Modals, 'removePopupModal').and.callFake(function () {
                 var deferred = $q.defer();
-                deferred.resolve('');
+                deferred.resolve({name: 'Post'});
                 return deferred.promise;
             });
             spySocial = spyOn(SocialDataStore, 'deletePost').and.callFake(function () {
@@ -78,9 +139,10 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                 deferred.resolve({data: {result: [{_id: 2, userId: 0}]}});
                 return deferred.promise;
             });
-        }));
+        }));*/
 
         it('it should pass if SocialDataStore.deletePost deletes the given post', function () {
+            Modals.removePopupModal({name: 'Post'});
             ContentHome.posts = [{_id: 1}];
             ContentHome.deletePost(1);
             expect(ContentHome.posts.length).toEqual(0);
