@@ -498,8 +498,10 @@
 
             Thread.uploadImage = function (file) {
                 console.log('inside select image method',file);
-                Thread.imageSelected = true;
-                Thread.imageName = file && file.name;
+                if(file) {
+                    Thread.imageSelected = true;
+                    Thread.imageName = file.name;
+                }
             };
 
             Thread.cancelImageSelect = function () {
