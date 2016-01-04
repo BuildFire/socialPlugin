@@ -47,7 +47,7 @@
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: scroll;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: 100%;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+'px' : '100%'}" class="infinite-scroll-parent">
                         <div ng-if=" !WidgetWall.SocialItems.items.length">
                             <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>
@@ -117,7 +117,7 @@
                     <a>
                     <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage($file)"
                           ng-model="WidgetWall.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
-                          ngf-accept="'image/*'" accept="image/*" ngf-max-size="10MB" ngf-allow-dir="true"
+                          ngf-accept="'image/*'" accept="image/*" ngf-allow-dir="true"
                           name="files"></span>
                     </a>
                 </div>
@@ -131,7 +131,7 @@
                 <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
                     <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
                         <div><span class="filename">{{WidgetWall.imageName}}</span></div>
-                        <div class="progress">
+                        <div class="progress" ng-if="WidgetWall.showImageLoader">
                             <div class="progress-bar"></div>
                         </div>
                     </div>

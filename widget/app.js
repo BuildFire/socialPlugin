@@ -78,6 +78,7 @@
                 var path = $location.path();
                 if (path.indexOf('/thread') == 0) {
                     $rootScope.showThread = true;
+                    $location.path('/');
                     $rootScope.$digest();
                 }
                 else
