@@ -47,7 +47,7 @@
                     <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: 100%;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '100%'}" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: 100%;"  class="infinite-scroll-parent">
                         <div ng-if=" !WidgetWall.SocialItems.items.length">
                             <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>
