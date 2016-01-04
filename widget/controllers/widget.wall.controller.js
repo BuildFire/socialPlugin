@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
             var WidgetWall = this;
             var usersData = [];
             var userIds = [];
@@ -20,6 +20,7 @@
             WidgetWall.picFile = '';
             WidgetWall.imageSelected = false;
             WidgetWall.imageName = '';
+            WidgetWall.showImageLoader = true;
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
@@ -32,15 +33,18 @@
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
-                        WidgetWall.waitAPICompletion = true;
-                        var success = function (response) {
-                            WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
-                            finalPostCreation(response.data.result);
-                        };
-                        var error = function (err) {
-                            console.log('Error is : ', err);
-                        };
-                        SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.SocialItems.userDetails.userToken, WidgetWall.SocialItems.socialAppId).then(success, error);
+                        if(getImageSizeInMB(WidgetWall.picFile.size) <= FILE_UPLOAD.MAX_SIZE) {
+                            WidgetWall.waitAPICompletion = true;
+                            var success = function (response) {
+                                WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
+                                finalPostCreation(response.data.result);
+                            };
+                            var error = function (err) {
+                                console.log('Error is : ', err);
+                            };
+                            console.error('>>>>>>>>>>>>>>>>>>>>>', WidgetWall.picFile);
+                            SocialDataStore.uploadImage(WidgetWall.picFile, WidgetWall.SocialItems.userDetails.userToken, WidgetWall.SocialItems.socialAppId).then(success, error);
+                        }
                     } else if (WidgetWall.postText && !WidgetWall.waitAPICompletion) {                        // text post
                         WidgetWall.waitAPICompletion = true;
                         finalPostCreation();
@@ -48,6 +52,10 @@
 
                 });
 
+            };
+
+            var getImageSizeInMB = function (size) {
+                return (size/(1024 * 1024));       // return size in MB
             };
 
 
@@ -463,18 +471,27 @@
 
             WidgetWall.uploadImage = function (file) {
                 console.log('inside select image method',file);
+                var fileSize;
                 if(file) {
+                    fileSize = getImageSizeInMB(file.size);      // get image size in MB
                     WidgetWall.imageSelected = true;
-                    WidgetWall.imageName = file.name;
+                    if(fileSize > FILE_UPLOAD.MAX_SIZE) {
+                        WidgetWall.imageName = file.name + ' - ' + FILE_UPLOAD.SIZE_EXCEED;
+                        WidgetWall.showImageLoader = false;
+                    } else {
+                        WidgetWall.imageName = file.name;
+                        WidgetWall.showImageLoader = true;
+                    }
                 }
             };
 
             WidgetWall.cancelImageSelect = function () {
-                WidgetWall.imageName = WidgetWall.imageName + ' - Cancelled';
+                WidgetWall.imageName = WidgetWall.imageName.replace(' - ' + FILE_UPLOAD.SIZE_EXCEED, '') + ' - ' + FILE_UPLOAD.CANCELLED;
                 $timeout(function () {
                     WidgetWall.imageSelected = false;
                     WidgetWall.imageName = '';
                     WidgetWall.picFile = '';
+                    WidgetWall.showImageLoader = true;
                     if (!$scope.$$phase)
                         $scope.$digest();
                 },500);
