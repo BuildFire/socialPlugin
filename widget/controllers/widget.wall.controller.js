@@ -463,8 +463,10 @@
 
             WidgetWall.uploadImage = function (file) {
                 console.log('inside select image method',file);
-                WidgetWall.imageSelected = true;
-                WidgetWall.imageName = file && file.name;
+                if(file) {
+                    WidgetWall.imageSelected = true;
+                    WidgetWall.imageName = file.name;
+                }
             };
 
             WidgetWall.cancelImageSelect = function () {
