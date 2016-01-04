@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, SocialItems, $q, $timeout) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -13,6 +13,7 @@
             Thread.SocialItems = SocialItems.getInstance();
             Thread.imageSelected = false;
             Thread.imageName = '';
+            Thread.showImageLoader = true;
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -146,18 +147,20 @@
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
                     if (Thread.picFile && !Thread.waitAPICompletion) {                // image post
-                        Thread.waitAPICompletion = true;
-                        var success = function (response) {
-                            console.log('response inside controller for image upload is: ', response);
-                            Thread.imageName = Thread.imageName + ' - 100%';
-                            addComment(response.data.result);
-                        };
-                        var error = function (err) {
-                            console.log('Error is : ', err);
-                            Thread.picFile = '';
-                            Thread.comment = '';
-                        };
-                        SocialDataStore.uploadImage(Thread.picFile, Thread.userDetails.userToken, Thread.SocialItems.socialAppId).then(success, error);
+                        if(getImageSizeInMB(Thread.picFile.size) <= FILE_UPLOAD.MAX_SIZE) {
+                            Thread.waitAPICompletion = true;
+                            var success = function (response) {
+                                console.log('response inside controller for image upload is: ', response);
+                                Thread.imageName = Thread.imageName + ' - 100%';
+                                addComment(response.data.result);
+                            };
+                            var error = function (err) {
+                                console.log('Error is : ', err);
+                                Thread.picFile = '';
+                                Thread.comment = '';
+                            };
+                            SocialDataStore.uploadImage(Thread.picFile, Thread.userDetails.userToken, Thread.SocialItems.socialAppId).then(success, error);
+                        }
                     }
                     else if (Thread.comment && !Thread.waitAPICompletion) {
                         Thread.waitAPICompletion = true;
@@ -169,6 +172,11 @@
 
 
             };
+
+            var getImageSizeInMB = function (size) {
+                return (size/(1024 * 1024));       // return size in MB
+            };
+
             /**
              * loadMoreComments methods is loads the more comments of a post.
              */
@@ -498,18 +506,28 @@
 
             Thread.uploadImage = function (file) {
                 console.log('inside select image method',file);
+                var fileSize;
                 if(file) {
+                    fileSize = getImageSizeInMB(file.size);      // get image size in MB
                     Thread.imageSelected = true;
-                    Thread.imageName = file.name;
+                    if (fileSize > FILE_UPLOAD.MAX_SIZE) {
+                        Thread.imageName = file.name + ' - ' + FILE_UPLOAD.SIZE_EXCEED;
+                        Thread.showImageLoader = false;
+                    } else {
+                        Thread.imageName = file.name;
+                        Thread.showImageLoader = true;
+                    }
                 }
+
             };
 
             Thread.cancelImageSelect = function () {
-                Thread.imageName = Thread.imageName + ' - Cancelled';
+                Thread.imageName = Thread.imageName.replace(' - ' + FILE_UPLOAD.SIZE_EXCEED, '') + ' - ' + FILE_UPLOAD.CANCELLED;
                 $timeout(function () {
                     Thread.imageSelected = false;
                     Thread.imageName = '';
                     Thread.picFile = '';
+                    Thread.showImageLoader = true;
                     if (!$scope.$$phase)
                         $scope.$digest();
                 },500);

@@ -28,4 +28,9 @@
             FOLLOW: "Join Group",
             FOLLOWING: "Joined Group"
         })
+        .constant('FILE_UPLOAD', {
+            CANCELLED : "Cancelled",
+            SIZE_EXCEED : "File Too Large",
+            MAX_SIZE : 20        // upload file max size in 20 MB
+        })
 })(window.angular);
