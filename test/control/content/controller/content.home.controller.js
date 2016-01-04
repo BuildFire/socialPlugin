@@ -19,7 +19,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
             });
         }));
 
-    xdescribe('Units: units should be Defined', function () {
+   describe('Units: units should be Defined', function () {
         it('it should pass if ContentHome is defined', function () {
             expect(ContentHome).not.toBeUndefined();
         });
@@ -31,7 +31,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    xdescribe('ContentHome.getPosts', function () {
+    describe('ContentHome.getPosts', function () {
         describe('Should pass when SocialDataStore.getPosts and SocialDataStore.getUsers return success', function () {
             beforeEach(function(){
                 SocialDataStore.getPosts.and.callFake(function () {
@@ -118,7 +118,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    xdescribe('ContentHome.getUserName', function () {
+    describe('ContentHome.getUserName', function () {
 
         beforeEach(function(){
             SocialDataStore.getPosts.and.callFake(function () {
@@ -155,7 +155,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.getUserImage', function () {
+    describe('ContentHome.getUserImage', function () {
 
         beforeEach(function(){
             SocialDataStore.getPosts.and.callFake(function () {
@@ -192,7 +192,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.deletePost', function () {
+    describe('ContentHome.deletePost', function () {
 
 
 
@@ -354,7 +354,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         })
     });
 
-    xdescribe('ContentHome.deleteComment', function () {
+    describe('ContentHome.deleteComment', function () {
 
         describe('ContentHome.deleteComment Modal success SocialDatastore Success',function(){
             beforeEach(function(){
@@ -466,7 +466,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    fdescribe('ContentHome.banUser', function () {
+    xdescribe('ContentHome.banUser', function () {
         var spy1;
         beforeEach(inject(function () {
             spy1 = spyOn(Modals,'banPopupModal').and.callFake(function () {
