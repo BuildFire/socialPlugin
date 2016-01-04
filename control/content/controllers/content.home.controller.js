@@ -6,7 +6,7 @@
         .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
-            var usersData = [];
+            ContentHome.usersData = [];
             var userIds = [];
             var initialCommentsLength;
             ContentHome.postText = '';
@@ -100,7 +100,7 @@
                                 console.error('Error while creating post ', response.data.error);
                             } else if (response.data.result) {
                                 console.info('Users fetched successfully', response.data.result);
-                                usersData = response.data.result;
+                                ContentHome.usersData = response.data.result;
                             }
                         };
                         // Called when getting error from SocialDataStore getUsers method
@@ -128,7 +128,7 @@
             // Method for getting User Name by giving userId as its argument
             ContentHome.getUserName = function (userId) {
                 var userName = '';
-                usersData.some(function (userData) {
+                ContentHome.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
@@ -140,7 +140,7 @@
             //Method for getting User Image by giving userId as its argument
             ContentHome.getUserImage = function (userId) {
                 var userImageUrl = '';
-                usersData.some(function (userData) {
+                ContentHome.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl || '';
                         return true;
@@ -200,7 +200,7 @@
                         if (post.commentsCount < 1) {
                             post.viewComments = false;
                         }
-                        post.comments = post.comments.filter(function (el) {
+                        post.comments = post && post.comments && post.comments.length && post.comments.filter(function (el) {
                             return el._id != commentId;
                         });
                         if (!$scope.$$phase)
@@ -323,7 +323,7 @@
                                         console.error('Error while creating post ', response.data.error);
                                     } else if (response.data.result && response.data.result.length > 0) {
                                         console.info('Users fetched successfully', response.data.result);
-                                        usersData.push(response.data.result[0]);
+                                        ContentHome.usersData.push(response.data.result[0]);
                                         if (!$scope.$$phase)$scope.$digest();
                                     }
                                 };
@@ -368,7 +368,7 @@
                                             console.error('Error while creating post ', response.data.error);
                                         } else if (response.data.result && response.data.result.length) {
                                             console.info('Users fetched successfully in comment added', response.data.result);
-                                            usersData.push(response.data.result[0]);
+                                            ContentHome.usersData.push(response.data.result[0]);
                                         }
                                         if (!$scope.$$phase)$scope.$digest();
                                     };
