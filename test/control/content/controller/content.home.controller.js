@@ -184,8 +184,12 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
 
         it('ContentHome.getUserImage test non empty name',function(){
-
-
+            ContentHome.usersData=[{
+                userObject:{
+                    _id: '55a8ce9adaf0ea9c2a000e59',
+                    imageUrl:'https://s3.amazonaws.com/Kaleo.DevBucket/upload_85afd72abba40258aa256409a01ed44b.jpg'
+                }
+            }];
             var userImageUrl=ContentHome.getUserImage('55a8ce9adaf0ea9c2a000e59');
             scope.$digest();
             expect(userImageUrl).toEqual('https://s3.amazonaws.com/Kaleo.DevBucket/upload_85afd72abba40258aa256409a01ed44b.jpg');
@@ -377,8 +381,9 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
             it('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
 
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.deleteComment(1);
+                ContentHome.posts = [{_id: 1, comments: []}];
+                console.log('--------------------------->kkkkkkkkkkkkkkkk', ContentHome);
+                ContentHome.deleteComment(ContentHome.posts[0], 1);
                 scope.$digest();
 
 

@@ -41,13 +41,13 @@
 <body class="scrollable">
 <div class="main_view">
     <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall">
-        <div class="slide content" ng-style="{'height': WidgetWall.height ? WidgetWall.height+ 'px' : '596px'}">
-            <div class="holder padding-zero has-bottom">
-                <div class="social-plugin social-wall">
-                    <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
+        <div class="slide content">
+            <div class="padding-zero" style="height: 100%;">
+                <div class="social-plugin social-wall" style="height: calc(100% - 45px)">
+                    <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: 100%;" ng-style="{'height': WidgetWall.height ? WidgetWall.height+'px' : '100%'}" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);" class="infinite-scroll-parent">
                         <div ng-if=" !WidgetWall.SocialItems.items.length">
                             <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>

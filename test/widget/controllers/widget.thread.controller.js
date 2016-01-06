@@ -19,9 +19,7 @@ xdescribe('Unit : Controller - ThreadCtrl', function () {
                 SocialDataStore: SocialDataStore,
                 $routeParams:$routeParams
             });
-        })
-    )
-    ;
+        }));
 
     describe('Units: units should be Defined', function () {
         it('it should pass if WidgetWallCtrl is defined', function () {

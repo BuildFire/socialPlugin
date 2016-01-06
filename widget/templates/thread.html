@@ -1,100 +1,106 @@
-<div class="slide content" ng-style="{'height': Thread.height ? Thread.height+ 'px' : '596px'}">
-    <div class="holder padding-zero has-bottom">
-        <div class="social-plugin social-thread">
-            <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
+<div class="slide content">
+    <div class="padding-zero" style="height: calc(100% - 45px);">
+        <div class="social-plugin social-thread" style="height: 100%;">
+            <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
             </div>
-            <div class="social-item clearfix">
-                <hr class="small">
-                <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
-                    <div class="col-xs-8 pull-left">
-                        <div class="media-holder pull-left"
-                             ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
-                            <img src="{{Thread.getUserImage(Thread.post.userId)}}">
+            <div style="height: calc(100% - 48px);overflow-y: auto;overflow-x: hidden;">
+                <div class="social-item clearfix">
+                    <hr class="small">
+                    <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
+                        <div class="col-xs-8 pull-left">
+                            <div class="media-holder pull-left"
+                                 ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
+                                <img src="{{Thread.getUserImage(Thread.post.userId)}}">
+                            </div>
+                            <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
+                                <a class="text-primary"
+                                   ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">{{Thread.getUserName(Thread.post.userId)}}</a>
+                            </p>
                         </div>
-                        <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                            <a class="text-primary" ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">{{Thread.getUserName(Thread.post.userId)}}</a>
-                        </p>
+                        <div class="col-xs-3 pull-right margin-top-ten text-right" ng-if="Thread.post.createdOn">
+                            <span class="time-ago opacity-seventy">{{Thread.getDuration(Thread.post.createdOn) | convertTimeFormat}}</span>
+                        </div>
                     </div>
-                    <div class="col-xs-3 pull-right margin-top-ten text-right" ng-if="Thread.post.createdOn">
-                        <span class="time-ago opacity-seventy">{{Thread.getDuration(Thread.post.createdOn) | convertTimeFormat}}</span>
+                    <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
+                        <p class="margin-zero" ng-bind-html="Thread.post.text | newLine"></p>
                     </div>
-                </div>
-                <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-                    <p class="margin-zero" ng-bind-html="Thread.post.text | newLine"></p>
-                </div>
-                <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="Thread.post.imageUrl">
-                    <div class="plugin-slide text-center">
-                        <img ng-src="{{Thread.post.imageUrl | cropImage :342 : 193}}">
+                    <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="Thread.post.imageUrl">
+                        <div class="plugin-slide text-center">
+                            <img ng-src="{{Thread.post.imageUrl | cropImage :342 : 193}}">
+                        </div>
                     </div>
-                </div>
-                <div class="footer margin-bottom-ten clearfix">
-                    <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-                        <a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
-                            <span class="icon icon-heart" ng-class="{inactive: Thread.post.isUserLikeActive}"></span>
-                        </a>
-                        <a class="social-icon margin-left-twenty">
-                            <span class="icon icon-bubble"></span>
-                        </a>
-                    </div>
-                    <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-                        <div class="pull-right">
-                            <p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Likes</p>
-
-                            <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}}
-                                Comments</p>
-                            <a class="more-info" ng-click="Thread.showMoreOptions()">
-                                <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
+                    <div class="footer margin-bottom-ten clearfix">
+                        <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
+                            <a class="social-icon" ng-click="Thread.likeThread(Thread.post, 'thread')">
+                                <span class="icon icon-heart"
+                                      ng-class="{inactive: Thread.post.isUserLikeActive}"></span>
+                            </a>
+                            <a class="social-icon margin-left-twenty">
+                                <span class="icon icon-bubble"></span>
                             </a>
                         </div>
-                    </div>
-                </div>
-                <hr class="small margin-bottom-zero">
-                <div ng-if="Thread.post.commentsCount > 10 && Thread.showMore"
-                     class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
-                    <a ng-click="Thread.loadMoreComments()">Load More Comments</a>
-                </div>
-                <div class="comments-list">
-                    <div class="social-comment" ng-repeat="comment in Thread.comments">
-                        <hr class="small">
-                        <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
-                            <div class="col-xs-8 pull-left">
-                                <p class="text-primary ellipsis margin-top-five margin-bottom-zero">
-                                    <a class="text-primary"
-                                       ng-click="Thread.buildfire.auth.openProfile(comment.userId)">{{Thread.getUserName(comment.userId)}}</a>
-                                </p>
-                            </div>
-                            <div class="col-xs-3 pull-right margin-top-five text-right" ng-if="comment.createdOn">
-                                <span class="time-ago opacity-seventy">{{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</span>
-                            </div>
-                        </div>
-                        <a style="float: right; margin-right: 5px" ng-click="Thread.deleteComment(comment._id)"
-                           ng-if="Thread.userDetails.userId == comment.userId" class="btn-delete-icon btn-danger"></a>
+                        <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
+                            <div class="pull-right">
+                                <p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Likes</p>
 
-                        <div class="copy padding-left-ten padding-right-ten margin-bottom-five">
-                            <p class="margin-zero" ng-bind-html="comment.comment|newLine"></p>
-                        </div>
-                        <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
-                            <div class="plugin-slide text-center">
-                                <img ng-src="{{comment.attachedImage}}">
-                            </div>
-                        </div>
-                        <div class="footer margin-bottom-ten clearfix">
-                            <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-                                <a class="social-icon" ng-click="Thread.likeComment(comment, 'comment')">
-                                    <span class="icon icon-heart"
-                                          ng-class="{inactive: comment.isUserLikeActive}"></span>
+                                <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}}
+                                    Comments</p>
+                                <a class="more-info" ng-click="Thread.showMoreOptions()">
+                                    <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                 </a>
                             </div>
-                            <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-                                <div class="pull-right">
-                                    <p class="pull-left margin-bottom-zero">{{comment.likesCount?comment.likesCount:0}}
-                                        Likes</p>
+                        </div>
+                    </div>
+                    <hr class="small margin-bottom-zero">
+                    <div ng-if="Thread.post.commentsCount > 10 && Thread.showMore"
+                         class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
+                        <a ng-click="Thread.loadMoreComments()">Load More Comments</a>
+                    </div>
+                    <div class="comments-list">
+                        <div class="social-comment" ng-repeat="comment in Thread.comments">
+                            <hr class="small">
+                            <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
+                                <div class="col-xs-8 pull-left">
+                                    <p class="text-primary ellipsis margin-top-five margin-bottom-zero">
+                                        <a class="text-primary"
+                                           ng-click="Thread.buildfire.auth.openProfile(comment.userId)">{{Thread.getUserName(comment.userId)}}</a>
+                                    </p>
+                                </div>
+                                <div class="col-xs-3 pull-right margin-top-five text-right" ng-if="comment.createdOn">
+                                    <span class="time-ago opacity-seventy">{{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</span>
+                                </div>
+                            </div>
+                            <a style="float: right; margin-right: 5px" ng-click="Thread.deleteComment(comment._id)"
+                               ng-if="Thread.userDetails.userId == comment.userId"
+                               class="btn-delete-icon btn-danger"></a>
 
-                                    <!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
-                                    <a class="more-info">
-                                        <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
+                            <div class="copy padding-left-ten padding-right-ten margin-bottom-five">
+                                <p class="margin-zero" ng-bind-html="comment.comment|newLine"></p>
+                            </div>
+                            <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
+                                <div class="plugin-slide text-center">
+                                    <img ng-src="{{comment.attachedImage}}">
+                                </div>
+                            </div>
+                            <div class="footer margin-bottom-ten clearfix">
+                                <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
+                                    <a class="social-icon" ng-click="Thread.likeComment(comment, 'comment')">
+                                    <span class="icon icon-heart"
+                                          ng-class="{inactive: comment.isUserLikeActive}"></span>
                                     </a>
+                                </div>
+                                <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
+                                    <div class="pull-right">
+                                        <p class="pull-left margin-bottom-zero">
+                                            {{comment.likesCount?comment.likesCount:0}}
+                                            Likes</p>
+
+                                        <!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
+                                        <a class="more-info">
+                                            <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
