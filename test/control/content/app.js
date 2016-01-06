@@ -1,8 +1,10 @@
 describe('socialPluginContent: App', function () {
     beforeEach(module('socialPluginContent'));
     var location, route, rootScope;
+
     beforeEach(inject(
         function (_$location_, _$route_, _$rootScope_) {
+
             location = _$location_;
             route = _$route_;
             rootScope = _$rootScope_;
@@ -21,5 +23,9 @@ describe('socialPluginContent: App', function () {
             rootScope.$digest();
             expect(route.current.controller).toBe('ContentHomeCtrl')
         });
+
     });
+
+
+
 });

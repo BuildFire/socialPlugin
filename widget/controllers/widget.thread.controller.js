@@ -6,6 +6,7 @@
             var Thread = this;
             var userIds = [];
             var usersData = [];
+            var uniqueLinksOfComments = [];
             Thread.comments = [];
             Thread.userDetails = {};
             Thread.height = window.innerHeight;
@@ -83,7 +84,7 @@
                     //Thread.post = data.data.result;
                     Thread.showMore = Thread.post.commentsCount > 10;
                     uniqueIdsArray.push(Thread.post.uniqueLink);
-                    userIds.push(Thread.post.userId);
+//                    userIds.push(Thread.post.userId);
 
                     var checkUserPromise = checkAuthenticatedUser(true);
 
@@ -109,25 +110,35 @@
             Thread.getComments = function (postId, lastCommentId) {
                 SocialDataStore.getCommentsOfAPost({threadId: postId, lastCommentId: lastCommentId, userToken: Thread.userDetails.userToken, appId: Thread.SocialItems.socialAppId}).then(
                     function (data) {
-                        var uniqueLinksOfComments = [];
+                        var newUniqueLinksOfComments = [], newUserIds = [];
                         console.log('Success get Comments---------', data);
                         if (data && data.data && data.data.result)
                             Thread.comments = Thread.comments.concat(data.data.result);
                         Thread.comments.forEach(function (commentData) {
-                            uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                            if(uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
+                                uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                newUniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                            }
                             if (userIds.indexOf(commentData.userId) == -1) {
                                 userIds.push(commentData.userId);
+                                newUserIds.push(commentData.userId);
                             }
                         });
-                        getCommentsLikeAndUpdate(uniqueLinksOfComments);
-                        if (userIds && userIds.length > 0) {
-                            SocialDataStore.getUsers(userIds, Thread.userDetails.userToken).then(function (response) {
+                        if(userIds.indexOf(Thread.post.userId) == -1) {
+                            userIds.push(Thread.post.userId);
+                            newUserIds.push(Thread.post.userId);
+                        }
+                        console.log('newUserIds :::::::::::::::::::', newUserIds, userIds);
+                        console.log('newUniqueLinksOfComments :::::::::::::::::::', newUniqueLinksOfComments, uniqueLinksOfComments);
+                        getCommentsLikeAndUpdate(newUniqueLinksOfComments);
+                        if (newUserIds && newUserIds.length > 0) {
+                            SocialDataStore.getUsers(newUserIds, Thread.userDetails.userToken).then(function (response) {
                                 console.info('Users fetching for comments and response is: ', response.data.result);
                                 if (response.data.error) {
                                     console.error('Error while fetching users for comments ', response.data.error);
                                 } else if (response.data.result) {
                                     console.info('Users fetched successfully for comments ', response.data.result);
-                                    usersData = response.data.result;
+                                    usersData = usersData.concat(response.data.result);
                                 }
                             }, function (err) {
                                 console.log('Error while fetching users of comments inside thread page: ', err);
@@ -213,7 +224,7 @@
             Thread.getUserName = function (userId) {
                 var userName = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
                     }
@@ -228,7 +239,7 @@
             Thread.getUserImage = function (userId) {
                 var userImageUrl = '';
                 usersData.some(function (userData) {
-                    if (userData.userObject._id == userId) {
+                    if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl || '';
                         return true;
                     }

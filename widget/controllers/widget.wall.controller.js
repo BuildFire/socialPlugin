@@ -438,12 +438,18 @@
             };
             function getUsersAndLikes() {
                 var count = 0;
+                var postIdsChunkArray = [], newUserIds = [], newPostsUniqueIds = [], chunk = 10;
+//                getLikesData = [];
                 WidgetWall.SocialItems.items.forEach(function (postData) {
                     count++;
-                    if (userIds.indexOf(postData.userId.toString()) == -1)
+                    if (userIds.indexOf(postData.userId.toString()) == -1) {
                         userIds.push(postData.userId.toString());
-                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1)
+                        newUserIds.push(postData.userId.toString());
+                    }
+                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1) {
                         postsUniqueIds.push(postData.uniqueLink);
+                        newPostsUniqueIds.push(postData.uniqueLink);
+                    }
                 });
                 var successCallback = function (response) {
                     if (response.data.error) {
@@ -456,8 +462,19 @@
                 var errorCallback = function (err) {
                     console.error('Error while fetching users details ', err);
                 };
-                SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
-                SocialDataStore.getThreadLikes(postsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
+                SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
+                console.log('newPostsUniqueIds is:::::::::',newPostsUniqueIds);
+                SocialDataStore.getThreadLikes(newPostsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
+                    if (response.data.error) {
+                        console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                    } else if (response.data.result) {
+                        getLikesData = getLikesData.concat(response.data.result);
+                        console.log('getLikesData is::::::::::::::::::::::::::::', getLikesData);
+                    }
+                }, function (err) {
+                    console.error('Error while fetching thread likes ', err);
+                });
+                /*SocialDataStore.getThreadLikes(postsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
                     postsUniqueIds = [];
                     if (response.data.error) {
                         console.error('Error while getting likes of thread by logged in user ', response.data.error);
@@ -466,7 +483,7 @@
                     }
                 }, function (err) {
                     console.error('Error while fetching thread likes ', err);
-                });
+                });*/
             }
 
             WidgetWall.uploadImage = function (file) {
@@ -500,10 +517,14 @@
             $scope.$watch(function () {
                 return WidgetWall.SocialItems.items;
             }, function () {
-                if (masterItems != WidgetWall.SocialItems.items) {
-                    console.log('New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
+                    console.log('Before New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                    console.log('before master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
                     masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
                     getUsersAndLikes();
+                    console.log('After New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                    console.log('After master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
+
                 }
             }, true);
             $rootScope.$on(EVENTS.COMMENT_ADDED, function () {
