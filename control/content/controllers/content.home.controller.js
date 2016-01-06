@@ -75,6 +75,7 @@
             // Method for getting posts and its detail using SocialDataStrore methods
             ContentHome.getPosts = function () {
                 console.log('Get post method called--in----- content--------------');
+                var newUserIds = [];
                 ContentHome.noMore = true;
                 var lastThreadId;
                 // Called when getting success from SocialDataStore getPosts method
@@ -89,10 +90,13 @@
                     }
                     if(response && response.data && response.data.result) {
                         response.data.result.forEach(function (postData) {
-                            if (userIds.indexOf(postData.userId.toString()) == -1)
+                            if (userIds.indexOf(postData.userId.toString()) == -1) {
                                 userIds.push(postData.userId.toString());
+                                newUserIds.push(postData.userId.toString());
+                            }
                             ContentHome.posts.push(postData);
                         });
+                        console.log('newUserIds::::::::::::::',newUserIds, userIds);
                         // Called when getting success from SocialDataStore getUsers method
                         var successCallback = function (response) {
                             console.info('Users fetching response is: ', response.data.result);
@@ -100,7 +104,8 @@
                                 console.error('Error while creating post ', response.data.error);
                             } else if (response.data.result) {
                                 console.info('Users fetched successfully', response.data.result);
-                                ContentHome.usersData = response.data.result;
+                                ContentHome.usersData = ContentHome.usersData.concat(response.data.result);
+                                console.log('ContentHome.usersData is:::::::::::',ContentHome.usersData);
                             }
                         };
                         // Called when getting error from SocialDataStore getUsers method
@@ -108,7 +113,7 @@
                             console.log('Error while fetching users details ', err);
                         };
                         // Getting users details of posts
-                        SocialDataStore.getUsers(userIds).then(successCallback, errorCallback);
+                        SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
                     } else if(response && response.data && response.data.error) {
                         console.log("error while getting posts:::::: ", response.data.error);
                     }
@@ -242,6 +247,8 @@
 
             // Method for loading comments
             ContentHome.loadMoreComments = function (thread, viewComment) {
+                var newUniqueLinksOfComments = [];
+                var newUserIds = [];
                 initialCommentsLength = (thread.comments && thread.comments.length) || null;
                 if (viewComment && viewComment == 'viewComment' && thread.commentsCount > 0)
                     thread.viewComments = thread.viewComments ? false : true;
@@ -254,17 +261,35 @@
                         function (data) {
                             console.log('Success in Content get Load more Comments---------', data);
                             if (data && data.data && data.data.result) {
-                                var uniqueLinksOfComments = [];
+                                thread.uniqueLinksOfComments = thread.uniqueLinksOfComments || [];
                                 thread.comments = thread.comments && !viewComment ? thread.comments.concat(data.data.result) : data.data.result;
                                 thread.moreComments = thread.comments && thread.comments.length < thread.commentsCount ? false : true;
                                 thread.comments.forEach(function (commentData) {
-                                    uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                    if(thread.uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
+                                        thread.uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                        newUniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                    }
+
                                     if (userIds.indexOf(commentData.userId) == -1) {
                                         userIds.push(commentData.userId);
+                                        newUserIds.push(commentData.userId);
                                     }
                                 });
-                                console.log('uniqueLinksOfComments are:::::::::', uniqueLinksOfComments);
-                                getCommentsLikeAndUpdate(thread, uniqueLinksOfComments);
+                                console.log('newUniqueLinksOfComments are:::::::::', newUniqueLinksOfComments, thread.uniqueLinksOfComments);
+                                getCommentsLikeAndUpdate(thread, newUniqueLinksOfComments);
+                                if (newUserIds && newUserIds.length > 0) {
+                                    SocialDataStore.getUsers(newUserIds).then(function (response) {
+                                        console.info('Users fetching for comments and response is: ', response.data.result);
+                                        if (response.data.error) {
+                                            console.error('Error while fetching users for comments ', response.data.error);
+                                        } else if (response.data.result) {
+                                            console.info('Users fetched successfully for comments ', response.data.result);
+                                            ContentHome.usersData = ContentHome.usersData.concat(response.data.result);
+                                        }
+                                    }, function (err) {
+                                        console.log('Error while fetching users of comments inside thread page: ', err);
+                                    });
+                                }
                                 if (!$scope.$$phase)$scope.$digest();
                             }
                         },
