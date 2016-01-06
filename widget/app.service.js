@@ -410,6 +410,7 @@
             };
             var instance;
             SocialItems.prototype.posts = function () {
+                console.log('Get Post called---------------------------------------------------*****************');
                 if (_this.busy) {
                     return;
                 }

@@ -518,9 +518,13 @@
                 return WidgetWall.SocialItems.items;
             }, function () {
                 if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
-                    console.log('New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                    console.log('Before New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                    console.log('before master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
                     masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
                     getUsersAndLikes();
+                    console.log('After New Items loaded----------------------------', WidgetWall.SocialItems.items);
+                    console.log('After master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
+
                 }
             }, true);
             $rootScope.$on(EVENTS.COMMENT_ADDED, function () {
