@@ -59,7 +59,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         it('it should pass if SocialDataStore is defined', function () {
             expect(SocialDataStore).not.toBeUndefined();
         });
-        it('it should pass if Buildfire is defined', function () {
+        xit('it should pass if Buildfire is defined', function () {
             expect(Buildfire).not.toBeUndefined();
         });
     });
@@ -619,7 +619,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    describe('ContentHome.loadMoreComments', function () {
+    xdescribe('ContentHome.loadMoreComments', function () {
 
         var spy1;
         beforeEach(inject(function () {
