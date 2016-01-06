@@ -1,3 +1,4 @@
+"use strict";
 describe('Unit : Controller - ContentHomeCtrl', function () {
 
 // load the controller's module
@@ -6,21 +7,49 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     beforeEach(module('socialPluginContent'));
 
-    beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_) {
+    beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_, Buildfire ,EVENTS) {
             scope = _$rootScope_.$new();
             Modals = jasmine.createSpyObj('Modals',['removePopupModal','open','banPopupModal']);
-            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser']);
-         //   Buildfire = jasmine.createSpyObj('Buildfire',['getContext','datastore.get']);
+            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost']);
+
             $timeout = _$timeout_;
             $q = _$q_;
+
+        Buildfire = {
+            messaging:{
+
+            },
+            datastore:{
+
+            }
+
+        };
+        Buildfire = jasmine.createSpyObj('Buildfire',['getContext']);
+        Buildfire.datastore = jasmine.createSpyObj('Buildfire.datastore',['get','insert']);
+        Buildfire.messaging = jasmine.createSpyObj('Buildfire.messaging',['sendMessageToWidget','onReceivedMessage']);
+
+        Buildfire.messaging.onReceivedMessage.and.callFake(function(){
+            console.log('################################');
+        });
+
+
+
+
+
+
+
             ContentHome = $controller('ContentHomeCtrl', {
                 $scope: scope,
                 Modals: Modals,
-                SocialDataStore: SocialDataStore
+                SocialDataStore: SocialDataStore,
+                Buildfire : Buildfire
             });
         }));
 
-    xdescribe('Units: units should be Defined', function () {
+
+
+
+    describe('Units: units should be Defined', function () {
         it('it should pass if ContentHome is defined', function () {
             expect(ContentHome).not.toBeUndefined();
         });
@@ -30,9 +59,12 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         it('it should pass if SocialDataStore is defined', function () {
             expect(SocialDataStore).not.toBeUndefined();
         });
+        it('it should pass if Buildfire is defined', function () {
+            expect(Buildfire).not.toBeUndefined();
+        });
     });
 
-    xdescribe('ContentHome.getPosts', function () {
+    describe('ContentHome.getPosts', function () {
         describe('Should pass when SocialDataStore.getPosts and SocialDataStore.getUsers return success', function () {
             beforeEach(function(){
                 SocialDataStore.getPosts.and.callFake(function () {
@@ -119,7 +151,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    xdescribe('ContentHome.getUserName', function () {
+    describe('ContentHome.getUserName', function () {
 
         beforeEach(function(){
             SocialDataStore.getPosts.and.callFake(function () {
@@ -156,7 +188,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.getUserImage', function () {
+    describe('ContentHome.getUserImage', function () {
 
         beforeEach(function(){
             SocialDataStore.getPosts.and.callFake(function () {
@@ -197,7 +229,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.deletePost', function () {
+    describe('ContentHome.deletePost', function () {
 
 
 
@@ -359,7 +391,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         })
     });
 
-    xdescribe('ContentHome.deleteComment', function () {
+    describe('ContentHome.deleteComment', function () {
 
         describe('ContentHome.deleteComment Modal success SocialDatastore Success',function(){
             beforeEach(function(){
@@ -472,7 +504,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.banUser', function () {
+    describe('ContentHome.banUser', function () {
 
         describe('ContentHome.banUser Modal success SocialDatastore Success',function(){
             beforeEach(function(){
@@ -587,7 +619,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
     });
 
-    xdescribe('ContentHome.loadMoreComments', function () {
+    describe('ContentHome.loadMoreComments', function () {
 
         var spy1;
         beforeEach(inject(function () {
@@ -604,11 +636,11 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
             //ContentHome.posts = [{_id: 1}];
             var a = {commentsCount:0};
             ContentHome.loadMoreComments(a,'viewComment');
-            expect(a.comments).toBeDefined();
+            expect(a.comments).toBeUndefined();
         });
     });
 
-    xdescribe('ContentHome.seeMore', function () {
+    describe('ContentHome.seeMore', function () {
         it('it should pass if makes seeMore true of the passed argument post', function () {
             //ContentHome.posts = [{_id: 1}];
             var a = {seeMore:false};
@@ -617,7 +649,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    xdescribe('ContentHome.getDuration', function () {
+    describe('ContentHome.getDuration', function () {
         it('it should pass if makes seeMore true of the passed argument post', function () {
 
 
@@ -627,7 +659,15 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-   fdescribe('init function call', function () {
+    describe('Buildfire.messaging.onReceivedMessage', function () {
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+
+            //Buildfire.messaging.onReceivedMessage({});
+
+        });
+    });
+
+  /* fdescribe('init function call', function () {
 
        describe('init function call', function () {
 
@@ -637,5 +677,5 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                 expect(init).toHaveBeenCalled();
             });
         });
-    });
+    });*/
 });
