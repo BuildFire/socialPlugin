@@ -48,10 +48,7 @@
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);" class="infinite-scroll-parent">
-                        <div ng-if=" !WidgetWall.SocialItems.items.length">
-                            <h4 style="text-align: center;">You do not have any posts yet</h4>
-                        </div>
-                        <div id="top" infinite-scroll-distance="0"
+                        <div  id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
                              infinite-scroll-disabled="WidgetWall.SocialItems.busy">
@@ -103,6 +100,9 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div ng-show=" WidgetWall.SocialItems.items.length<1">
+                            <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>
                     </div>
                 </div>
