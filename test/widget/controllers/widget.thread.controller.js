@@ -1,4 +1,4 @@
-xdescribe('Unit : Controller - ThreadCtrl', function () {
+describe('Unit : Controller - ThreadCtrl', function () {
 
 // load the controller's module
     beforeEach(module('socialPluginWidget'));
@@ -19,13 +19,15 @@ xdescribe('Unit : Controller - ThreadCtrl', function () {
                 SocialDataStore: SocialDataStore,
                 $routeParams:$routeParams
             });
-        }));
+        })
+    )
+    ;
 
     describe('Units: units should be Defined', function () {
-        it('it should pass if WidgetWallCtrl is defined', function () {
+        xit('it should pass if WidgetWallCtrl is defined', function () {
             expect(ThreadCtrl).not.toBeUndefined();
         });
-        it('it should pass if Modals is defined', function () {
+        xit('it should pass if Modals is defined', function () {
             expect(Modals).not.toBeUndefined();
         });
     });
@@ -71,7 +73,7 @@ xdescribe('Unit : Controller - ThreadCtrl', function () {
 
         }));
 
-        it('it should pass if it calls Modals.showMoreOptionsModal', function () {
+        xit('it should pass if it calls Modals.showMoreOptionsModal', function () {
             ThreadCtrl.showMoreOptions();
             expect(spy1).toHaveBeenCalled();
         });
@@ -89,7 +91,7 @@ xdescribe('Unit : Controller - ThreadCtrl', function () {
 
         }));
 
-        it('it should pass if it calls SocialDataStore.getCommentsOfAPost', function () {
+        xit('it should pass if it calls SocialDataStore.getCommentsOfAPost', function () {
             ThreadCtrl.post ={_id:1};
             ThreadCtrl.comments = [{_id:''}];
             ThreadCtrl.loadMoreComments();

@@ -1,11 +1,9 @@
-xdescribe('Unit : Controller - WidgetWallCtrl', function () {
+describe('Unit : Controller - WidgetWallCtrl', function () {
 
 // load the controller's module
     beforeEach(module('socialPluginWidget'));
 
-    var
-        WidgetWallCtrl, scope, Modals, SocialDataStore, $timeout,$q;
-
+    var WidgetWallCtrl, scope, Modals, SocialDataStore, $timeout,$q;
     beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _SocialDataStore_, _$timeout_,_$q_) {
             scope = _$rootScope_.$new();
             Modals = _Modals_;
@@ -44,7 +42,7 @@ xdescribe('Unit : Controller - WidgetWallCtrl', function () {
 
         }));
 
-        it('it should pass if it calls SocialDataStore.createPost if WidgetWall.picFile is truthy', function () {
+        xit('it should pass if it calls SocialDataStore.createPost if WidgetWall.picFile is truthy', function () {
             WidgetWallCtrl.picFile = 'a';
             WidgetWallCtrl.createPost();
             expect(spy1).toHaveBeenCalled();

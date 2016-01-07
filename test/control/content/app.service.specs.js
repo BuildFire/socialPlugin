@@ -1,4 +1,4 @@
-xdescribe('Unit : socialPluginContent content services', function () {
+describe('Unit : socialPluginContent content services', function () {
     describe('Unit: Buildfire Provider', function () {
         var Buildfire;
         var SocialDataStore;
