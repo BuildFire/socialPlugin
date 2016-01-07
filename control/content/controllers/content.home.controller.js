@@ -186,7 +186,7 @@
             ContentHome.deleteComment = function (post, commentId) {
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId).then(success, error);
+                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId,datastoreWriteKey).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });

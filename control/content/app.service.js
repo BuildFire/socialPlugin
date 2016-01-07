@@ -185,7 +185,7 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                deleteComment: function (commentId, threadId, socialAppId) {
+                deleteComment: function (commentId, threadId, socialAppId,secureToken) {
                     var deferred = $q.defer();
                     var postDeleteObject = {};
                     postDeleteObject.id = '1';
@@ -195,7 +195,7 @@
                     postDeleteObject.params.appId = socialAppId;
                     postDeleteObject.params.threadId = threadId;
                     postDeleteObject.params.userToken = null;
-                    postDeleteObject.params.secureToken = null;
+                    postDeleteObject.params.secureToken = secureToken;
                     postDeleteObject.userToken = null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
