@@ -51,10 +51,10 @@
                         <div ng-if=" !WidgetWall.SocialItems.items.length">
                             <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>
-                        <div id="top" infinite-scroll-distance="0"
+                        <div  id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
-                             infinite-scroll-disabled="WidgetWall.SocialItems.busy">
+                             infinite-scroll-disabled="WidgetWall.SocialItems.busy" style="height: calc(100% - 45px)">
                             <div class="social-item clearfix" ng-repeat="post in WidgetWall.SocialItems.items">
                                 <hr class="small">
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
