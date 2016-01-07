@@ -410,7 +410,7 @@
             };
             var instance;
             SocialItems.prototype.posts = function () {
-                console.log('Get Post called---------------------------------------------------*****************');
+                console.log('Get Post called------------------------in widget section SocialItems service---------------------------*****************');
                 if (_this.busy) {
                     return;
                 }
