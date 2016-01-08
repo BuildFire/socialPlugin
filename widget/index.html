@@ -1,166 +1,148 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="buildfire">
+<html lang="en" ng-app="socialPluginWidget">
 <head>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../../../../styles/bootstrap.css">
-    <link rel="stylesheet" href="../../../../styles/appStyle.css">
-    <link rel="stylesheet" href="../../../../styles/siteIcons.css">
-    <link rel="stylesheet" href="../../../../styles/helper.css">
+    <link rel="stylesheet" href="../../../styles/bootstrap.css">
+    <link rel="stylesheet" href="../../../styles/appStyle.css">
+    <link rel="stylesheet" href="../../../styles/siteIcons.css">
+    <link rel="stylesheet" href="../../../styles/helper.css">
+    <link rel="stylesheet" href="../../../styles/transitionAnimation.css">
 
-	<!-- Plugin CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 
-	<!-- BuildFire JS -->
-	<script src="../../../../scripts/buildfire.js"></script>
+    <!-- JS -->
+    <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
+    <script src="../../../scripts/buildfire.js"></script>
+    <script src="../../../scripts/angular/angular.min.js"></script>
+    <script src="../../../scripts/angular/angular-route.min.js"></script>
+    <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
+    <script src="assets/js/ng-file-upload.min.js"></script>
+    <script src="assets/js/ng-file-upload-shim.min.js"></script>
+    <script src="assets/js/moment.js"></script>
+    <script src="modals.js"></script>
+    <script src="app.js"></script>
+    <script src="assets/js/ng-infinite-scroll.custom.js"
+            type="application/javascript"></script>
+    <script src="../../../scripts/angular/angular-animate.min.js"></script>
+    <script src="app.service.js"></script>
+    <script src="enums.js"></script>
+    <script src="assets/js/filters.js"></script>
+    <script src="controllers/widget.wall.controller.js"></script>
+    <script src="controllers/widget.thread.controller.js"></script>
 
+    <script>
+        moment().format();
+    </script>
     <!-- Meta -->
-	<meta charset="utf-8">
+    <meta charset="utf-8">
 </head>
-<div class="holder padding-zero has-bottom">
-	<div class="social-plugin social-wall">				
-		<div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen">
-			<a>Join Group</a>			
-		</div>
-		<div class="social-item clearfix">
-			<hr class="small">
-			<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<div class="col-xs-8 pull-left">
-					<div class="media-holder pull-left">
-						<img src="http://www.placehold.it/100x100">
-					</div>
-					<p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-						<a class="text-primary">Jackie Conrad</a>
-					</p>
-				</div>
-				<div class="col-xs-3 pull-right margin-top-ten text-right">
-					<span class="time-ago opacity-seventy">2h</span>
-				</div>
-			</div>
-			<div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-			</div>
-			<div class="plugin-banner clearfix margin-bottom-fifteen">
-				<div class="plugin-slide text-center">
-					<img src="http://www.placehold.it/720x380.jpg">
-				</div>
-			</div>
-			<div class="footer margin-bottom-ten clearfix">
-				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-					<a class="social-icon">
-						<span class="icon icon-heart"></span>
-					</a>
-					<a class="social-icon margin-left-twenty">
-						<span class="icon icon-bubble"></span>
-					</a>
-				</div>
-				<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-					<div class="pull-right">
-						<p class="pull-left margin-bottom-zero">9 Likes</p>
-						<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
-						<a class="more-info">
-							<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="social-item clearfix">
-			<hr class="small">
-			<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<div class="col-xs-8 pull-left">
-					<div class="media-holder pull-left">
-						<img src="http://www.placehold.it/100x100">
-					</div>
-					<p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-						<a class="text-primary">Jackie Conrad</a>
-					</p>
-				</div>
-				<div class="col-xs-3 pull-right margin-top-ten text-right">
-					<span class="time-ago opacity-seventy">2h</span>
-				</div>
-			</div>
-			<div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-			</div>
-			<div class="footer margin-bottom-ten clearfix">
-				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-					<a class="social-icon">
-						<span class="icon icon-heart"></span>
-					</a>
-					<a class="social-icon margin-left-twenty">
-						<span class="icon icon-bubble"></span>
-					</a>
-				</div>
-				<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-					<div class="pull-right">
-						<p class="pull-left margin-bottom-zero">9 Likes</p>
-						<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
-						<a class="more-info">
-							<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="social-item clearfix">
-			<hr class="small">
-			<div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<div class="col-xs-8 pull-left">
-					<div class="media-holder pull-left">
-						<img src="http://www.placehold.it/100x100">
-					</div>
-					<p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-						<a class="text-primary">Jackie Conrad</a>
-					</p>
-				</div>
-				<div class="col-xs-3 pull-right margin-top-ten text-right">
-					<span class="time-ago opacity-seventy">2h</span>
-				</div>
-			</div>
-			<div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-				<p class="margin-zero">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-			</div>
-			<div class="plugin-banner clearfix margin-bottom-fifteen">
-				<div class="plugin-slide text-center">
-					<img src="http://www.placehold.it/720x380.jpg">
-				</div>
-			</div>
-			<div class="footer margin-bottom-ten clearfix">
-				<div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-					<a class="social-icon">
-						<span class="icon icon-heart"></span>
-					</a>
-					<a class="social-icon margin-left-twenty">
-						<span class="icon icon-bubble"></span>
-					</a>
-				</div>
-				<div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
-					<div class="pull-right">
-						<p class="pull-left margin-bottom-zero">9 Likes</p>
-						<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>
-						<a class="more-info">
-							<span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<body class="scrollable">
+<div class="main_view">
+    <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall">
+        <div class="slide content">
+            <div class="padding-zero" style="height: 100%;">
+                <div class="social-plugin social-wall" style="height: calc(100% - 45px)">
+                    <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
+                        <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
+                    </div>
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);" class="infinite-scroll-parent">
+                        <div  id="top" infinite-scroll-distance="0"
+                             data-infinite-container=".infinite-scroll-parent"
+                             infinite-scroll="WidgetWall.SocialItems.posts()"
+                             infinite-scroll-disabled="WidgetWall.SocialItems.busy">
+                            <div class="social-item clearfix" ng-repeat="post in WidgetWall.SocialItems.items">
+                                <hr class="small">
+                                <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
+                                    <div class="col-xs-8 pull-left">
+                                        <div class="media-holder pull-left" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
+                                            <img ng-src="{{WidgetWall.getUserImage(post.userId)}}">
+                                        </div>
+                                        <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
+                                            <a class="text-primary" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
+                                        </p>
+                                    </div>
+                                    <div class="col-xs-3 pull-right margin-top-ten text-right">
+                                        <span class="time-ago opacity-seventy">{{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn-delete-icon btn-danger" ng-click="WidgetWall.deletePost(post._id)" ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" style="float: right;margin-right: 5px;z-index: 1 !important;"></a>
+                                <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
+                                    <p class="margin-zero cursor-pointer">
+                                        <span ng-click="WidgetWall.goInToThread(post.uniqueLink)" ng-bind-html="(post.text | limitTo : (post.limit || 150) :0) | newLine"></span>
+                                        <span ng-if="(post.text.length>150 && !post.seeMore)">...</span>
+                                        <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="WidgetWall.seeMore(post)">Read More</a>
+									</p>
+                                </div>
+                                <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
+                                    <div class="plugin-slide text-center">
+                                        <a href="#/thread/{{post.uniqueLink}}"><img ng-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
+                                    </div>
+                                </div>
+                                <div class="footer margin-bottom-ten clearfix">
+                                    <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
+                                        <a class="social-icon" ng-click="WidgetWall.likeThread(post, 'thread')">
+                                            <span class="icon icon-heart" ng-class="{inactive: WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
+                                        </a>
+                                        <a href="#/thread/{{post.uniqueLink}}" class="social-icon margin-left-twenty">
+                                            <span class="icon icon-bubble"></span>
+                                        </a>
+                                    </div>
+                                    <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
+                                        <div class="pull-right">
+                                            <p class="pull-left margin-bottom-zero">{{post.likesCount}} Likes</p>
+                                            <p class="pull-left margin-bottom-zero margin-left-twenty">{{post.commentsCount}} Comments</p>
+                                            <a class="more-info" ng-click="WidgetWall.showMoreOptions(post._id)">
+                                                <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show=" WidgetWall.SocialItems.items.length<1">
+                            <h4 style="text-align: center;">You do not have any posts yet</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container" ng-if="WidgetWall.SocialItems.socialAppId">
+            <hr class="small">
+            <form ng-submit="" handle-phone-submit  >
+            <div class="post-holder clearfix">
+                <div class="add-media">
+                    <a>
+                    <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage($file)"
+                          ng-model="WidgetWall.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
+                          ngf-accept="'image/*'" accept="image/*" ngf-allow-dir="true"
+                          name="files"></span>
+                    </a>
+                </div>
+                <div class="add-message pull-left">
+                    <textarea rows="1" cols="30" placeholder="Type your message..." name="text"
+                           ng-model="WidgetWall.postText" class="text-area-custom"></textarea>
+                </div>
+                <div class="send-message">
+                    <input type="submit" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
+                </div>
+                <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
+                    <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
+                        <div><span class="filename">{{WidgetWall.imageName}}</span></div>
+                        <div class="progress" ng-if="WidgetWall.showImageLoader">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </form>
+        </div>
+    </div>
+    <div class="content" ng-view="" ng-hide="showThread"></div>
+
+
 </div>
-<div class="holder padding-zero bottom-post bodyBackgroundTheme">
-	<hr class="small">
-	<div class="post-holder clearfix">
-		<div class="add-media">
-			<a>
-				<span class="icon icon-camera2 text-primary"></span>
-			</a>
-		</div>
-		<div class="add-message pull-left">
-			<input type="text" class="form-control" placeholder="Type your message...">
-		</div>
-		<div class="send-message">
-			<input type="submit" class="text-primary" value="Send">
-		</div>
-	</div>
-</div>
+</body>
+</html>

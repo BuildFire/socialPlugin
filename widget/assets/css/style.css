@@ -3,8 +3,13 @@
 	display:block;
 }
 
-/* Single Post */
-.social-item:nth-child(2) > hr.small:first-child,
+/* Group Single Post */
+.social-item:nth-child(1) > hr.small:first-child,
+.social-comment:first-child > hr.small:first-child{
+	display:none;
+}
+/* Single Post*/
+.social-thread .social-item:nth-child(2) > hr.small:first-child,
 .social-comment:first-child > hr.small:first-child{
 	display:none;
 }
@@ -16,7 +21,7 @@
 }
 .head .media-holder img{
 	width:100%;
-	height:auto;
+	height:100%;
 	border-radius:100%;
 }
 .head .time-ago{
@@ -24,6 +29,9 @@
 }
 .footer .icon{
 	font-size:18px;
+}
+.footer .icon.inactive{
+	color:#777 !important;
 }
 .footer .status p{
 	font-size:13px;
@@ -94,3 +102,50 @@
 		font-size:13px;
 	}
 }
+
+.text-area-custom{
+	border: none;
+	height: 38px !important;
+	resize: none;
+	padding: 2.5% 2%;
+	line-height:25px;
+}
+
+/* BOF Upload image section with uploader and cross */
+.uploadifive-queue-item {
+    background-color: #F5F5F5;
+    border-bottom: 1px dotted #D5D5D5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font: 12px Arial, Helvetica, Sans-serif;
+    margin-top: 3px;
+    padding: 15px;
+}
+.uploadifive-queue-item .progress {
+    border: 1px solid #D0D0D0;
+    height: 3px;
+    margin: 5px 0;
+    width: 100%;
+}
+.cross-icon {
+    float: right;
+    height: 16px;
+    /* margin-top: -120px; */
+    width: 16px;
+    color: #333 !important;
+    z-index: 1 !important;
+}
+.image-upload-queue {
+    margin: 10px;clear: both;
+}
+.send-btn {
+    height: 35px !important;
+}
+.post-container {
+    height: inherit !important;
+}
+.filename {
+    color: #555555 !important;
+}
+/* EOF Upload image section with uploader and cross */
