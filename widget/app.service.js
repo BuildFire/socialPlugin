@@ -484,7 +484,7 @@
             };
 
             SocialItems.prototype.loggedInUserDetails = function () {
-                Buildfire.datastore.get('Social', function (err, data) {
+               Buildfire.datastore.get('Social', function (err, data) {
                     console.log('Get------------data--------datastore--------', err, data);
                     _this.socialAppId = data && data.data && data.data.socialAppId;
                     _this.parentThreadId = data && data.data && data.data.parentThreadId;
@@ -517,44 +517,6 @@
 
                             }, function (err) {
                                 console.log('Error while logging in user is: ', err);
-                            });
-                        }
-                        else {
-                            Buildfire.auth.login(null, function (err, user) {
-                                console.log('Login called---------------------------------', user, err);
-                                Buildfire.auth.getCurrentUser(function (err, userData) {
-                                    console.info('Current Logged In user details are -----------------', userData);
-                                    if (userData) {
-                                        _this.userDetails.userToken = userData.userToken;
-                                        _this.userDetails.userId = userData._id;
-                                        var postDataObject = {};
-                                        postDataObject.id = '1';
-                                        postDataObject.method = 'users/getUserSettings';
-                                        postDataObject.params = {};
-                                        postDataObject.params.appId = _this.socialAppId;
-                                        postDataObject.params.threadId = _this.parentThreadId;
-                                        postDataObject.params.userId = _this.userDetails.userId || null;
-                                        postDataObject.params.userToken = encodeURIComponent(_this.userDetails.userToken) || null;
-                                        $http({
-                                            method: 'GET',
-                                            url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
-                                            headers: {'Content-Type': 'application/json'}
-                                        }).then(function (response) {
-                                            console.log('inside getUser settings :::::::::::::', response);
-                                            if (response && response.data && response.data.result) {
-                                                console.log('getUserSettings response is: ', response);
-                                                _this._receivePushNotification = response.data.result.receivePushNotification;
-                                                _this.userDetails.settingsId = response.data.result._id;
-                                            } else if (response && response.data && response.data.error) {
-                                                console.log('response error is: ', response.data.error);
-                                            }
-
-                                        }, function (err) {
-                                            console.log('Error while logging in user is: ', err);
-                                        });
-                                    }
-                                });
-                                Location.goToHome();
                             });
                         }
                     });
