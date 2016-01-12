@@ -4,18 +4,50 @@ describe('Unit : socialPluginWidget content services', function () {
         var SocialDataStore;
         var Location1;
         var SocialItem;
+        var scope;
+        var rootScope;
         beforeEach(module('socialPluginWidget'));
-        beforeEach(inject(function (_Buildfire_,_SocialDataStore_, Location ,SocialItems) {
-            Buildfire = _Buildfire_;
+
+
+        beforeEach(module('socialPluginWidget', function ($provide) {
+         /*   $provide.service('Buildfire', function () {
+
+                this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+                this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login']);
+                this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
+                this.datastore.onUpdate.and.callFake(function (callback) {
+                    callback('Event');
+                    return {
+                        clear: function () {
+                            return true
+                        }
+                    }
+                });
+
+            });*/
+        }));
+        beforeEach(inject(function (_Buildfire_,_SocialDataStore_, Location ,SocialItems,$rootScope) {
+
+
+            Buildfire = jasmine.createSpyObj('Buildfire', ['getContext']);
+            Buildfire.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+            Buildfire.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login']);
+            Buildfire.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
+
+
             SocialDataStore = _SocialDataStore_;
             Location1 = Location;
-            SocialItem =SocialItems
+            SocialItem =SocialItems;
+            rootScope=$rootScope;
+
+
 
         }));
 
         it('Buildfire should exist and be an object', function () {
             expect(typeof Buildfire).toEqual('object');
         });
+
         it('Location should exist and be an object', function () {
             expect(typeof Location1).toEqual('object');
         });
@@ -40,6 +72,12 @@ describe('Unit : socialPluginWidget content services', function () {
             console.info(">>>>>>>>>>",Location1.go);
             expect(typeof Location1.goToHome).toEqual('function');
         });
+
+           xit('Location.goToHome called', function () {
+                console.info("Location.go Called ???????????????");
+                Location1.goToHome();
+
+            });
 
 
 
@@ -207,7 +245,7 @@ describe('Unit : socialPluginWidget content services', function () {
         });
 
 
-        it('SocialItem.posts should be a function', function () {
+        it('SocialItem.getInstance should be a function', function () {
 
             console.info(">>>>>>>>>>",SocialItem.getInstance);
             expect(typeof SocialItem.getInstance).toEqual('function');
@@ -219,17 +257,169 @@ describe('Unit : socialPluginWidget content services', function () {
 
         });
 
-        it('SocialItem.posts called', function () {
+        xit('SocialItem.posts  test cases', function () {
             console.info("SocialItem.posts Called ???????????????");
             SocialItem.getInstance().posts();
 
         });
 
-        it('SocialItem.loggedInUserDetails called', function () {
-            console.info("SocialItem.loggedInUserDetails Called ???????????????");
-            SocialItem.getInstance().loggedInUserDetails();
+        describe('SocialItem.loggedInUserDetails  test cases',function(){
+
+            describe('SocialItem.loggedInUserDetails  Buildfire.auth.getCurrentUser with valid data',function(){
+                beforeEach(function(){
+                    var tagname='Social';
+                    Buildfire.datastore.get.and.callFake(function (tagname, callback) {
+                        if (tagname) {
+                            callback(null, {data: {
+                                content: {
+                                    sortBy: 'Newest'
+                                },
+                                design: null
+                            }});
+                        } else {
+                            callback('Error', null);
+                        }
+                    });
+
+
+                    Buildfire.auth.getCurrentUser.and.callFake(function (callback) {
+
+                        callback(null, {data: {
+                            content: {
+                                sortBy: 'Newest'
+                            },
+                            design: null
+                        }});
+
+                    });
+
+                });
+
+                it('SocialItem.loggedInUserDetails called', function () {
+                    console.info("SocialItem.loggedInUserDetails Called ???????????????");
+
+                    SocialItem.getInstance().loggedInUserDetails();
+
+                });
+            });
+
+            describe('SocialItem.loggedInUserDetails  Buildfire.auth.getCurrentUser with no data',function(){
+                beforeEach(function(){
+
+
+                    var tagname='Social';
+                    Buildfire.datastore.get.and.callFake(function (tagname, callback) {
+                        if (tagname) {
+                            callback(null, {data: {
+                                content: {
+                                    sortBy: 'Newest'
+                                },
+                                design: null
+                            }});
+                        } else {
+                            callback('Error', null);
+                        }
+                    });
+
+
+                    Buildfire.auth.getCurrentUser.and.callFake(function (callback) {
+
+                        callback(null, null);
+
+                    });
+
+
+                });
+
+                it('SocialItem.loggedInUserDetails called', function () {
+                    console.info("SocialItem.loggedInUserDetails Called ???????????????");
+
+                    SocialItem.getInstance().loggedInUserDetails();
+
+                });
+            })
 
         });
+
+        describe('SocialItem.posts  test cases',function(){
+
+            describe('SocialItem.posts  Buildfire.auth.getCurrentUser with valid data',function(){
+
+                beforeEach(function(){
+
+                    Buildfire.getContext.and.callFake(function (callback) {
+                          callback(null,{});
+                    });
+                });
+
+                it('SocialItem.loggedInUserDetails called', function () {
+
+                    console.info("SocialItem.loggedInUserDetails Called ???????????????");
+                    SocialItem.getInstance().busy=false;
+                    SocialItem.getInstance().parentThreadId='asasa';
+                    SocialItem.getInstance().socialAppId='assasas';
+
+                    SocialItem.getInstance().posts();
+                });
+
+
+                it('SocialItem.loggedInUserDetails called and returns', function () {
+
+                    console.info("SocialItem.loggedInUserDetails Called ???????????????");
+                    SocialItem.getInstance().busy=true;
+                    SocialItem.getInstance().parentThreadId='asasa';
+                    SocialItem.getInstance().socialAppId='assasas';
+
+                    SocialItem.getInstance().posts();
+                });
+
+
+                it('SocialItem.loggedInUserDetails called and else', function () {
+
+                    console.info("SocialItem.loggedInUserDetails else ???????????????");
+                    SocialItem.getInstance().posts();
+                });
+
+            });
+
+            xdescribe('SocialItem.posts  Buildfire.auth.getCurrentUser with no data',function(){
+                beforeEach(function(){
+
+
+                    var tagname='Social';
+                    Buildfire.datastore.get.and.callFake(function (tagname, callback) {
+                        if (tagname) {
+                            callback(null, {data: {
+                                content: {
+                                    sortBy: 'Newest'
+                                },
+                                design: null
+                            }});
+                        } else {
+                            callback('Error', null);
+                        }
+                    });
+
+
+                    Buildfire.auth.getCurrentUser.and.callFake(function (callback) {
+
+                        callback(null, null);
+
+                    });
+
+
+                });
+
+                it('SocialItem.loggedInUserDetails called', function () {
+                    console.info("SocialItem.loggedInUserDetails Called ???????????????");
+
+                    SocialItem.getInstance().loggedInUserDetails();
+
+                });
+            })
+
+        });
+
 
     });
 

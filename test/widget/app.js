@@ -1,6 +1,39 @@
 describe('socialPluginWidget: App', function () {
     beforeEach(module('socialPluginWidget'));
     var location, route, rootScope;
+    var Buildfire;
+
+    beforeEach(module('socialPluginWidget', function ($provide) {
+        $provide.service('Buildfire', function () {
+
+            this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+            this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login']);
+            this.navigation = jasmine.createSpyObj('navigation', ['onBackButtonClick', 'onUpdate']);
+
+
+
+            this.datastore.onUpdate.and.callFake(function (callback) {
+                callback('Event');
+                return {
+                    clear: function () {
+                        return true
+                    }
+                }
+            });
+
+           this.navigation.onBackButtonClick.and.callFake(function (callback) {
+               callback(null);
+            });
+
+
+        });
+    }));
+
+    beforeEach(inject(function (_Buildfire_) {
+        Buildfire = _Buildfire_;
+
+    }));
+
     beforeEach(inject(
         function (_$location_, _$route_, _$rootScope_) {
             location = _$location_;
@@ -36,5 +69,13 @@ describe('socialPluginWidget: App', function () {
             rootScope.$digest();
             expect(route.current.controller).toBe('ThreadCtrl')
         });
+
+        it('should allow me to test the run() block', inject(function ($rootScope) {
+
+
+
+
+        }));
     });
+
 });

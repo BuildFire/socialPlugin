@@ -1,62 +1,128 @@
-xdescribe('socialPluginWidget: Services', function () {
+describe('socialPluginWidget: Services', function () {
 
-    var $modal, $q;
+    var Buildfire,$modal,Modals, $q, scope, MoreOptionsModalPopupCtrl,$modalInstance,Info,$rootScope,SocialDataStore,Buildfire;
     beforeEach(module('socialModals'));
-    beforeEach(inject(function ($injector,$modal) {
-        $modal = $injector.get('$modal');
-        $q = $injector.get('$q');
+
+    beforeEach(inject(function ($rootScope,$controller,_Modals_ ,_$modal_,_$q_,$injector) {
+        console.log('@@@@@@@@@@@@@@@',_Modals_);
+        scope=$rootScope.$new();
+        Modals=$injector.get('Modals');
+        console.log('@@@@@@@@@@@@@@@',Modals);
+       $modal = _$modal_;
+        $q = _$q_;
+     /*   MoreOptionsModalPopupCtrl = $controller('MoreOptionsModalPopupCtrl', {
+            scope : scope
+        });*/
+
+        $modalInstance = { // Create a mock object using spies
+            close: jasmine.createSpy('modalInstance.close'),
+            dismiss: jasmine.createSpy('modalInstance.dismiss'),
+            result: {
+                then: jasmine.createSpy('modalInstance.result.then')
+            }
+        };
+
+        SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost']);
+
+        Buildfire = {
+
+        }
+
+        Buildfire.messaging = jasmine.createSpyObj('messaging', ['onReceivedMessage', '.sendMessageToWidget', '']);
+
+
+        MoreOptionsModalPopupCtrl = $controller('MoreOptionsModalPopupCtrl', {
+            $scope: scope,
+            $modalInstance:$modalInstance,
+            Info:Info,
+            $rootScope:$rootScope,
+            SocialDataStore:SocialDataStore,
+            Buildfire:Buildfire
+        });
+
+        console.log('@@@@@@@@@@@@@@@MoreOptionsModalPopupCtrl',MoreOptionsModalPopupCtrl);
+
     }));
 
+
     describe('Modals service', function () {
-        var Modals;
-        beforeEach(inject(function (_Modals_) {
-            Modals = _Modals_;
-        }));
+
         it('Modals should exists', function () {
             expect(Modals).toBeDefined();
         });
-        it('Modals.removePopupModal should exists', function () {
-            expect(Modals.removePopupModal).toBeDefined();
+       it('Modals.showMoreOptionsModal should exists', function () {
+            expect(Modals.showMoreOptionsModal).toBeDefined();
         });
     });
 
-    describe('Modals: RemovePopupCtrl Controller', function () {
-        var scope, $modalInstance, Info, spy, RemovePopup;
-        beforeEach(inject(function ($controller, _$rootScope_, _$modal_) {
-            scope = _$rootScope_.$new();
-            modalInstance = { // Create a mock object using spies
-                close: jasmine.createSpy('modalInstance.close'),
-                dismiss: jasmine.createSpy('modalInstance.dismiss'),
-                result: {
-                    then: jasmine.createSpy('modalInstance.result.then')
-                }
-            };
-            Info = {};
-            RemovePopup = $controller('RemovePopupCtrl', {
-                $scope: scope,
-                $modalInstance: modalInstance, //_$modal_.op,
-                Info: Info
-            });
-        }));
-        it('RemovePopup should exists', function () {
-            expect(RemovePopup).toBeDefined();
+    describe('Modals: showMoreOptionsModal Controller', function () {
+
+
+        it('MoreOptionsModalPopupCtrl should be called', function () {
+            Modals.showMoreOptionsModal();
         });
-        it('RemovePopup.cancel should exists', function () {
-            expect(RemovePopup.cancel).toBeDefined();
+
+        it('MoreOptionsModalPopupCtrl should exists', function () {
+            expect(MoreOptionsModalPopupCtrl).toBeDefined();
         });
-        it('CarouselImage.ok should exists', function () {
-            expect(RemovePopup.ok).toBeDefined();
+
+
+
+        it('scope.cancel should exists', function () {
+            console.log('$$$$$$$$$$$$',scope.cancel);
+            scope.cancel();
+            expect(scope.cancel).toBeDefined();
         });
-        it('RemovePopup.cancel should exists', function () {
-            expect(RemovePopup.cancel).toBeDefined();
+        it('scope.ok should exists', function () {
+            scope.ok();
+            expect(scope.ok).toBeDefined();
         });
-        it('RemovePopup.ok should close modalInstance', function () {
-            RemovePopup.ok();
-            expect(modalInstance.close).toHaveBeenCalledWith('yes');
+
+
+        it('scope.block should exists', function () {
+            scope.block();
+            expect(scope.block).toBeDefined();
         });
-        it('RemovePopup.ok should dismiss modalInstance', function () {
-            RemovePopup.cancel();
-            expect(modalInstance.dismiss).toHaveBeenCalledWith('no');
+
+
+
+        describe('scope.deletePost should be called with success', function () {
+
+            beforeEach(function(){
+                SocialDataStore.deletePost.and.callFake(function () {
+                    var deferred = $q.defer();
+                    deferred.resolve({data: {result: [{_id: 2, userId: 0}]}});
+                    return deferred.promise;
+                });
+            })
+
+            it('scope.deletePost should be called ',function(){
+                var promise= scope.deletePost();
+                scope.$digest();
+                expect(scope.deletePost).toBeDefined();
+            })
+
+
         });
+
+        describe('scope.deletePost should be called with failure', function () {
+
+            beforeEach(function(){
+                SocialDataStore.deletePost.and.callFake(function () {
+                    var deferred = $q.defer();
+                    deferred.reject({data: {result: [{_id: 2, userId: 0}]}});
+                    return deferred.promise;
+                });
+            })
+
+            it('scope.deletePost should be called ',function(){
+                var promise= scope.deletePost();
+                scope.$digest();
+                expect(scope.deletePost).toBeDefined();
+            })
+
+
+        });
+
     });
 });
