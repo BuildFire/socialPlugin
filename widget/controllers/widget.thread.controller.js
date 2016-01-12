@@ -60,12 +60,12 @@
                         if (!callFromInit)
                             Buildfire.auth.login(null, function (err, data) {
                                 console.log('----------================',data);
-                                var promise = checkAuthenticatedUser();
+                               /* var promise = checkAuthenticatedUser();
                                 promise.then(function () {
                                     console.log('success of getting user details after login');
                                 }, function (err) {
                                     console.log('error is:::', err);
-                                });
+                                });*/
                             });
                     }
                 });
