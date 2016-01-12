@@ -101,7 +101,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div ng-if=" WidgetWall.SocialItems.items.length<1">
+                        <div ng-show=" !WidgetWall.SocialItems.checkPostsCalled()">
                             <h4 style="text-align: center;">You do not have any posts yet</h4>
                         </div>
                     </div>

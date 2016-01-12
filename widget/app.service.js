@@ -406,6 +406,7 @@
                 _this.userDetails.userId = null;
                 _this.userDetails.settingsId = null;
                 _this._receivePushNotification;
+                _this.postMehodCalledFlag=false;
 
             };
             var instance;
@@ -471,6 +472,7 @@
                             _this.items = _this.items.concat(data.data.result);
                             _this.lastThreadId = _this.items[_this.items.length - 1]._id;
                             _this.busy = data.data.result.length < 10;
+                            _this.postMehodCalledFlag=true;
                         }
                         else {
                             _this.busy = true;
@@ -522,6 +524,9 @@
                     });
                 });
             };
+            SocialItems.prototype.checkPostsCalled = function () {
+                return _this.postMehodCalledFlag &&  (_this.items.length>0);
+            }
             return {
                 getInstance: function () {
                     if (!instance) {
