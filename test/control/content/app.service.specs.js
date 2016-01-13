@@ -13,6 +13,8 @@ describe('Unit : socialPluginContent content services', function () {
             expect(typeof Buildfire).toEqual('object');
         });
         it('SocialDataStore should exist and be an object', function () {
+
+
             console.info(">>>>>>>>>>",SocialDataStore.addApplication);
             expect(typeof SocialDataStore.addApplication).toEqual('function');
         });

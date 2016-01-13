@@ -10,7 +10,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
     beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_ ,EVENTS) {
             scope = _$rootScope_.$new();
             Modals = jasmine.createSpyObj('Modals',['removePopupModal','open','banPopupModal']);
-            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost']);
+            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost','getThreadLikes']);
 
             $timeout = _$timeout_;
             $q = _$q_;
@@ -31,15 +31,20 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
             }
         };
-        Buildfire.messaging = jasmine.createSpyObj('messaging', ['onReceivedMessage', '.sendMessageToWidget', '']);
-       // Buildfire.messaging.onReceivedMessage();
+        Buildfire = jasmine.createSpyObj('Buildfire', ['getContext', '.sendMessageToWidget', '']);
+        Buildfire.messaging = jasmine.createSpyObj('messaging', ['onReceivedMessage', 'sendMessageToWidget', '']);
+        Buildfire.datastore = jasmine.createSpyObj('datastore', ['get', '.sendMessageToWidget', '']);
 
-            ContentHome = $controller('ContentHomeCtrl', {
+        // Buildfire.messaging.onReceivedMessage();
+
+        ContentHome = $controller('ContentHomeCtrl', {
                 $scope: scope,
                 Modals: Modals,
                 SocialDataStore: SocialDataStore,
                 Buildfire : Buildfire
             });
+
+        scope.$digest();
         }));
 
 
@@ -57,6 +62,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
         it('it should pass if Buildfire is defined', function () {
             expect(Buildfire).not.toBeUndefined();
+
         });
     });
 
@@ -247,14 +253,14 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
                 console.log('####################',Buildfire);
                 Buildfire.messaging.sendMessageToWidget.and.callFake(function () {
-                    var deferred = $q.defer();
+                  /*  var deferred = $q.defer();
                     deferred.resolve({});
-                    return deferred.promise;
+                    return deferred.promise;*/
                 });
 
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
+           it('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
 
                 ContentHome.posts = [{_id: 1}];
                 ContentHome.deletePost(1);
@@ -262,7 +268,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                 expect(ContentHome.posts.length).toEqual(0);
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
+            it('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
 
                 ContentHome.posts = [{_id: 1}];
                 ContentHome.deletePost(2);
@@ -412,21 +418,21 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
+           it('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
 
-                ContentHome.posts = [{_id: 1, comments: []}];
+                ContentHome.posts = [{_id: 1, comments: [],commentsCount:100},{_id: 2, comments: []},{_id: 3, comments: []}];
                 console.log('--------------------------->kkkkkkkkkkkkkkkk', ContentHome);
                 ContentHome.deleteComment(ContentHome.posts[0], 1);
                 scope.$digest();
 
 
-                expect(ContentHome.posts.length).toEqual(1);
+                expect(ContentHome.posts.length).toEqual(3);
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
+          it('it should pass if SocialDataStore.deleteComment deletes the given post and returns nothing to delete', function () {
 
                 ContentHome.posts = [{_id: 1}];
-                ContentHome.deletePost(2);
+                ContentHome.deleteComment(2);
                 scope.$digest();
 
 
@@ -452,7 +458,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
+            it('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
 
                 ContentHome.posts = [{_id: 1}];
                 ContentHome.deleteComment(1);
@@ -462,7 +468,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                 expect(ContentHome.posts.length).toEqual(1);
             });
 
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
+            it('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
 
                 ContentHome.posts = [{_id: 1}];
                 ContentHome.deletePost(2);
@@ -525,7 +531,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
             });
 
-            xit('it should pass if SocialDataStore.banUser bans user', function () {
+            it('it should pass if SocialDataStore.banUser bans user', function () {
 
                 ContentHome.posts = [{_id: 1}];
                 ContentHome.banUser(1);
@@ -624,24 +630,199 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
 
         var spy1;
         beforeEach(inject(function () {
-            spy1 = spyOn(SocialDataStore,'getCommentsOfAPost').and.callFake(function () {
+           SocialDataStore.getCommentsOfAPost.and.callFake(function () {
                 console.log(2);
+               var data={
+                   data:{
+                       result:[{
+                           threadId:'sasasas',
+                           _id:"sasass"
+                       },{
+                           threadId:'1sasasas',
+                           _id:"1sasass"
+
+                       }]
+
+
+                   }
+               };
+
                 var deferred = $q.defer();
-                deferred.resolve('');
+                deferred.resolve(data);
                 return deferred.promise;
+
+
+
+               var defer = $q.defer();
+               defer.resolve(data);
+               return ({
+                   result: defer.promise
+               });
             });
+
+
+
+            SocialDataStore.getThreadLikes.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+
+                        }]
+
+
+                    }
+                };
+
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+               /* var defer = $q.defer();
+                defer.resolve(data);
+                return ({
+                    result: defer.promise
+                });*/
+            });
+
+
+            SocialDataStore.getUsers.and.callFake(function () {
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+
+                        }]
+
+
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+            });
+
 
         }));
 
-        xit('it should pass if SocialDataStore.getPosts is called with null when ContentHome.posts is empty', function () {
+        it('it should pass if ContentHome.loadMoreComments is called with null when ContentHome.posts is empty', function () {
             //ContentHome.posts = [{_id: 1}];
-            var a = {commentsCount:0};
+            var a = {commentsCount:2};
             ContentHome.loadMoreComments(a,'viewComment');
-            expect(a.comments).toBeUndefined();
+            scope.$digest();
+            expect(a.comments).toBeDefined();
         });
     });
 
-    xdescribe('ContentHome.seeMore', function () {
+    describe('ContentHome.loadMoreComments failures', function () {
+
+        var spy1;
+        beforeEach(inject(function () {
+            SocialDataStore.getCommentsOfAPost.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+
+                        }]
+
+
+                    }
+                };
+
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+
+
+                var defer = $q.defer();
+                defer.resolve(data);
+                return ({
+                    result: defer.promise
+                });
+            });
+
+
+
+            SocialDataStore.getThreadLikes.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+
+                        }]
+
+
+                    }
+                };
+
+                var deferred = $q.defer();
+                deferred.reject(data);
+                return deferred.promise;
+
+                /* var defer = $q.defer();
+                 defer.resolve(data);
+                 return ({
+                 result: defer.promise
+                 });*/
+            });
+
+
+            SocialDataStore.getUsers.and.callFake(function () {
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+
+                        }]
+
+
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.reject(data);
+                return deferred.promise;
+
+            });
+
+
+        }));
+
+        it('it should pass if ContentHome.loadMoreComments is called with null when ContentHome.posts is empty', function () {
+            //ContentHome.posts = [{_id: 1}];
+            var a = {commentsCount:2};
+            ContentHome.loadMoreComments(a,'viewComment');
+            scope.$digest();
+            expect(a.comments).toBeDefined();
+        });
+    });
+
+    describe('ContentHome.seeMore', function () {
         it('it should pass if makes seeMore true of the passed argument post', function () {
             //ContentHome.posts = [{_id: 1}];
             var a = {seeMore:false};
@@ -660,23 +841,299 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         });
     });
 
-    describe('Buildfire.messaging.onReceivedMessage', function () {
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_CREATED', function () {
 
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+            });
+        })
         it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
-
+            var event={
+                name:'POST_CREATED',
+                post:{}
+            };
+            Buildfire.messaging.onReceivedMessage(event);
 
         });
     });
 
-  /* describe('init function call', function () {
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_CREATED error', function () {
 
-       describe('init function call', function () {
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        error:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
 
-            it("may be spied upon", function() {
-                spyOn(global,'init').andCallThrough();
-                init();
-                expect(init).toHaveBeenCalled();
             });
+        })
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                name:'POST_CREATED',
+                post:{}
+            };
+            Buildfire.messaging.onReceivedMessage(event);
+
         });
-    });*/
+    });
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_CREATED failure', function () {
+
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        error:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.reject(data);
+                return deferred.promise;
+
+            });
+        })
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                name:'POST_CREATED',
+                post:{}
+            };
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_LIKED', function () {
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'POST_LIKED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_UNLIKED', function () {
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'POST_UNLIKED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_ADDED', function () {
+
+
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+            });
+        })
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'COMMENT_ADDED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_ADDED error', function () {
+
+
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        error:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.resolve(data);
+                return deferred.promise;
+
+            });
+        })
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'COMMENT_ADDED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_ADDED failure', function () {
+
+
+        beforeEach(function(){
+            SocialDataStore.getUsers.and.callFake(function () {
+                console.log(2);
+                var data={
+                    data:{
+                        result:[{
+                            threadId:'sasasas',
+                            _id:"sasass"
+                        },{
+                            threadId:'1sasasas',
+                            _id:"1sasass"
+                        }]
+                    }
+                };
+                var deferred = $q.defer();
+                deferred.reject(data);
+                return deferred.promise;
+
+            });
+        })
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'COMMENT_ADDED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.POST_DELETED', function () {
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'POST_DELETED',
+                post:{}
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_DELETED', function () {
+
+        it('Buildfire.messaging.onReceivedMessage  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:1,
+                name:'COMMENT_DELETED',
+                post:{},
+                comments:[{
+                    _id:'asa'
+                }]
+            };
+            ContentHome.posts=[{_id:1,likesCount:12,comments:[{ _id:'asa'},{ _id:'1asa'}]}];
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_UNLIKED', function () {
+
+        it('Buildfire.messaging.COMMENT_UNLIKED  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'COMMENT_UNLIKED',
+                post:{},
+                comments:[{
+                    _id:'asa'
+                }]
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12,comments:[{ _id:'asa'},{ _id:'1asa'}]}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
+
+    describe('Buildfire.messaging.onReceivedMessage EVENTS.COMMENT_LIKED', function () {
+
+        it('Buildfire.messaging.COMMENT_UNLIKED  should pass if makes seeMore true of the passed argument post', function () {
+            var event={
+                _id:'asa',
+                name:'COMMENT_LIKED',
+                post:{},
+                comments:[{
+                    _id:'asa'
+                }]
+            };
+            ContentHome.posts=[{_id:'asa',likesCount:12,comments:['asasa','asa']}]
+            Buildfire.messaging.onReceivedMessage(event);
+
+        });
+    });
 });
