@@ -14,6 +14,7 @@
             Thread.SocialItems = SocialItems.getInstance();
             Thread.imageSelected = false;
             Thread.imageName = '';
+            Thread.post = {};
             Thread.showImageLoader = true;
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
@@ -60,12 +61,12 @@
                         if (!callFromInit)
                             Buildfire.auth.login(null, function (err, data) {
                                 console.log('----------================',data);
-                                var promise = checkAuthenticatedUser();
+                               /* var promise = checkAuthenticatedUser();
                                 promise.then(function () {
                                     console.log('success of getting user details after login');
                                 }, function (err) {
                                     console.log('error is:::', err);
-                                });
+                                });*/
                             });
                     }
                 });
