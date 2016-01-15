@@ -1,7 +1,7 @@
 <div class="slide content">
     <div class="padding-zero" style="height: calc(100% - 45px);">
         <div class="social-plugin social-thread" style="height: 100%;">
-            <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten">
+            <div class="padded head-btn text-center padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
             </div>
             <div style="height: calc(100% - 48px);overflow-y: auto;overflow-x: hidden;">
@@ -54,7 +54,7 @@
                     </div>
                     <hr class="small margin-bottom-zero">
                     <div ng-if="Thread.post.commentsCount > 10 && Thread.showMore"
-                         class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-five">
+                         class="padded head-btn text-center padding-bottom-ten margin-bottom-five">
                         <a ng-click="Thread.loadMoreComments()">Load More Comments</a>
                     </div>
                     <div class="comments-list">
@@ -111,7 +111,7 @@
     </div>
 </div>
 <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
-    <hr class="small">
+    <hr class="small" style="border-top:none !important;">
     <div class="post-holder clearfix">
         <div class="add-media">
             <a>

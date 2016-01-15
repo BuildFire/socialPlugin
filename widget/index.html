@@ -4,7 +4,6 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="../../../styles/bootstrap.css">
-    <link rel="stylesheet" href="../../../styles/appStyle.css">
     <link rel="stylesheet" href="../../../styles/siteIcons.css">
     <link rel="stylesheet" href="../../../styles/helper.css">
     <link rel="stylesheet" href="../../../styles/transitionAnimation.css">
@@ -44,7 +43,7 @@
         <div class="slide content">
             <div class="padding-zero" style="height: 100%;">
                 <div class="social-plugin social-wall" style="height: calc(100% - 45px)">
-                    <div class="padded head-btn text-center border-bottom-grey padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
+                    <div class="padded head-btn text-center padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);" class="infinite-scroll-parent">
@@ -102,7 +101,7 @@
                             </div>
                         </div>
                         <div ng-show="WidgetWall.SocialItems.items.length<=0">
-                            <h4 style="text-align: center;">You do not have any posts yet</h4>
+                            <h5 class="text-center margin-top-fifteen">You do not have any posts yet.</h5>
                         </div>
                     </div>
                 </div>
@@ -110,7 +109,7 @@
 
         </div>
         <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container" ng-if="WidgetWall.SocialItems.socialAppId">
-            <hr class="small">
+		    <hr class="small" style="border-top:none !important;">
             <form ng-submit="" handle-phone-submit  >
             <div class="post-holder clearfix">
                 <div class="add-media">
