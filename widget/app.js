@@ -82,7 +82,7 @@
                     $rootScope.$digest();
                 }
                 else
-                    Buildfire.navigation.navigateHome();
+                    Buildfire.navigation._goBackOne();
             }
         }])
         .directive('handlePhoneSubmit', function () {
