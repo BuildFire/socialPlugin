@@ -415,6 +415,7 @@
                 if (_this.busy) {
                     return;
                 }
+                _this.busy = true;
                 if (_this.parentThreadId && _this.socialAppId) {
                     console.log('Inside if---------------------------------------this', _this);
                     getPosts();
@@ -452,7 +453,6 @@
                 }
                 function getPosts(){
                     console.log('getPosts called');
-                    _this.busy = true;
                     var postDataObject = {};
                     postDataObject.id = '1';
                     postDataObject.method = 'thread/findByPage';
