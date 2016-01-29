@@ -11,6 +11,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
             this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
             this.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','sendMessageToControl']);
+            this.getContext=function(){};
 
         });
     }));
