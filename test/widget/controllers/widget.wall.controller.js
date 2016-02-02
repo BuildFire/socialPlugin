@@ -8,6 +8,10 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
     beforeEach(module('socialPluginWidget', function ($provide) {
         $provide.service('Buildfire', function () {
             this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+            this.imageLib = jasmine.createSpyObj('imageLib', ['cropImage']);
+            this.imageLib.cropImage.and.callFake(function (url,options) {
+               return 'abc.png';
+            });
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
             this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
             this.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','sendMessageToControl']);

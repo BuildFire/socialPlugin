@@ -34,6 +34,10 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
         Buildfire = jasmine.createSpyObj('Buildfire', ['getContext', '.sendMessageToWidget', '']);
         Buildfire.messaging = jasmine.createSpyObj('messaging', ['onReceivedMessage', 'sendMessageToWidget', '']);
         Buildfire.datastore = jasmine.createSpyObj('datastore', ['get', '.sendMessageToWidget', '']);
+        Buildfire.imageLib = jasmine.createSpyObj('imageLib', ['cropImage']);
+        Buildfire.imageLib.cropImage.and.callFake(function (url,options) {
+            return 'https://s3.amazonaws.com/Kaleo.DevBucket/upload_85afd72abba40258aa256409a01ed44b.jpg';
+        });
 
         // Buildfire.messaging.onReceivedMessage();
 

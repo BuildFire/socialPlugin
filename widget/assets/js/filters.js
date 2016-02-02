@@ -9,29 +9,29 @@
                 if (time && time.indexOf('a few seconds ago') != -1) {
                     formattedTime = formattedTime.replace('a few seconds ago', 'just now');
                 } else if (time && time.indexOf('a second ago') != -1) {
-                    formattedTime = formattedTime.replace('a second ago', '1s');
+                    formattedTime = formattedTime.replace('a second ago', '1 s');
                 } else if (time && time.indexOf(' seconds ago') != -1) {
-                    formattedTime = formattedTime.replace(' seconds ago', 's');
+                    formattedTime = formattedTime.replace('seconds ago', 's');
                 } else if (time && time.indexOf('a minute ago') != -1) {
-                    formattedTime = formattedTime.replace('a minute ago', '1min');
+                    formattedTime = formattedTime.replace('a minute ago', '1 min');
                 } else if (time && time.indexOf(' minutes ago') != -1) {
-                    formattedTime = formattedTime.replace(' minutes ago', 'min');
+                    formattedTime = formattedTime.replace('minutes ago', 'min');
                 } else if (time && time.indexOf('an hour ago') != -1) {
-                    formattedTime = formattedTime.replace('an hour ago', '1h');
+                    formattedTime = formattedTime.replace('an hour ago', '1 h');
                 } else if (time && time.indexOf(' hours ago') != -1) {
-                    formattedTime = formattedTime.replace(' hours ago', 'h');
+                    formattedTime = formattedTime.replace('hours ago', 'h');
                 } else if (time && time.indexOf('a day ago') != -1) {
-                    formattedTime = formattedTime.replace('a day ago', '1d');
+                    formattedTime = formattedTime.replace('a day ago', '1 d');
                 } else if (time && time.indexOf(' days ago') != -1) {
-                    formattedTime = formattedTime.replace(' days ago', 'd');
+                    formattedTime = formattedTime.replace('days ago', 'd');
                 } else if (time && time.indexOf('a month ago') != -1) {
-                    formattedTime = formattedTime.replace('a month ago', '1m');
+                    formattedTime = formattedTime.replace('a month ago', '1 m');
                 } else if (time && time.indexOf(' months ago') != -1) {
-                    formattedTime = formattedTime.replace(' months ago', 'm');
+                    formattedTime = formattedTime.replace('months ago', 'm');
                 } else if (time && time.indexOf('a year ago') != -1) {
-                    formattedTime = formattedTime.replace('a year ago', '1y');
+                    formattedTime = formattedTime.replace('a year ago', '1 y');
                 } else if (time && time.indexOf(' years ago') != -1) {
-                    formattedTime = formattedTime.replace(' years ago', 'y');
+                    formattedTime = formattedTime.replace('years ago', 'y');
                 }
                 return formattedTime;
 

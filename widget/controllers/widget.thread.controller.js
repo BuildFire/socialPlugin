@@ -56,18 +56,17 @@
                             }
                         });
                     }
-                    else {
-                        deferred.reject(err);
-                        if (!callFromInit)
+                    else if (err) {
+                        return deferred.reject(err);
+                    } else {
+                        if (!callFromInit) {
                             Buildfire.auth.login(null, function (err, data) {
-                                console.log('----------================',data);
-                               /* var promise = checkAuthenticatedUser();
-                                promise.then(function () {
-                                    console.log('success of getting user details after login');
-                                }, function (err) {
-                                    console.log('error is:::', err);
-                                });*/
+                                console.log('----------================',err, data);
+                                if (err) {
+                                    return deferred.reject(err);
+                                }
                             });
+                        }
                     }
                 });
                 return deferred.promise;
@@ -241,7 +240,7 @@
                 var userImageUrl = '';
                 usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl || '';
+                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
                     }
                 });

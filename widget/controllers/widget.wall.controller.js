@@ -50,6 +50,8 @@
                         finalPostCreation();
                     }
 
+                }, function (err) {
+                    console.log('error is ------', err);
                 });
 
             };
@@ -86,12 +88,19 @@
                             console.log('Error while logging in user is: ', err);
                         });
                     }
-                    else {
-                        Buildfire.auth.login(null, function (err, user) {
-                            deferredObject.reject();
-                            console.log('Login called---------------------------------', user, err);
-                            Location.goToHome();
-                        });
+                    else if (err) {
+                        return deferredObject.reject(err);
+                    } else {
+                        if(err) {
+                            return deferredObject.reject(err);
+                        } else {
+                            Buildfire.auth.login(null, function (err, user) {
+                                console.log('Login called---------------------------------', user, err);
+                                if(err) {
+                                    return deferredObject.reject(err);
+                                }
+                            });
+                        }
                     }
                 });
                 return deferredObject.promise;
@@ -199,7 +208,7 @@
                 var userImageUrl = '';
                 usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl || '';
+                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
                     }
                 });
@@ -260,6 +269,8 @@
                         function (err) {
                             console.log('Error in Error handler--------------------------', err);
                         });
+                }, function (err) {
+                    console.log('Error is ::::::', err);
                 });
 
 
@@ -319,6 +330,8 @@
                         post.waitAPICompletion = true;
                         SocialDataStore.getThreadLikes(uniqueIdsArray, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(success, error);
                     }
+                }, function (err) {
+                    console.log('Error is ::::::::::', err);
                 });
 
 
