@@ -56,18 +56,17 @@
                             }
                         });
                     }
-                    else {
-                        deferred.reject(err);
-                        if (!callFromInit)
+                    else if (err) {
+                        return deferred.reject(err);
+                    } else {
+                        if (!callFromInit) {
                             Buildfire.auth.login(null, function (err, data) {
-                                console.log('----------================',data);
-                               /* var promise = checkAuthenticatedUser();
-                                promise.then(function () {
-                                    console.log('success of getting user details after login');
-                                }, function (err) {
-                                    console.log('error is:::', err);
-                                });*/
+                                console.log('----------================',err, data);
+                                if (err) {
+                                    return deferred.reject(err);
+                                }
                             });
+                        }
                     }
                 });
                 return deferred.promise;
