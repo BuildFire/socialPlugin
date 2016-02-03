@@ -77,7 +77,7 @@
                         return el.uniqueLink == $routeParams.threadId;
                     });
                     console.log(posts);
-                    Thread.post = posts[0];
+                    Thread.post = posts[0] || {};
                     console.log('Single post----------------------------------------------------------',Thread.post);
                     var uniqueIdsArray = [];
                     $rootScope.showThread = false;
