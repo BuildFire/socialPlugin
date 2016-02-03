@@ -1,19 +1,27 @@
 describe('Unit : Controller - ThreadCtrl', function () {
 
 // load the controller's module
-    var ThreadCtrl, scope, Modals, SocialDataStore, $timeout,$q,Buildfire,SocialItem,Location1,routeParams;
+    var ThreadCtrl, $scope, Modals, SocialDataStore, $timeout,$q,Buildfire,SocialItem,Location1,routeParams, $httpBackend, authRequestHandler;
 
     beforeEach(module('socialPluginWidget'));
 
-   /* beforeEach(module('socialPluginWidget', function ($provide) {
+    beforeEach(module('socialPluginWidget', function ($provide) {
         $provide.service('Buildfire', function () {
             this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
             this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
             this.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','onReceivedMessage']);
-
+            this.getContext = function (cb) {
+                cb(null, {});
+            };
+            this.messaging.onReceivedMessage.and.callFake(function(cb){
+                cb({});
+            });
+            this.auth.getCurrentUser.and.callFake(function(cb){
+                cb(null,{_id: '434', userToken: 'sfds343433'});
+            });
         });
-    }));*/
+    }));
 
 
     /* beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _SocialDataStore_, _$timeout_,_$q_,Buildfire) {
@@ -31,31 +39,39 @@ describe('Unit : Controller - ThreadCtrl', function () {
      })
      );*/
 
-    beforeEach(inject(function ($controller, _$rootScope_,_$routeParams_, Location,_SocialItems_,_Modals_, _SocialDataStore_, _$timeout_,_$q_,_Buildfire_) {
+    beforeEach(inject(function ($controller, _$rootScope_,_$routeParams_, _$httpBackend_, Location,_SocialItems_,_Modals_, _SocialDataStore_, _$timeout_,_$q_,_Buildfire_) {
 
         routeParams=_$routeParams_;
+        $httpBackend = _$httpBackend_;
 
-        Buildfire = jasmine.createSpyObj('Buildfire', ['getContext', '']);
+        /*Buildfire = jasmine.createSpyObj('Buildfire', ['getContext', 'auth']);
         Buildfire.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
         Buildfire.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
         Buildfire.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
         Buildfire.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','onReceivedMessage']);
+        Buildfire.getContext.and.callFake(function (callback) {
+            callback('Error', null);
+        });
+        Buildfire.auth.getCurrentUser.and.callFake(function (callback) {
+            callback('Error', null);
+        });
+*/
 
 
-
-        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','getCommentsOfAPost']);;
+        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','getCommentsOfAPost']);
         Location1 = Location;
         SocialItem =_SocialItems_;
-        scope = _$rootScope_.$new();
+        $scope = _$rootScope_.$new();
         Modals = _Modals_;
         $timeout = _$timeout_;
         $q = _$q_;
+        routeParams.threadId= '12121';
 
         ThreadCtrl = $controller('ThreadCtrl', {
-            $scope: scope,
-            routeParams: {threadId: '12121'}
+            $scope: $scope,
+            $routeParams:routeParams
+//            SocialDataStore: SocialDataStore
         });
-
     }));
 
     describe('Units: units should be Defined', function () {
@@ -103,7 +119,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
             $httpBackend = $injector.get ('$httpBackend');
         }));
 
-        beforeEach(function(){
+        /*beforeEach(function(){
             Buildfire.auth.getCurrentUser.and.callFake(function(cb){
                 cb(null,{});
             });
@@ -112,7 +128,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
                 cb(null,{});
                 $httpBackend.flush();
             });
-        })
+        });*/
 
         it('it should pass if Thread.addComment is called', function () {
 
@@ -189,7 +205,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
     describe('Thread.deleteComment', function () {
 
         it('it should pass if Thread.deleteComment is called', function () {
-
             ThreadCtrl.deleteComment('asasasa');
         });
     });
@@ -197,7 +212,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
     describe('Thread.uploadImage', function () {
 
         it('it should pass if Thread.uploadImage is called', function () {
-
             ThreadCtrl.uploadImage({});
         });
     });
@@ -205,12 +219,11 @@ describe('Unit : Controller - ThreadCtrl', function () {
     describe('Thread.cancelImageSelect', function () {
 
         it('it should pass if Thread.cancelImageSelect is called', function () {
-
             ThreadCtrl.cancelImageSelect();
         });
     });
 
-    describe(' Buildfire.messaging.onReceivedMessage', function () {
+    /*describe(' Buildfire.messaging.onReceivedMessage', function () {
 
         it('it should pass if  Buildfire.messaging.onReceivedMessaget is called', function () {
             console.log('__________________',Buildfire);
@@ -218,11 +231,5 @@ describe('Unit : Controller - ThreadCtrl', function () {
                 cb({});
             });
         });
-    });
-
-
-
-
-
-
+    });*/
 });
