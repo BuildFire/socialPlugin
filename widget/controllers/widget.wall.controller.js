@@ -475,7 +475,8 @@
                 var errorCallback = function (err) {
                     console.error('Error while fetching users details ', err);
                 };
-                SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
+                if(newUserIds && newUserIds.length)
+                    SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
                 console.log('newPostsUniqueIds is:::::::::',newPostsUniqueIds);
                 SocialDataStore.getThreadLikes(newPostsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
                     if (response.data.error) {
