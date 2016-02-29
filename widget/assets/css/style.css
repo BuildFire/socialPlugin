@@ -399,3 +399,14 @@
 	margin-left:-12px;
 	margin-top:-12px;
 }
+
+/* For IOS input focus issue
+*/
+
+textarea {
+    -webkit-user-select: auto !important;
+    -khtml-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: auto !important;
+    user-select: auto !important;
+}
