@@ -10,12 +10,6 @@
             $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|cdvfile|file):/);
 
 
-            /**
-             *To disable pull down to refresh functionality
-             * */
-
-//            buildfire.datastore.disableRefresh();
-
             $routeProvider
                 .when('/', {
                     template: '<div></div>'
