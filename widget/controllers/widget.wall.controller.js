@@ -11,7 +11,7 @@
             //            var _receivePushNotification;
             WidgetWall.buildfire = Buildfire;
             WidgetWall.getFollowingStatus = function () {
-                return (typeof WidgetWall.SocialItems._receivePushNotification !== 'undefined') ? (WidgetWall.SocialItems._receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : '';
+                return (typeof WidgetWall.SocialItems._receivePushNotification !== 'undefined') ? (WidgetWall.SocialItems._receivePushNotification ? GROUP_STATUS.FOLLOWING : GROUP_STATUS.FOLLOW) : GROUP_STATUS.FOLLOW;
             };
             WidgetWall.userDetails = {};
             WidgetWall.height = window.innerHeight;
@@ -392,6 +392,21 @@
             };
 
             WidgetWall.followUnfollow = function (isFollow) {
+                if(WidgetWall.SocialItems.userDetails.userToken && WidgetWall.SocialItems.userDetails.userId) {
+                    updateFollowUnfollow(isFollow);
+                } else {
+                    Buildfire.auth.login(null, function (err, user) {
+                        console.log('Login called---------------------------------', user, err);
+                        if(err) {
+                            console.log('Error while logging in---------', err);
+                        } else {
+                            updateFollowUnfollow(isFollow);
+                        }
+                    });
+                }
+            };
+
+            var updateFollowUnfollow = function (isFollow) {
                 var followNotification = false;
                 if (isFollow == GROUP_STATUS.FOLLOWING) {
                     followNotification = false;
@@ -413,7 +428,7 @@
                 }, function (err) {
                     console.log('Error while getting user Details--------------', err);
                 });
-            };
+            }
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Event in wall cotroller------------------------', event);
