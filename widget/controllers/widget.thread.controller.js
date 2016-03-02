@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout','Location', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout,Location) {
             var Thread = this;
             var userIds = [];
             var usersData = [];
@@ -597,5 +597,23 @@
                 Thread.userDetails.userId = null;
                 $scope.$digest();
             });
+
+
+            /**
+             * Implementation of pull down to refresh
+             */
+            var onRefresh=Buildfire.datastore.onRefresh(function(){
+            });
+
+            /**
+             * Unbind the onRefresh
+             */
+            $scope.$on('$destroy', function () {
+                onRefresh.clear();
+                Buildfire.datastore.onRefresh(function(){
+                    Location.goToHome();
+                });
+            });
+
         }])
 })(window.angular);

@@ -603,5 +603,13 @@
                 WidgetWall.SocialItems.userDetails.userId = null;
                 $scope.$digest();
             });
+
+            /**
+             * Implementation of pull down to refresh
+             */
+            var onRefresh=Buildfire.datastore.onRefresh(function(){
+                Location.goToHome();
+            });
+
         }])
 })(window.angular);
