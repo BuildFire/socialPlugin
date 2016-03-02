@@ -7,7 +7,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
 
     beforeEach(module('socialPluginWidget', function ($provide) {
         $provide.service('Buildfire', function () {
-            this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+            this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate','onRefresh']);
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
             this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
             this.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','onReceivedMessage']);
