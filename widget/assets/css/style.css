@@ -283,7 +283,7 @@
 }
 .holder.bottom-post .post-holder .add-message{
 	width:100%;
-	padding:0 49px 0 38px;
+	padding:0 50px 0 38px;
 }
 .holder.bottom-post .post-holder .add-message input{
 	border:none;
@@ -313,12 +313,16 @@
 .holder.bottom-post .post-holder .add-media .icon{
 	font-size:20px;
 	line-height:24px;
+	color:inherit !important;
+	position:relative;
+	top:1px;
 }
 .holder.bottom-post .post-holder .send-message input{
 	border:none;
 	background:none;
 	height:100%;
-	padding-top:7px;
+	width:100%;
+	padding-top:11px;
 }
 @media(max-width: 620px){
 	p{
@@ -333,7 +337,8 @@
 	padding: 2.5% 2%;
 	line-height:25px;
 	position:relative;
-	top:2px;
+	top:3px;
+	width:100%;
 }
 
 /* BOF Upload image section with uploader and cross */
