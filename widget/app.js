@@ -94,5 +94,33 @@
                     textFields.blur();
                 });
             };
-        });
+        })
+        .filter('getUserImage', ['Buildfire', function (Buildfire) {
+            return function (usersData, userId) {
+                var userImageUrl = '';
+                usersData.some(function (userData) {
+                    if (userData.userObject._id == userId) {
+                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
+                        return true;
+                    }
+                });
+                return userImageUrl;
+            }
+        }])
+        .directive("loadImage", [function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
+
+                    var elem = $("<img>");
+
+                    elem[0].onload = function () {
+                        element.attr("src", attrs.finalSrc);
+                        elem.remove();
+                    };
+                    elem.attr("src", attrs.finalSrc);
+                }
+            };
+        }]);
 })(window.angular, window.buildfire);

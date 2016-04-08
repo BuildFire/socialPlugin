@@ -5,7 +5,7 @@
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout) {
             var Thread = this;
             var userIds = [];
-            var usersData = [];
+            Thread.usersData = [];
             var uniqueLinksOfComments = [];
             Thread.comments = [];
             Thread.userDetails = {};
@@ -138,7 +138,7 @@
                                     console.error('Error while fetching users for comments ', response.data.error);
                                 } else if (response.data.result) {
                                     console.info('Users fetched successfully for comments ', response.data.result);
-                                    usersData = usersData.concat(response.data.result);
+                                    Thread.usersData = Thread.usersData.concat(response.data.result);
                                 }
                             }, function (err) {
                                 console.log('Error while fetching users of comments inside thread page: ', err);
@@ -223,7 +223,7 @@
              */
             Thread.getUserName = function (userId) {
                 var userName = '';
-                usersData.some(function (userData) {
+                Thread.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
@@ -238,7 +238,7 @@
              */
             Thread.getUserImage = function (userId) {
                 var userImageUrl = '';
-                usersData.some(function (userData) {
+                Thread.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
