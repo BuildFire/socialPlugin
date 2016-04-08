@@ -7,7 +7,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
     beforeEach(module('socialPluginWidget', function ($provide) {
         $provide.service('Buildfire', function () {
-            this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
+            this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate','onRefresh']);
             this.imageLib = jasmine.createSpyObj('imageLib', ['cropImage']);
             this.imageLib.cropImage.and.callFake(function (url,options) {
                return 'abc.png';
