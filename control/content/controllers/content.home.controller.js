@@ -473,7 +473,10 @@
                                         el.comments.some(function (commentData) {
                                             console.log('Comment Data---------Liked-------------------', commentData);
                                             if (commentData._id == event._id) {
+                                                if(commentData.likesCount)
                                                 commentData.likesCount++;
+                                                else
+                                                commentData.likesCount=1;
                                                 return true;
                                             }
                                         });
