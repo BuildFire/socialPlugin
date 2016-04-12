@@ -5,7 +5,7 @@
         .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout','Location', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout,Location) {
             var Thread = this;
             var userIds = [];
-            var usersData = [];
+            Thread.usersData = [];
             var uniqueLinksOfComments = [];
             Thread.comments = [];
             Thread.userDetails = {};
@@ -138,7 +138,7 @@
                                     console.error('Error while fetching users for comments ', response.data.error);
                                 } else if (response.data.result) {
                                     console.info('Users fetched successfully for comments ', response.data.result);
-                                    usersData = usersData.concat(response.data.result);
+                                    Thread.usersData = Thread.usersData.concat(response.data.result);
                                 }
                             }, function (err) {
                                 console.log('Error while fetching users of comments inside thread page: ', err);
@@ -223,7 +223,7 @@
              */
             Thread.getUserName = function (userId) {
                 var userName = '';
-                usersData.some(function (userData) {
+                Thread.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
@@ -238,7 +238,7 @@
              */
             Thread.getUserImage = function (userId) {
                 var userImageUrl = '';
-                usersData.some(function (userData) {
+                Thread.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
@@ -286,7 +286,7 @@
                                     post.likesCount++;
                                     post.waitAPICompletion = false;
                                     post.isUserLikeActive = false;
-                                    $rootScope.$broadcast(EVENTS.POST_LIKED);
+                                    $rootScope.$broadcast(EVENTS.POST_LIKED,post);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while liking thread', err);
@@ -302,7 +302,7 @@
                                     post.likesCount--;
                                     post.waitAPICompletion = false;
                                     post.isUserLikeActive = true;
-                                    $rootScope.$broadcast(EVENTS.POST_UNLIKED);
+                                    $rootScope.$broadcast(EVENTS.POST_UNLIKED,post);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while removing like of thread', err);

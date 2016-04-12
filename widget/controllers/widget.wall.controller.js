@@ -4,7 +4,7 @@
     angular.module('socialPluginWidget')
         .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
             var WidgetWall = this;
-            var usersData = [];
+            WidgetWall.usersData = [];
             var userIds = [];
             var postsUniqueIds = [];
             var getLikesData = [];
@@ -138,7 +138,7 @@
                                 console.error('Error while fetching users ', response.data.error);
                             } else if (response.data.result) {
                                 console.info('Users fetched successfully', response.data.result);
-                                usersData = response.data.result;
+                                WidgetWall.usersData = response.data.result;
                                 WidgetWall.waitAPICompletion = false;
                                 // the element you wish to scroll to.
                                 $location.hash('top');
@@ -196,7 +196,7 @@
 
             WidgetWall.getUserName = function (userId) {
                 var userName = '';
-                usersData.some(function (userData) {
+                WidgetWall.usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
@@ -206,7 +206,7 @@
             };
             WidgetWall.getUserImage = function (userId) {
                 var userImageUrl = '';
-                usersData.some(function (userData) {
+                WidgetWall.usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
@@ -214,12 +214,12 @@
                 });
                 return userImageUrl;
             };
-            WidgetWall.showMoreOptions = function (postId) {
+            WidgetWall.showMoreOptions = function (post) {
 
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
-                    console.log("Post id ------------->", postId);
-                    Modals.showMoreOptionsModal({})
+                    console.log("Post id ------------->", post._id);
+                    Modals.showMoreOptionsModal({'postId': post._id,'userId':post.userId,'socialItemUserId':WidgetWall.SocialItems.userDetails.userId})
                         .then(function (data) {
                             console.log('Data in Success------------------data :????????????????????????????????????', data);
 
@@ -227,7 +227,7 @@
 
                                 case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise = SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
+                                    var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
                                     reportPostPromise.then(function (response) {
                                         $modal
                                             .open({
@@ -237,7 +237,7 @@
                                                 size: 'sm',
                                                 resolve: {
                                                     Info: function () {
-                                                        return postId;
+                                                        return post._id;
                                                     }
                                                 }
                                             });
@@ -257,7 +257,7 @@
                                             size: 'sm',
                                             resolve: {
                                                 Info: function () {
-                                                    return postId;
+                                                    return post._id;
                                                 }
                                             }
                                         });
@@ -435,9 +435,8 @@
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
-                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                return el._id != event._id;
-                            });
+                            WidgetWall.deletePost(event._id);
+
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -484,7 +483,7 @@
                         console.error('Error while fetching users ', response.data.error);
                     } else if (response.data.result) {
                         console.log('Users data--------------------', response);
-                        usersData = response.data.result;
+                        WidgetWall.usersData = response.data.result;
                     }
                 };
                 var errorCallback = function (err) {
@@ -571,15 +570,17 @@
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
             });
-            $rootScope.$on(EVENTS.POST_LIKED, function () {
+            $rootScope.$on(EVENTS.POST_LIKED, function (e,post) {
                 console.log('inside post liked event listener:::::::::::');
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,false);
             });
-            $rootScope.$on(EVENTS.POST_UNLIKED, function () {
-                console.log('inside post unliked event listener:::::::::::');
+            $rootScope.$on(EVENTS.POST_UNLIKED, function (e,post) {
+                console.log('inside post unliked event listener:::::::::::', e,'--------------------------post------',post);
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,true);
             });
             Buildfire.datastore.onUpdate(function (err, response) {
                 console.log('----------- on Update ----',err,response);

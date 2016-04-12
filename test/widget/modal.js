@@ -34,7 +34,7 @@ describe('socialPluginWidget: Services', function () {
         MoreOptionsModalPopupCtrl = $controller('MoreOptionsModalPopupCtrl', {
             $scope: scope,
             $modalInstance:$modalInstance,
-            Info:Info,
+            Info:{postId:123123},
             $rootScope:$rootScope,
             SocialDataStore:SocialDataStore,
             Buildfire:Buildfire

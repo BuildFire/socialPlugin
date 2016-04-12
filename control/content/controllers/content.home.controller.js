@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS) {
+        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS, $timeout) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             ContentHome.usersData = [];
@@ -16,18 +16,18 @@
             var datastoreWriteKey;
             var instanceId;
             var init = function () {
-                Buildfire.getContext(function(err,context){
-                    datastoreWriteKey=context.datastoreWriteKey;
+                Buildfire.getContext(function (err, context) {
+                    datastoreWriteKey = context.datastoreWriteKey;
                 });
-                Buildfire.datastore.get('Social',function(err,data){
-                    console.log('Get data in content section socail App Id------------------',err,data);
-                    if(data && data.data && data.data.socialAppId){
-                        ContentHome.socialAppId=data.data.socialAppId;
-                        ContentHome.parentThreadId=data.data.parentThreadId;
+                Buildfire.datastore.get('Social', function (err, data) {
+                    console.log('Get data in content section socail App Id------------------', err, data);
+                    if (data && data.data && data.data.socialAppId) {
+                        ContentHome.socialAppId = data.data.socialAppId;
+                        ContentHome.parentThreadId = data.data.parentThreadId;
                         $scope.$digest();
-                        console.log('Content------------------------social App id, parent id',ContentHome.socialAppId,ContentHome.parentThreadId);
+                        console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
                     }
-                    else{
+                    else {
                         Buildfire.getContext(function (err, context) {
                             if (err) {
                                 console.error("Error occurred while getting buildfire context");
@@ -38,18 +38,21 @@
                                     if (response && response.data && response.data.result) {
                                         console.log('application successfully added:::::-------------------------- ', response);
                                         ContentHome.socialAppId = response.data.result;
-                                        SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId,context).then(
-                                            function(parentThreadRes){
-                                                console.log('Parent ThreadId -------success----',parentThreadRes);
-                                                if(parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id){
-                                                    ContentHome.parentThreadId=parentThreadRes.data.result._id;
-                                                    Buildfire.datastore.insert({socialAppId:response.data.result,parentThreadId:parentThreadRes.data.result._id},'Social',false,function(err,data){
-                                                        console.log('Data saved using datastore-------------',err,data);
+                                        SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                                            function (parentThreadRes) {
+                                                console.log('Parent ThreadId -------success----', parentThreadRes);
+                                                if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
+                                                    ContentHome.parentThreadId = parentThreadRes.data.result._id;
+                                                    Buildfire.datastore.insert({
+                                                        socialAppId: response.data.result,
+                                                        parentThreadId: parentThreadRes.data.result._id
+                                                    }, 'Social', false, function (err, data) {
+                                                        console.log('Data saved using datastore-------------', err, data);
                                                     });
                                                 }
                                             },
-                                            function(error){
-                                                console.log('Parent thread callback error------',error);
+                                            function (error) {
+                                                console.log('Parent thread callback error------', error);
                                             }
                                         );
                                     }
@@ -65,10 +68,10 @@
                 ContentHome.noMore = false;
                 console.log('inside init method of content controller:::::::: ');
                 /*Buildfire.auth.getCurrentUser(function (err, userData) {
-                    if(userData) {
+                 if(userData) {
 
-                    }
-                });*/
+                 }
+                 });*/
             };
             init();
 
@@ -88,7 +91,7 @@
                     else {
                         ContentHome.noMore = false;
                     }
-                    if(response && response.data && response.data.result) {
+                    if (response && response.data && response.data.result) {
                         response.data.result.forEach(function (postData) {
                             if (userIds.indexOf(postData.userId.toString()) == -1) {
                                 userIds.push(postData.userId.toString());
@@ -96,7 +99,7 @@
                             }
                             ContentHome.posts.push(postData);
                         });
-                        console.log('newUserIds::::::::::::::',newUserIds, userIds);
+                        console.log('newUserIds::::::::::::::', newUserIds, userIds);
                         // Called when getting success from SocialDataStore getUsers method
                         var successCallback = function (response) {
                             console.info('Users fetching response is: ', response.data.result);
@@ -105,7 +108,7 @@
                             } else if (response.data.result) {
                                 console.info('Users fetched successfully', response.data.result);
                                 ContentHome.usersData = ContentHome.usersData.concat(response.data.result);
-                                console.log('ContentHome.usersData is:::::::::::',ContentHome.usersData);
+                                console.log('ContentHome.usersData is:::::::::::', ContentHome.usersData);
                             }
                         };
                         // Called when getting error from SocialDataStore getUsers method
@@ -114,7 +117,7 @@
                         };
                         // Getting users details of posts
                         SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
-                    } else if(response && response.data && response.data.error) {
+                    } else if (response && response.data && response.data.error) {
                         console.log("error while getting posts:::::: ", response.data.error);
                     }
                 };
@@ -127,7 +130,11 @@
                 else
                     lastThreadId = null;
                 // Getting posts initially and on scroll down by passing lastThreadId
-                SocialDataStore.getPosts({lastThreadId: lastThreadId, socialAppId: ContentHome.socialAppId, parentThreadId: ContentHome.parentThreadId}).then(success, error);
+                SocialDataStore.getPosts({
+                    lastThreadId: lastThreadId,
+                    socialAppId: ContentHome.socialAppId,
+                    parentThreadId: ContentHome.parentThreadId
+                }).then(success, error);
             };
 
             // Method for getting User Name by giving userId as its argument
@@ -147,7 +154,10 @@
                 var userImageUrl = '';
                 ContentHome.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
+                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {
+                            width: 40,
+                            height: 40
+                        }) : '';
                         return true;
                     }
                 });
@@ -158,7 +168,7 @@
             ContentHome.deletePost = function (postId) {
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId, ContentHome.socialAppId,datastoreWriteKey).then(success, error);
+                    SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -186,7 +196,7 @@
             ContentHome.deleteComment = function (post, commentId) {
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
-                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId,datastoreWriteKey).then(success, error);
+                    SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
                 }, function (err) {
                     console.log('Error is: ', err);
                 });
@@ -206,8 +216,8 @@
                             post.viewComments = false;
                         }
                         post.comments = post && post.comments && post.comments.length && post.comments.filter(function (el) {
-                            return el._id != commentId;
-                        });
+                                return el._id != commentId;
+                            });
                         if (!$scope.$$phase)
                             $scope.$digest();
                     }
@@ -265,7 +275,7 @@
                                 thread.comments = thread.comments && !viewComment ? thread.comments.concat(data.data.result) : data.data.result;
                                 thread.moreComments = thread.comments && thread.comments.length < thread.commentsCount ? false : true;
                                 thread.comments.forEach(function (commentData) {
-                                    if(thread.uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
+                                    if (thread.uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
                                         thread.uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
                                         newUniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
                                     }
@@ -304,14 +314,14 @@
                 console.log('inside getCommentsLikeAndUpdate', thread, uniqueLinksOfComments);
                 SocialDataStore.getThreadLikes(uniqueLinksOfComments, ContentHome.socialAppId).then(function (data) {
                         console.log('Response of a post comments like-----------------', data);
-                        if(data && data.data && data.data.result && data.data.result.length){
-                            console.log('In If------------------',data.data.result);
+                        if (data && data.data && data.data.result && data.data.result.length) {
+                            console.log('In If------------------', data.data.result);
                             data.data.result.forEach(function (uniqueLinkData) {
-                                thread.comments.some(function(comment){
-                                    if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
-                                        comment.likesCount=uniqueLinkData.likesCount;
-                                        comment.isUserLikeActive=uniqueLinkData.isUserLikeActive;
-                                        console.log('Updated comments data------------------',comment);
+                                thread.comments.some(function (comment) {
+                                    if (uniqueLinkData.uniqueLink == (comment.threadId + "cmt" + comment._id)) {
+                                        comment.likesCount = uniqueLinkData.likesCount;
+                                        comment.isUserLikeActive = uniqueLinkData.isUserLikeActive;
+                                        console.log('Updated comments data------------------', comment);
                                         return true;
                                     }
                                 });
@@ -362,7 +372,7 @@
                                     SocialDataStore.getUsers([event.post.userId]).then(successCallback, errorCallback);
                                 }
                             }
-                           /* if (!$scope.$$phase)$scope.$digest();*/
+                            /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_LIKED :
                             ContentHome.posts.some(function (el) {
@@ -371,7 +381,7 @@
                                     return true;
                                 }
                             });
-                           /* if (!$scope.$$phase)$scope.$digest();*/
+                            /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.POST_UNLIKED:
                             ContentHome.posts.some(function (el) {
@@ -416,7 +426,7 @@
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el._id != event._id;
                             });
-                           /* if (!$scope.$$phase)$scope.$digest();*/
+                            /* if (!$scope.$$phase)$scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
@@ -428,41 +438,54 @@
                                     return true;
                                 }
                             });
-                           /* if (!$scope.$$phase)
-                                $scope.$digest();*/
+                            /* if (!$scope.$$phase)
+                             $scope.$digest();*/
                             break;
                         case EVENTS.COMMENT_UNLIKED:
+                            console.log('Comment unLike recieved--------------------------------', event);
                             ContentHome.posts.some(function (el) {
-                                if(el._id == event.postId) {
-                                    if(el.comments && el.comments.length)
-                                    el.comments.some(function (commentData) {
-                                        if(commentData._id == event._id) {
-                                            commentData.likesCount = commentData.likesCount > 0 ? commentData.likesCount-- : 0;
-                                            return true;
-                                        }
-                                    });
+                                if (el._id == event.postId) {
+                                    if (el.comments && el.comments.length)
+                                        el.comments.some(function (commentData) {
+                                            console.log('Comment Data----------------------------', commentData);
+                                            if (commentData._id == event._id) {
+                                                $timeout(function () {
+                                                    if (commentData.likesCount > 0)
+                                                        commentData.likesCount--;
+                                                    else
+                                                        commentData.likesCount = 0;
+                                                    return true;
+                                                }, 10);
+                                            }
+                                        });
                                     return true;
                                 }
                             });
-                           /* if (!$scope.$$phase)
-                                $scope.$digest();*/
+                            if (!$scope.$$phase)
+                                $scope.$digest();
                             break;
                         case EVENTS.COMMENT_LIKED:
+                            console.log('Comment Like recieved--------------------------------', event);
                             console.log('comment liked in content home controller event called from widget thread page');
                             ContentHome.posts.some(function (el) {
-                                if(el._id == event.postId) {
-                                    if(el.comments && el.comments.length)
-                                     el.comments.some(function (commentData) {
-                                        if(commentData._id == event._id) {
-                                            commentData.likesCount++;
-                                            return true;
-                                        }
-                                    });
+                                if (el._id == event.postId) {
+                                    if (el.comments && el.comments.length) {
+                                        el.comments.some(function (commentData) {
+                                            console.log('Comment Data---------Liked-------------------', commentData);
+                                            if (commentData._id == event._id) {
+                                                if(commentData.likesCount)
+                                                commentData.likesCount++;
+                                                else
+                                                commentData.likesCount=1;
+                                                return true;
+                                            }
+                                        });
+                                    }
                                     return true;
                                 }
                             });
-                            /*if (!$scope.$$phase)
-                                $scope.$digest();*/
+                            if (!$scope.$$phase)
+                                $scope.$digest();
                             break;
                         default :
                             break;

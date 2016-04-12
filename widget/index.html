@@ -46,7 +46,7 @@
                     <div class="padded head-btn text-center padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);margin-top: 15px !important;" class="infinite-scroll-parent">
                         <div style="height: 20px;" id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
@@ -56,7 +56,8 @@
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <div class="col-xs-8 pull-left">
                                         <div class="media-holder pull-left" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
-                                            <img ng-src="{{WidgetWall.getUserImage(post.userId)}}">
+                                            <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
+                                                 data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                             <a class="text-primary" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
@@ -66,7 +67,7 @@
                                         <span class="time-ago opacity-seventy">{{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}</span>
                                     </div>
                                 </div>
-                                <a href="#" class="btn-delete-icon btn-danger" ng-click="WidgetWall.deletePost(post._id)" ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" style="float: right;margin-right: 5px;z-index: 1 !important;"></a>
+                                <!--<a href="#" class="btn-delete-icon btn-danger" ng-click="WidgetWall.deletePost(post._id)" ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" style="float: right;margin-right: 5px;z-index: 1 !important;"></a>-->
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <p class="margin-zero cursor-pointer">
                                         <span ng-click="WidgetWall.goInToThread(post.uniqueLink)" ng-bind-html="(post.text | limitTo : (post.limit || 150) :0) | newLine"></span>
@@ -76,7 +77,7 @@
                                 </div>
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                                     <div class="plugin-slide text-center">
-                                        <a href="#/thread/{{post.uniqueLink}}"><img ng-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
+                                        <a href="#/thread/{{post.uniqueLink}}"><img load-image="16x9" data-final-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
                                     </div>
                                 </div>
                                 <div class="footer margin-bottom-ten clearfix">
@@ -92,7 +93,7 @@
                                         <div class="pull-right">
                                             <p class="pull-left margin-bottom-zero">{{post.likesCount}} Likes</p>
                                             <p class="pull-left margin-bottom-zero margin-left-twenty">{{post.commentsCount}} Comments</p>
-                                            <a class="more-info" ng-click="WidgetWall.showMoreOptions(post._id)">
+                                            <a class="more-info" ng-click="WidgetWall.showMoreOptions(post)">
                                                 <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                             </a>
                                         </div>
