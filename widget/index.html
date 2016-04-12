@@ -56,7 +56,8 @@
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <div class="col-xs-8 pull-left">
                                         <div class="media-holder pull-left" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
-                                            <img ng-src="{{WidgetWall.getUserImage(post.userId)}}">
+                                            <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
+                                                 data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                             <a class="text-primary" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
@@ -76,7 +77,7 @@
                                 </div>
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                                     <div class="plugin-slide text-center">
-                                        <a href="#/thread/{{post.uniqueLink}}"><img ng-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
+                                        <a href="#/thread/{{post.uniqueLink}}"><img load-image="16x9" data-final-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
                                     </div>
                                 </div>
                                 <div class="footer margin-bottom-ten clearfix">

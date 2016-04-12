@@ -4,7 +4,7 @@
     angular.module('socialPluginWidget')
         .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
             var WidgetWall = this;
-            var usersData = [];
+            WidgetWall.usersData = [];
             var userIds = [];
             var postsUniqueIds = [];
             var getLikesData = [];
@@ -138,7 +138,7 @@
                                 console.error('Error while fetching users ', response.data.error);
                             } else if (response.data.result) {
                                 console.info('Users fetched successfully', response.data.result);
-                                usersData = response.data.result;
+                                WidgetWall.usersData = response.data.result;
                                 WidgetWall.waitAPICompletion = false;
                                 // the element you wish to scroll to.
                                 $location.hash('top');
@@ -196,7 +196,7 @@
 
             WidgetWall.getUserName = function (userId) {
                 var userName = '';
-                usersData.some(function (userData) {
+                WidgetWall.usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
                         userName = userData.userObject.displayName || 'No Name';
                         return true;
@@ -206,7 +206,7 @@
             };
             WidgetWall.getUserImage = function (userId) {
                 var userImageUrl = '';
-                usersData.some(function (userData) {
+                WidgetWall.usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
                         userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
                         return true;
@@ -484,7 +484,7 @@
                         console.error('Error while fetching users ', response.data.error);
                     } else if (response.data.result) {
                         console.log('Users data--------------------', response);
-                        usersData = response.data.result;
+                        WidgetWall.usersData = response.data.result;
                     }
                 };
                 var errorCallback = function (err) {
