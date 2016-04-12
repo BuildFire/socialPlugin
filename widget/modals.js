@@ -38,6 +38,8 @@
             MoreOptionsPopup.options=['Report Post'];
 
             $scope.postId=Info.postId;
+            $scope.userId=Info.userId;
+            $scope.socialItemUserId=Info.socialItemUserId;
 
             $scope.ok = function (option) {
                 $modalInstance.close(option);
@@ -51,7 +53,7 @@
 
             };
 
-            $scope.deletePost=function(postId){
+            $scope.deletePost=function(post){
                 var deletePostPromise=SocialDataStore.deletePost(postId);
                 deletePostPromise.then(function(response){
                     var event={};
