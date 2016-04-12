@@ -37,7 +37,7 @@
             MoreOptionsPopup.option='';
             MoreOptionsPopup.options=['Report Post'];
 
-            $scope.postId=Info;
+            $scope.postId=Info.postId;
 
             $scope.ok = function (option) {
                 $modalInstance.close(option);
@@ -56,6 +56,7 @@
                 deletePostPromise.then(function(response){
                     var event={};
                     event.name="POST_DELETED";
+                    event._id=postId;
                     Buildfire.messaging.onReceivedMessage(event);
                     $modalInstance.dismiss('no');
                     console.log(response);

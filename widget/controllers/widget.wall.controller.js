@@ -219,7 +219,7 @@
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     console.log("Post id ------------->", postId);
-                    Modals.showMoreOptionsModal({})
+                    Modals.showMoreOptionsModal({'postId': postId})
                         .then(function (data) {
                             console.log('Data in Success------------------data :????????????????????????????????????', data);
 
@@ -435,9 +435,8 @@
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
-                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                return el._id != event._id;
-                            });
+                            WidgetWall.deletePost(event._id);
+
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
