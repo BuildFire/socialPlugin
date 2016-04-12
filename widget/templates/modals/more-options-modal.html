@@ -1,4 +1,4 @@
-<div class="padded clearfix" ng-repeat="option in MoreOptionsPopup.options" >
+<div class="padded clearfix" ng-repeat="option in MoreOptionsPopup.options" ng-style="socialItemUserId == userId? {'padding-bottom': '0px' }:{}">
     <div class="content text-center">
         <a class="margin-zero" ng-click="ok(option)" style="color :red !important">{{option}}</a>
     </div>

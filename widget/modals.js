@@ -53,7 +53,7 @@
 
             };
 
-            $scope.deletePost=function(post){
+            $scope.deletePost=function(postId){
                 var deletePostPromise=SocialDataStore.deletePost(postId);
                 deletePostPromise.then(function(response){
                     var event={};
