@@ -570,15 +570,17 @@
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
             });
-            $rootScope.$on(EVENTS.POST_LIKED, function () {
+            $rootScope.$on(EVENTS.POST_LIKED, function (e,post) {
                 console.log('inside post liked event listener:::::::::::');
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,false);
             });
-            $rootScope.$on(EVENTS.POST_UNLIKED, function () {
-                console.log('inside post unliked event listener:::::::::::');
+            $rootScope.$on(EVENTS.POST_UNLIKED, function (e,post) {
+                console.log('inside post unliked event listener:::::::::::', e,'--------------------------post------',post);
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,true);
             });
             Buildfire.datastore.onUpdate(function (err, response) {
                 console.log('----------- on Update ----',err,response);

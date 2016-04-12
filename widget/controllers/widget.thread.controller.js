@@ -286,7 +286,7 @@
                                     post.likesCount++;
                                     post.waitAPICompletion = false;
                                     post.isUserLikeActive = false;
-                                    $rootScope.$broadcast(EVENTS.POST_LIKED);
+                                    $rootScope.$broadcast(EVENTS.POST_LIKED,post);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while liking thread', err);
@@ -302,7 +302,7 @@
                                     post.likesCount--;
                                     post.waitAPICompletion = false;
                                     post.isUserLikeActive = true;
-                                    $rootScope.$broadcast(EVENTS.POST_UNLIKED);
+                                    $rootScope.$broadcast(EVENTS.POST_UNLIKED,post);
                                     if (!$scope.$$phase)$scope.$digest();
                                 }, function (err) {
                                     console.log('error while removing like of thread', err);
