@@ -31,7 +31,7 @@
             </div>
             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                 <div class="plugin-slide text-center">
-                    <img load-image="16x9" data-final-src="{{post.imageUrl | cropImage : 555 : 337}}">
+                    <img ng-if="post.imageUrl" load-image="16x9" data-final-src="{{post.imageUrl | cropImage : 555 : 337}}">
                 </div>
             </div>
             <div class="social-footer padded padding-top-zero clearfix">
@@ -87,7 +87,7 @@
                     </div>
                     <div class="plugin-banner clearfix margin-top-ten margin-bottom-fifteen">
                         <div class="plugin-slide text-center">
-                            <img load-image="16x9" data-final-src="{{comment.attachedImage}}">
+                            <img ng-if="comment.attachedImage" load-image="16x9" data-final-src="{{comment.attachedImage}}">
                         </div>
                     </div>
                     <div class="social-footer clearfix">
