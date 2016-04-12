@@ -214,12 +214,12 @@
                 });
                 return userImageUrl;
             };
-            WidgetWall.showMoreOptions = function (postId) {
+            WidgetWall.showMoreOptions = function (post) {
 
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
-                    console.log("Post id ------------->", postId);
-                    Modals.showMoreOptionsModal({'postId': postId})
+                    console.log("Post id ------------->", post._id);
+                    Modals.showMoreOptionsModal({'postId': post._id,'userId':post.userId,'socialItemUserId':WidgetWall.SocialItems.userDetails.userId})
                         .then(function (data) {
                             console.log('Data in Success------------------data :????????????????????????????????????', data);
 
@@ -227,7 +227,7 @@
 
                                 case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise = SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
+                                    var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
                                     reportPostPromise.then(function (response) {
                                         $modal
                                             .open({
@@ -237,7 +237,7 @@
                                                 size: 'sm',
                                                 resolve: {
                                                     Info: function () {
-                                                        return postId;
+                                                        return post._id;
                                                     }
                                                 }
                                             });
@@ -257,7 +257,7 @@
                                             size: 'sm',
                                             resolve: {
                                                 Info: function () {
-                                                    return postId;
+                                                    return post._id;
                                                 }
                                             }
                                         });
