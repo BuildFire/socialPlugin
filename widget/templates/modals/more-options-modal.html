@@ -1,6 +1,11 @@
-<div class="padded clearfix" ng-repeat="option in MoreOptionsPopup.options" >
+<div class="padded clearfix" ng-repeat="option in MoreOptionsPopup.options" ng-style="socialItemUserId == userId? {'padding-bottom': '0px' }:{}">
     <div class="content text-center">
         <a class="margin-zero" ng-click="ok(option)" style="color :red !important">{{option}}</a>
+    </div>
+</div>
+<div class="padded clearfix" ng-if="socialItemUserId == userId">
+    <div class="content text-center">
+        <a class="margin-zero" ng-click="deletePost(postId)" style="color :red !important">Delete Post</a>
     </div>
 </div>
 <div class="bottom border-top-grey clearfix">

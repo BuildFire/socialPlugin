@@ -214,12 +214,12 @@
                 });
                 return userImageUrl;
             };
-            WidgetWall.showMoreOptions = function (postId) {
+            WidgetWall.showMoreOptions = function (post) {
 
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
-                    console.log("Post id ------------->", postId);
-                    Modals.showMoreOptionsModal({})
+                    console.log("Post id ------------->", post._id);
+                    Modals.showMoreOptionsModal({'postId': post._id,'userId':post.userId,'socialItemUserId':WidgetWall.SocialItems.userDetails.userId})
                         .then(function (data) {
                             console.log('Data in Success------------------data :????????????????????????????????????', data);
 
@@ -227,7 +227,7 @@
 
                                 case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise = SocialDataStore.reportPost(postId, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
+                                    var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
                                     reportPostPromise.then(function (response) {
                                         $modal
                                             .open({
@@ -237,7 +237,7 @@
                                                 size: 'sm',
                                                 resolve: {
                                                     Info: function () {
-                                                        return postId;
+                                                        return post._id;
                                                     }
                                                 }
                                             });
@@ -257,7 +257,7 @@
                                             size: 'sm',
                                             resolve: {
                                                 Info: function () {
-                                                    return postId;
+                                                    return post._id;
                                                 }
                                             }
                                         });
@@ -435,9 +435,8 @@
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
-                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                return el._id != event._id;
-                            });
+                            WidgetWall.deletePost(event._id);
+
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -571,15 +570,17 @@
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
             });
-            $rootScope.$on(EVENTS.POST_LIKED, function () {
+            $rootScope.$on(EVENTS.POST_LIKED, function (e,post) {
                 console.log('inside post liked event listener:::::::::::');
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,false);
             });
-            $rootScope.$on(EVENTS.POST_UNLIKED, function () {
-                console.log('inside post unliked event listener:::::::::::');
+            $rootScope.$on(EVENTS.POST_UNLIKED, function (e,post) {
+                console.log('inside post unliked event listener:::::::::::', e,'--------------------------post------',post);
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                WidgetWall.updateLikesData(post._id,true);
             });
             Buildfire.datastore.onUpdate(function (err, response) {
                 console.log('----------- on Update ----',err,response);

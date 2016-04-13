@@ -340,7 +340,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
         })
         it('it should pass if it calls scope.emit is called', function () {
-            rootScope.$emit('POST_LIKED');
+            rootScope.$emit('POST_LIKED',{_id:'12313'});
 
         });
     });
@@ -357,7 +357,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
         })
         it('it should pass if it calls scope.emit is called', function () {
-            rootScope.$emit('POST_UNLIKED');
+            rootScope.$emit('POST_UNLIKED',{_id:'12313'});
 
         });
     });
