@@ -58,6 +58,8 @@
                                         <div class="media-holder pull-left" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
                                             <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
                                                  data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
+                                            <img ng-if="!WidgetWall.getUserImage(post.userId)" load-image="1x1"
+                                            data-final-src="./assets/images/avatar-placeholder.png">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                             <a class="text-primary" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
