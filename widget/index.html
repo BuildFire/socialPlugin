@@ -39,40 +39,40 @@
 </head>
 <body class="scrollable">
 <div class="main_view">
-    <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall">
+    <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall" ng-cloak>
         <div class="slide content">
             <div class="padding-zero" style="height: 100%;">
                 <div class="social-plugin social-wall" style="height: calc(100% - 45px)">
                     <div class="padded head-btn text-center padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
-                        <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
+                        <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" class="ng-cloak">{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);margin-top: 15px !important;" class="infinite-scroll-parent">
                         <div style="height: 20px;" id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
-                             infinite-scroll-disabled="WidgetWall.SocialItems.busy">
+                             infinite-scroll-disabled="WidgetWall.SocialItems.busy" ng-cloak>
                             <div class="social-item clearfix" ng-repeat="post in WidgetWall.SocialItems.items">
                                 <hr class="small">
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <div class="col-xs-8 pull-left">
-                                        <div class="media-holder pull-left" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
+                                        <div class="media-holder pull-left ng-cloak" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
                                             <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
                                                  data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
-                                            <a class="text-primary" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
+                                            <a class="text-primary ng-cloak" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
                                         </p>
                                     </div>
                                     <div class="col-xs-3 pull-right margin-top-ten text-right">
-                                        <span class="time-ago opacity-seventy">{{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}</span>
+                                        <span class="time-ago opacity-seventy ng-cloak">{{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}</span>
                                     </div>
                                 </div>
                                 <a href="#" class="btn-delete-icon btn-danger" ng-click="WidgetWall.deletePost(post._id)" ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" style="float: right;margin-right: 5px;z-index: 1 !important;"></a>
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <p class="margin-zero cursor-pointer">
                                         <span ng-click="WidgetWall.goInToThread(post.uniqueLink)" ng-bind-html="(post.text | limitTo : (post.limit || 150) :0) | newLine"></span>
-                                        <span ng-if="(post.text.length>150 && !post.seeMore)">...</span>
-                                        <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="WidgetWall.seeMore(post)">Read More</a>
+                                        <span ng-if="(post.text.length>150 && !post.seeMore)" class="ng-cloak">...</span>
+                                        <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="WidgetWall.seeMore(post)" class="ng-cloak">Read More</a>
 									</p>
                                 </div>
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
@@ -82,18 +82,18 @@
                                 </div>
                                 <div class="footer margin-bottom-ten clearfix">
                                     <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
-                                        <a class="social-icon" ng-click="WidgetWall.likeThread(post, 'thread')">
+                                        <a class="social-icon ng-cloak" ng-click="WidgetWall.likeThread(post, 'thread')">
                                             <span class="icon icon-heart" ng-class="{inactive: WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
                                         </a>
-                                        <a href="#/thread/{{post.uniqueLink}}" class="social-icon margin-left-twenty">
+                                        <a href="#/thread/{{post.uniqueLink}}" class="social-icon margin-left-twenty ng-cloak">
                                             <span class="icon icon-bubble"></span>
                                         </a>
                                     </div>
                                     <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                         <div class="pull-right">
-                                            <p class="pull-left margin-bottom-zero">{{post.likesCount}} Likes</p>
-                                            <p class="pull-left margin-bottom-zero margin-left-twenty">{{post.commentsCount}} Comments</p>
-                                            <a class="more-info" ng-click="WidgetWall.showMoreOptions(post._id)">
+                                            <p class="pull-left margin-bottom-zero ng-cloak">{{post.likesCount}} Likes</p>
+                                            <p class="pull-left margin-bottom-zero margin-left-twenty ng-cloak">{{post.commentsCount}} Comments</p>
+                                            <a class="more-info ng-cloak" ng-click="WidgetWall.showMoreOptions(post._id)">
                                                 <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                             </a>
                                         </div>
@@ -128,7 +128,7 @@
                 <div class="send-message">
                     <input type="submit" class="text-primary send-btn" value="Send" ng-click="WidgetWall.createPost($event)">
                 </div>
-                <div class="image-upload-queue" ng-if="WidgetWall.imageSelected">
+                <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
                     <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()" class="btn-delete-icon cross-icon"></a>
                         <div><span class="filename">{{WidgetWall.imageName}}</span></div>
                         <div class="progress" ng-if="WidgetWall.showImageLoader">
@@ -140,7 +140,7 @@
                 </form>
         </div>
     </div>
-    <div class="content" ng-view="" ng-hide="showThread"></div>
+    <div class="content" ng-view="" ng-hide="showThread"><h5 class="titleBarTheme text-center" style="margin-top: 35px;">Something went wrong!! Please try again</h5></div>
 
 
 </div>
