@@ -1,10 +1,10 @@
 <div class="slide content">
-    <div class="padding-zero" style="height: calc(100% - 45px);">
+    <div class="padding-zero" style="height: calc(100% - 54px);">
         <div class="social-plugin social-thread" style="height: 100%;">
             <div class="padded head-btn text-center padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
             </div>
-            <div style="height: calc(100% - 48px);overflow-y: auto;overflow-x: hidden;">
+            <div style="height: calc(100% - 48px); padding-top: 15px !important; overflow-y: auto;overflow-x: hidden;">
                 <div class="social-item clearfix">
                     <hr class="small">
                     <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
@@ -92,9 +92,7 @@
                                 </div>
                                 <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                     <div class="pull-right">
-                                        <p class="pull-left margin-bottom-zero">
-                                            {{comment.likesCount?comment.likesCount:0}}
-                                            Likes</p>
+                                        <p class="text-right margin-bottom-zero"> {{comment.likesCount?comment.likesCount:0}} Like<span ng-hide="{{comment.likesCount == 1}}">s</span></p>
 
                                         <!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
                                         <a class="more-info">
@@ -111,7 +109,7 @@
     </div>
 </div>
 <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
-    <hr class="small" style="border-top:none !important;">
+    <hr class="small">
     <div class="post-holder clearfix">
         <div class="add-media">
             <a>
