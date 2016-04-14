@@ -42,11 +42,11 @@
     <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall" ng-cloak>
         <div class="slide content">
             <div class="padding-zero" style="height: 100%;">
-                <div class="social-plugin social-wall" style="height: calc(100% - 45px)">
-                    <div class="padded head-btn text-center padding-bottom-ten margin-bottom-fifteen" style="margin:0 !important;">
+                <div class="social-plugin social-wall" style="height: calc(100% - 39px)">
+                    <div class="head-btn text-center margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" class="ng-cloak">{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px);margin-top: 15px !important;" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 47px); padding-top: 15px !important;" class="infinite-scroll-parent">
                         <div style="height: 20px;" id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"
@@ -82,7 +82,7 @@
                                         <a href="#/thread/{{post.uniqueLink}}"><img load-image="16x9" data-final-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
                                     </div>
                                 </div>
-                                <div class="footer margin-bottom-ten clearfix">
+                                <div class="footer clearfix" style="margin-bottom:6px;">
                                     <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
                                         <a class="social-icon ng-cloak" ng-click="WidgetWall.likeThread(post, 'thread')">
                                             <span class="icon icon-heart" ng-class="{inactive: WidgetWall.isLikedByLoggedInUser(post._id)}"></span>
@@ -93,8 +93,8 @@
                                     </div>
                                     <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                         <div class="pull-right">
-                                            <p class="pull-left margin-bottom-zero opacity-seventy ng-cloak">{{post.likesCount}} Likes</p>
-                                            <p class="pull-left margin-bottom-zero margin-left-twenty opacity-seventy ng-cloak">{{post.commentsCount}} Comments</p>
+                                            <p class="pull-left margin-bottom-zero opacity-seventy ng-cloak">{{post.likesCount}} Like<span ng-hide="post.likesCount == 1">s</span></p>
+                                            <p class="pull-left margin-bottom-zero margin-left-twenty opacity-seventy ng-cloak">{{post.commentsCount}} Comment<span ng-hide="post.commentsCount == 1">s</span></p>
                                             <a class="more-info ng-cloak" ng-click="WidgetWall.showMoreOptions(post)">
                                                 <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                             </a>
@@ -112,8 +112,8 @@
 
         </div>
         <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
-		    <hr class="small" style="border-top:none !important;">
-            <form ng-submit="" handle-phone-submit  >
+		    <hr class="small">
+            <form ng-submit="" handle-phone-submit>
             <div class="post-holder clearfix">
                 <div class="add-media">
                     <a>

@@ -1,5 +1,5 @@
 <div ng-if="!ContentHome.socialAppId || !ContentHome.posts.length">
-    <h4 class="text-center">Looks like you do not have any posts yet. To add one, you can do so through the emulator to your right.</h4>
+    <h4 class="text-center" style="font-size:16px; line-height:22px;">Looks like you do not have any posts yet. To add one, you can do so through the emulator to your right.</h4>
 </div>
 <div ng-if="ContentHome.socialAppId" ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}"
      style="overflow-y:scroll;" class="infinite-scroll-parent">
@@ -15,7 +15,7 @@
                             <img ng-if="ContentHome.getUserImage(post.userId)" load-image="1x1" data-final-src="{{ContentHome.usersData | getUserImage: post.userId}}">
                             <img ng-if="!ContentHome.getUserImage(post.userId)" load-image="1x1" data-final-src="./assets/images/avatar-placeholder.png">
                         </div>
-                        <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
+                        <p class="text-primary ellipsis margin-bottom-zero padding-left-ten" style="margin-top:9px;">
                             <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
                         </p>
                     </div>
@@ -47,7 +47,7 @@
                         <span class="number">{{post.commentsCount}}</span>
                     </a>
                 </div>
-                <div class="status col-xs-9 padding-right-zero pull-right">
+                <div class="status col-xs-9 padding-right-zero pull-right" style="margin-top:1px;">
                     <div class="pull-right">
                         <p class="pull-left margin-bottom-zero" ng-hide="post.viewComments && post.comments.length"><a
                                 class="text-primary" ng-click="ContentHome.loadMoreComments(post,'viewComment')">View
@@ -66,9 +66,8 @@
                     </div>
                 </div>
             </div>
-            <hr class="small margin-zero">
-            <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments"
-                 class="padding-top-ten head-btn text-center padding-bottom-ten">
+            <hr class="small margin-zero" ng-if="post.comments.length && post.viewComments">
+            <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments" class="padding-top-ten head-btn text-center padding-bottom-ten">
                 <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
             </div>
             <div class="comments-list" ng-if="post.comments.length && post.viewComments">
