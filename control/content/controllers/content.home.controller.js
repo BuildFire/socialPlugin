@@ -430,8 +430,14 @@
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
-                                if (el._id == event.postId && el.comments) {
-                                    el.commentsCount--;
+                                if (el._id == event.postId) {
+                                    if(el.commentsCount>0){
+                                        el.commentsCount--;
+                                    }
+                                    else{
+                                        el.commentsCount=0;
+                                    }
+                                    if(el.comments)
                                     el.comments = el.comments.filter(function (comment) {
                                         return comment._id != event._id;
                                     });

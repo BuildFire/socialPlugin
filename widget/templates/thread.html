@@ -36,15 +36,15 @@
                                 <span class="icon icon-heart"
                                       ng-class="{inactive: Thread.post.isUserLikeActive}"></span>
                             </a>
-                            <a class="social-icon margin-left-twenty">
+                            <a class="social-icon margin-left-twenty hidden">
                                 <span class="icon icon-bubble"></span>
                             </a>
                         </div>
                         <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                             <div class="pull-right">
-                                <p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Likes</p>
+                                <p class="pull-left margin-bottom-zero opacity-seventy">{{Thread.post.likesCount}} Likes</p>
 
-                                <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}}
+                                <p class="pull-left margin-bottom-zero margin-left-twenty opacity-seventy">{{Thread.post.commentsCount}}
                                     Comments</p>
                                 <a class="more-info" ng-click="Thread.showMoreOptions()">
                                     <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                     <div class="pull-right">
-                                        <p class="pull-left margin-bottom-zero">
+                                        <p class="pull-left margin-bottom-zero opacity-seventy">
                                             {{comment.likesCount?comment.likesCount:0}}
                                             Likes</p>
 
