@@ -36,15 +36,14 @@
                                 <span class="icon icon-heart"
                                       ng-class="{inactive: Thread.post.isUserLikeActive}"></span>
                             </a>
-                            <a class="social-icon margin-left-twenty">
+                            <a class="social-icon margin-left-twenty hidden">
                                 <span class="icon icon-bubble"></span>
                             </a>
                         </div>
                         <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                             <div class="pull-right">
-                                <p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Like<span ng-hide="Thread.post.likesCount == 1">s</span></p>
-
-                                <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}} Comment<span ng-hide="Thread.post.commentsCount == 1">s</span></p>
+                                <p class="pull-left margin-bottom-zero opacity-seventy">{{Thread.post.likesCount}} Like<span ng-hide="Thread.post.likesCount == 1">s</span></p>
+                                <p class="pull-left margin-bottom-zero margin-left-twenty opacity-seventy">{{Thread.post.commentsCount}} Comment<span ng-hide="Thread.post.commentsCount == 1">s</span></p>
                                 <a class="more-info" ng-click="Thread.showMoreOptions()">
                                     <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                 </a>
@@ -91,8 +90,7 @@
                                 </div>
                                 <div class="status col-xs-9 padding-left-zero padding-right-ten pull-right">
                                     <div class="pull-right">
-                                        <p class="text-right margin-bottom-zero"> {{comment.likesCount?comment.likesCount:0}} Like<span ng-hide="comment.likesCount == 1">s</span></p>
-
+                                        <p class="text-right margin-bottom-zero opacity-seventy">{{comment.likesCount?comment.likesCount:0}} Like<span ng-hide="comment.likesCount == 1">s</span></p>
                                         <!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
                                         <a class="more-info">
                                             <span class="pull-left  margin-left-twenty"></span>

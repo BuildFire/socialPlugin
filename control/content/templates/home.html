@@ -13,6 +13,7 @@
                     <div class="col-xs-8 padding-left-zero pull-left">
                         <div class="media-holder pull-left">
                             <img ng-if="ContentHome.getUserImage(post.userId)" load-image="1x1" data-final-src="{{ContentHome.usersData | getUserImage: post.userId}}">
+                            <img ng-if="!ContentHome.getUserImage(post.userId)" load-image="1x1" data-final-src="./assets/images/avatar-placeholder.png">
                         </div>
                         <p class="text-primary ellipsis margin-bottom-zero padding-left-ten" style="margin-top:9px;">
                             <a class="text-primary">{{ContentHome.getUserName(post.userId)}}</a>
@@ -98,7 +99,7 @@
                         </div>
                         <div class="status col-xs-9 padding-right-zero pull-right">
                             <div class="pull-right">
-                                <p class="pull-left margin-bottom-zero"><a class="text-danger">Ban User</a></p>
+                                <p class="pull-left margin-bottom-zero"  ng-click="ContentHome.banUser(post.userId, comment._id)"><a class="text-danger">Ban User</a></p>
 
                                 <p class="pull-left margin-bottom-zero margin-left-twenty"
                                    ng-click="ContentHome.deleteComment(post, comment._id)"><a class="text-danger">Delete
