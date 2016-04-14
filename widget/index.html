@@ -42,11 +42,11 @@
     <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall">
         <div class="slide content">
             <div class="padding-zero" style="height: 100%;">
-                <div class="social-plugin social-wall" style="height: calc(100% - 54px)">
+                <div class="social-plugin social-wall" style="height: calc(100% - 39px)">
                     <div class="head-btn text-center margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" >{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
-                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 48px); padding-top: 15px !important;" class="infinite-scroll-parent">
+                    <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 47px); padding-top: 15px !important;" class="infinite-scroll-parent">
                         <div style="height: 20px;" id="top" infinite-scroll-distance="0"
                              data-infinite-container=".infinite-scroll-parent"
                              infinite-scroll="WidgetWall.SocialItems.posts()"

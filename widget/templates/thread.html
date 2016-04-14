@@ -1,10 +1,10 @@
 <div class="slide content">
-    <div class="padding-zero" style="height: calc(100% - 54px);">
+    <div class="padding-zero" style="height: calc(100% - 39px);">
         <div class="social-plugin social-thread" style="height: 100%;">
             <div class="padded head-btn text-center padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
             </div>
-            <div style="height: calc(100% - 48px); padding-top: 15px !important; overflow-y: auto;overflow-x: hidden;">
+            <div style="height: calc(100% - 47px); padding-top: 15px !important; overflow-y: auto;overflow-x: hidden;">
                 <div class="social-item clearfix">
                     <hr class="small">
                     <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
@@ -44,8 +44,7 @@
                             <div class="pull-right">
                                 <p class="pull-left margin-bottom-zero">{{Thread.post.likesCount}} Like<span ng-hide="Thread.post.likesCount == 1">s</span></p>
 
-                                <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}}
-                                    Comment<span ng-hide="Thread.post.commentsCount == 1">s</span></p>
+                                <p class="pull-left margin-bottom-zero margin-left-twenty">{{Thread.post.commentsCount}} Comment<span ng-hide="Thread.post.commentsCount == 1">s</span></p>
                                 <a class="more-info" ng-click="Thread.showMoreOptions()">
                                     <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                 </a>
