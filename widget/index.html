@@ -79,7 +79,9 @@
                                 </div>
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                                     <div class="plugin-slide text-center">
-                                        <a href="#/thread/{{post.uniqueLink}}"><img load-image="16x9" data-final-src="{{post.imageUrl | cropImage :342 : 193}}"></a>
+                                        <a href="#/thread/{{post.uniqueLink}}">
+											<img load-image="16x9" data-final-src="{{post.imageUrl | resizeImage :342 : 193}}">
+										</a>
                                     </div>
                                 </div>
                                 <div class="footer clearfix" style="margin-bottom:6px;">
