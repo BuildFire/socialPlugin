@@ -483,7 +483,7 @@
                         console.error('Error while fetching users ', response.data.error);
                     } else if (response.data.result) {
                         console.log('Users data--------------------', response);
-                        WidgetWall.usersData = response.data.result;
+                        WidgetWall.usersData = WidgetWall.usersData.concat(response.data.result);
                     }
                 };
                 var errorCallback = function (err) {
