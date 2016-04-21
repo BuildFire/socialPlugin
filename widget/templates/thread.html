@@ -12,6 +12,7 @@
                             <div class="media-holder pull-left"
                                  ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
                                 <img ng-if="Thread.getUserImage(Thread.post.userId)" load-image="1x1" data-final-src="{{Thread.usersData | getUserImage: Thread.post.userId}}">
+                                <img ng-if="!Thread.getUserImage(Thread.post.userId)" load-image="1x1" data-final-src="./assets/images/avatar-placeholder.png">
                             </div>
                             <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                 <a class="text-primary"
@@ -27,7 +28,7 @@
                     </div>
                     <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="Thread.post.imageUrl">
                         <div class="plugin-slide text-center">
-                            <img load-image="16x9" data-final-src="{{Thread.post.imageUrl | cropImage :342 : 193}}">
+                            <img load-image="16x9" data-final-src="{{Thread.post.imageUrl | resizeImage :342 : 193}}">
                         </div>
                     </div>
                     <div class="footer margin-bottom-ten clearfix">
@@ -78,7 +79,7 @@
                             </div>
                             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
                                 <div class="plugin-slide text-center">
-                                    <img load-image="16x9" data-final-src="{{comment.attachedImage}}">
+                                    <img load-image="16x9" data-final-src="{{comment.attachedImage | resizeImage :342 : 193}}">
                                 </div>
                             </div>
                             <div class="footer margin-bottom-ten clearfix">
