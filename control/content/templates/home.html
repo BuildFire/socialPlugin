@@ -85,7 +85,7 @@
                     </div>
                     <div class="plugin-banner clearfix margin-top-ten margin-bottom-fifteen">
                         <div class="plugin-slide text-center">
-                            <img ng-if="comment.attachedImage" load-image="16x9" data-final-src="{{comment.attachedImage}}">
+                            <img ng-if="comment.attachedImage" load-image="16x9" data-final-src="{{comment.attachedImage | resizeImage : 555 : 337}}">
                         </div>
                     </div>
                     <div class="social-footer clearfix">
