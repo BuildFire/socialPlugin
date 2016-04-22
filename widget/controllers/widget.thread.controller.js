@@ -263,6 +263,24 @@
                 });
 
             };
+
+            /**
+             * showMoreOptions method shows the more Option popup.
+             */
+            Thread.showMoreOptionsComment = function (commentId) {
+                var checkUserPromise=checkAuthenticatedUser(false);
+                checkUserPromise.then(function(){
+                    Modals.showMoreOptionsCommentModal({'commentId':commentId}).then(function (data) {
+                            console.log('Data in Successs------------------data');
+                        },
+                        function (err) {
+                            console.log('Error in Error handler--------------------------', err);
+                        });
+                }, function (err) {
+                    console.log('Error is--------------------------', err);
+                });
+
+            };
             /**
              * likeThread method is used to like a post.
              * @param post
@@ -416,6 +434,11 @@
                     );
                 }
             };
+
+            $rootScope.$on("Delete-Comment", function(event,comment ){
+                Thread.deleteComment(comment.commentId);
+            });
+
             Thread.deleteComment = function (commentId) {
                 SocialDataStore.deleteComment(commentId, Thread.post._id, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(
                     function (data) {
@@ -567,7 +590,7 @@
                             break;
                         case EVENTS.COMMENT_DELETED:
                             console.log('Comment Deleted in thread controlled evenet called-----------', event);
-                            if (event.postId == Thread.post._id) {
+                            if (event.postId == Thread.post._id) {;plo
                                 Thread.post.commentsCount--;
                                 Thread.comments = Thread.comments.filter(function (el) {
                                     return el._id != event._id;
