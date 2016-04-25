@@ -93,7 +93,7 @@
                             console.info('get thread likes response is: ', response.data.result);
                             if (response.data.error) {
                                 console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                            } else if (response.data.result) {
+                            } else if (response.data.result && response.data.result.length) {
                                 console.info('Thread likes fetched successfully', response.data.result);
                                 Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
                             }
@@ -252,7 +252,7 @@
             Thread.showMoreOptions = function () {
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
-                    Modals.showMoreOptionsModal({}).then(function (data) {
+                    Modals.showMoreOptionsModal({postId: Thread.post._id}).then(function (data) {
                             console.log('Data in Successs------------------data');
                         },
                         function (err) {
@@ -569,17 +569,42 @@
 
             Thread.getComments(Thread.post._id, null);
 
+            Thread.deletePost = function (postId) {
+                var success = function (response) {
+                    console.log('inside success of delete post', response);
+                    if (response.data.result) {
+                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_DELETED, '_id': postId});
+                        console.log('post successfully deleted');
+                        Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
+                            return el._id != postId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                // Called when getting error from SocialDataStore.deletePost method
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+                console.log('Post id appid usertoken-- in delete ---------------',postId, Thread.SocialItems.socialAppId, Thread.SocialItems.userDetails.userToken);
+                // Deleting post having id as postId
+                SocialDataStore.deletePost(postId, Thread.SocialItems.socialAppId, Thread.SocialItems.userDetails.userToken).then(success, error);
+            };
+
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Widget syn called method in controller Thread called-----', event);
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
+                            Thread.deletePost(event._id);
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el._id != event._id;
                             });
                             if(event._id==Thread.post._id)
                             $rootScope.showThread = true;
-                            $rootScope.$digest();
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            //$rootScope.$digest();
                             break;
                         case EVENTS.BAN_USER :
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
