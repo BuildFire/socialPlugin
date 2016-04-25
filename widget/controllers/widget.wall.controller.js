@@ -428,7 +428,7 @@
                 }, function (err) {
                     console.log('Error while getting user Details--------------', err);
                 });
-            }
+            };
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Event in wall cotroller------------------------', event);
