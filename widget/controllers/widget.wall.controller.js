@@ -133,6 +133,24 @@
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
+
+                        /**
+                         *  Follow Thread when post gets created
+                         */
+                        SocialDataStore.saveUserSettings({
+                            threadId: response.data.result._id,
+                            userId: WidgetWall.SocialItems.userDetails.userId,
+                            userToken: WidgetWall.SocialItems.userDetails.userToken,
+                            settingsId: WidgetWall.SocialItems.userDetails.settingsId,
+                            appId: WidgetWall.SocialItems.socialAppId,
+                            receivePushNotification: true
+                        }).then(function (data) {
+                            console.log('Success : User now follows its newly created post', data);
+                        }, function (err) {
+                            console.error('Error while getting user Details--------------', err);
+                        });
+
+
                         var successCallback = function (response) {
                             if (response.data.error) {
                                 console.error('Error while fetching users ', response.data.error);
