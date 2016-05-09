@@ -5,7 +5,7 @@
     }
     angular
         .module('socialModals', ['ui.bootstrap'])
-        .factory('Modals', ['$modal', '$q', function ($modal, $q) {
+        .factory('Modals', ['$modal', '$q', '$modalStack', function ($modal, $q, $modalStack) {
             return {
                 removePopupModal: function (info) {
                     var removePopupDeferred = $q.defer();
@@ -50,6 +50,9 @@
                         banPopupDeferred.reject(err);
                     });
                     return banPopupDeferred.promise;
+                },
+                close: function(reason) {
+                    $modalStack.dismissAll(reason);
                 }
             };
         }])

@@ -16,6 +16,7 @@
             Thread.imageName = '';
             Thread.post = {};
             Thread.showImageLoader = true;
+            Thread.modalPopupThreadId;
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -250,6 +251,7 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptions = function () {
+                Thread.modalPopupThreadId = Thread.post._id;
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
                     Modals.showMoreOptionsModal({postId: Thread.post._id}).then(function (data) {
@@ -268,6 +270,7 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptionsComment = function (commentId) {
+                Thread.modalPopupThreadId = commentId;
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
                     Modals.showMoreOptionsCommentModal({'commentId':commentId}).then(function (data) {
@@ -600,8 +603,10 @@
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el._id != event._id;
                             });
-                            if(event._id==Thread.post._id)
-                            $rootScope.showThread = true;
+                            if(event._id==Thread.modalPopupThreadId) {
+                                $rootScope.showThread = true;
+                                Modals.close('Post already deleted');
+                            }
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             //$rootScope.$digest();
@@ -610,11 +615,12 @@
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
+                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
                         case EVENTS.COMMENT_DELETED:
-                            console.log('Comment Deleted in thread controlled evenet called-----------', event);
+                            console.log('Comment Deleted in thread controlled event called-----------', event);
                             if (event.postId == Thread.post._id) {
                                 Thread.post.commentsCount--;
                                 Thread.comments = Thread.comments.filter(function (el) {
@@ -623,6 +629,8 @@
                                 if (!$scope.$$phase)
                                     $scope.$digest();
                             }
+                            if(Thread.modalPopupThreadId == event._id)
+                                Modals.close('Comment already deleted');
                             break;
                         default :
                             break;

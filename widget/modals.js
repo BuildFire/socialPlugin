@@ -5,7 +5,7 @@
     }
     angular
         .module('socialModals', ['ui.bootstrap'])
-        .factory('Modals', ['$modal', '$q', function ($modal, $q) {
+        .factory('Modals', ['$modal', '$q', '$modalStack', function ($modal, $q, $modalStack) {
             return {
                 showMoreOptionsModal: function (info, callback) {
                     var moreOptionsPopupDeferred = $q.defer();
@@ -50,6 +50,9 @@
                         moreOptionsPopupDeferred.reject(err);
                     });
                     return moreOptionsPopupDeferred.promise;
+                },
+                close: function(reason) {
+                    $modalStack.dismissAll(reason);
                 }
             };
         }])

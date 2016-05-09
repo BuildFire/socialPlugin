@@ -13,6 +13,7 @@
             ContentHome.posts = [];
             ContentHome.socialAppId;
             ContentHome.parentThreadId;
+            ContentHome.modalPopupThreadId;
             var datastoreWriteKey;
             var instanceId;
             var init = function () {
@@ -166,6 +167,7 @@
 
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
+                ContentHome.modalPopupThreadId = postId;
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -194,6 +196,7 @@
 
             // Method for deleting comments of a post
             ContentHome.deleteComment = function (post, commentId) {
+                ContentHome.modalPopupThreadId = commentId;
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -230,6 +233,7 @@
 
             // Method for banning a user by calling SocialDataStore banUser method
             ContentHome.banUser = function (userId, threadId) {
+                ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
                 Modals.banPopupModal().then(function (data) {
                     if (data == 'yes') {
@@ -427,6 +431,8 @@
                                 return el._id != event._id;
                             });
                             /* if (!$scope.$$phase)$scope.$digest();*/
+                            if(ContentHome.modalPopupThreadId == event._id)
+                                Modals.close('Post already deleted');
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
@@ -446,6 +452,8 @@
                             });
                             /* if (!$scope.$$phase)
                              $scope.$digest();*/
+                            if(ContentHome.modalPopupThreadId == event._id)
+                                Modals.close('Comment already deleted');
                             break;
                         case EVENTS.COMMENT_UNLIKED:
                             console.log('Comment unLike recieved--------------------------------', event);
