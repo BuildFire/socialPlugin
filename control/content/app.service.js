@@ -44,7 +44,7 @@
                     postDataObject.params.appId = socialAppId;
                     postDataObject.params.uniqueLink =  encodeURIComponent(context.appId + context.instanceId);
                     postDataObject.params.userToken = null;
-                    postDataObject.params.title = null;
+                    postDataObject.params.title = context.pluginTitle || null;
                     postDataObject.userToken =  null;
                     var successCallback = function (response) {
                         console.log('thread/getThread in content callback recieved--------------', response);

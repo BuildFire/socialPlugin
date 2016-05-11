@@ -21,6 +21,7 @@
             WidgetWall.imageSelected = false;
             WidgetWall.imageName = '';
             WidgetWall.showImageLoader = true;
+            WidgetWall.modalPopupThreadId;
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
@@ -233,7 +234,7 @@
                 return userImageUrl;
             };
             WidgetWall.showMoreOptions = function (post) {
-
+                WidgetWall.modalPopupThreadId = post._id;
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     console.log("Post id ------------->", post._id);
@@ -454,7 +455,8 @@
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
                             WidgetWall.deletePost(event._id);
-
+                            if(WidgetWall.modalPopupThreadId == event._id)
+                                Modals.close('Post already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -462,6 +464,7 @@
                             WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
+                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -473,6 +476,8 @@
                                     return true;
                                 }
                             });
+                            if(WidgetWall.modalPopupThreadId == event.postId)
+                                Modals.close('Comment already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
