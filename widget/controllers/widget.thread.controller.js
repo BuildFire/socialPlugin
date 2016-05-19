@@ -16,6 +16,7 @@
             Thread.imageName = '';
             Thread.post = {};
             Thread.showImageLoader = true;
+            Thread.modalPopupThreadId;
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -93,7 +94,7 @@
                             console.info('get thread likes response is: ', response.data.result);
                             if (response.data.error) {
                                 console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                            } else if (response.data.result) {
+                            } else if (response.data.result && response.data.result.length) {
                                 console.info('Thread likes fetched successfully', response.data.result);
                                 Thread.post.isUserLikeActive = response.data.result[0].isUserLikeActive;
                             }
@@ -250,9 +251,10 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptions = function () {
+                Thread.modalPopupThreadId = Thread.post._id;
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
-                    Modals.showMoreOptionsModal({}).then(function (data) {
+                    Modals.showMoreOptionsModal({postId: Thread.post._id}).then(function (data) {
                             console.log('Data in Successs------------------data');
                         },
                         function (err) {
@@ -268,6 +270,7 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptionsComment = function (commentId) {
+                Thread.modalPopupThreadId = commentId;
                 var checkUserPromise=checkAuthenticatedUser(false);
                 checkUserPromise.then(function(){
                     Modals.showMoreOptionsCommentModal({'commentId':commentId}).then(function (data) {
@@ -569,28 +572,56 @@
 
             Thread.getComments(Thread.post._id, null);
 
+            Thread.deletePost = function (postId) {
+                var success = function (response) {
+                    console.log('inside success of delete post', response);
+                    if (response.data.result) {
+                        Buildfire.messaging.sendMessageToControl({'name': EVENTS.POST_DELETED, '_id': postId});
+                        console.log('post successfully deleted');
+                        Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
+                            return el._id != postId;
+                        });
+                        if (!$scope.$$phase)
+                            $scope.$digest();
+                    }
+                };
+                // Called when getting error from SocialDataStore.deletePost method
+                var error = function (err) {
+                    console.log('Error while deleting post ', err);
+                };
+                console.log('Post id appid usertoken-- in delete ---------------',postId, Thread.SocialItems.socialAppId, Thread.SocialItems.userDetails.userToken);
+                // Deleting post having id as postId
+                SocialDataStore.deletePost(postId, Thread.SocialItems.socialAppId, Thread.SocialItems.userDetails.userToken).then(success, error);
+            };
+
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Widget syn called method in controller Thread called-----', event);
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
+                            Thread.deletePost(event._id);
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el._id != event._id;
                             });
-                            if(event._id==Thread.post._id)
-                            $rootScope.showThread = true;
-                            $rootScope.$digest();
+                            if(event._id==Thread.modalPopupThreadId) {
+                                $rootScope.showThread = true;
+                                Modals.close('Post already deleted');
+                            }
+                            if (!$scope.$$phase)
+                                $scope.$digest();
+                            //$rootScope.$digest();
                             break;
                         case EVENTS.BAN_USER :
                             Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
+                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
                         case EVENTS.COMMENT_DELETED:
-                            console.log('Comment Deleted in thread controlled evenet called-----------', event);
-                            if (event.postId == Thread.post._id) {;plo
+                            console.log('Comment Deleted in thread controlled event called-----------', event);
+                            if (event.postId == Thread.post._id) {
                                 Thread.post.commentsCount--;
                                 Thread.comments = Thread.comments.filter(function (el) {
                                     return el._id != event._id;
@@ -598,6 +629,8 @@
                                 if (!$scope.$$phase)
                                     $scope.$digest();
                             }
+                            if(Thread.modalPopupThreadId == event._id)
+                                Modals.close('Comment already deleted');
                             break;
                         default :
                             break;

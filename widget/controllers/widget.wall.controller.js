@@ -21,6 +21,7 @@
             WidgetWall.imageSelected = false;
             WidgetWall.imageName = '';
             WidgetWall.showImageLoader = true;
+            WidgetWall.modalPopupThreadId;
             $rootScope.showThread = true;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
@@ -133,6 +134,24 @@
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
+
+                        /**
+                         *  Follow Thread when post gets created
+                         */
+                        SocialDataStore.saveUserSettings({
+                            threadId: response.data.result._id,
+                            userId: WidgetWall.SocialItems.userDetails.userId,
+                            userToken: WidgetWall.SocialItems.userDetails.userToken,
+                            settingsId: WidgetWall.SocialItems.userDetails.settingsId,
+                            appId: WidgetWall.SocialItems.socialAppId,
+                            receivePushNotification: true
+                        }).then(function (data) {
+                            console.log('Success : User now follows its newly created post', data);
+                        }, function (err) {
+                            console.error('Error while getting user Details--------------', err);
+                        });
+
+
                         var successCallback = function (response) {
                             if (response.data.error) {
                                 console.error('Error while fetching users ', response.data.error);
@@ -215,7 +234,7 @@
                 return userImageUrl;
             };
             WidgetWall.showMoreOptions = function (post) {
-
+                WidgetWall.modalPopupThreadId = post._id;
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     console.log("Post id ------------->", post._id);
@@ -428,7 +447,7 @@
                 }, function (err) {
                     console.log('Error while getting user Details--------------', err);
                 });
-            }
+            };
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 console.log('Event in wall cotroller------------------------', event);
@@ -436,7 +455,8 @@
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
                             WidgetWall.deletePost(event._id);
-
+                            if(WidgetWall.modalPopupThreadId == event._id)
+                                Modals.close('Post already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -444,6 +464,7 @@
                             WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
                                 return el.userId != event._id;
                             });
+                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -455,6 +476,8 @@
                                     return true;
                                 }
                             });
+                            if(WidgetWall.modalPopupThreadId == event.postId)
+                                Modals.close('Comment already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;

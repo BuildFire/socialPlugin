@@ -13,8 +13,10 @@
             ContentHome.posts = [];
             ContentHome.socialAppId;
             ContentHome.parentThreadId;
+            ContentHome.modalPopupThreadId;
             var datastoreWriteKey;
             var instanceId;
+            var pluginTitle;
             var init = function () {
                 Buildfire.getContext(function (err, context) {
                     datastoreWriteKey = context.datastoreWriteKey;
@@ -38,23 +40,39 @@
                                     if (response && response.data && response.data.result) {
                                         console.log('application successfully added:::::-------------------------- ', response);
                                         ContentHome.socialAppId = response.data.result;
-                                        SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
-                                            function (parentThreadRes) {
-                                                console.log('Parent ThreadId -------success----', parentThreadRes);
-                                                if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
-                                                    ContentHome.parentThreadId = parentThreadRes.data.result._id;
-                                                    Buildfire.datastore.insert({
-                                                        socialAppId: response.data.result,
-                                                        parentThreadId: parentThreadRes.data.result._id
-                                                    }, 'Social', false, function (err, data) {
-                                                        console.log('Data saved using datastore-------------', err, data);
-                                                    });
+                                        Buildfire.datastore.insert({
+                                            "_buildfire": {
+                                                "myDynamicPluginCollection": {
+                                                    "data": instanceId,
+                                                    "dataType": "pluginInstance"
                                                 }
-                                            },
-                                            function (error) {
-                                                console.log('Parent thread callback error------', error);
                                             }
-                                        );
+                                        }, 'pluginInfo', false, function (err, data) {
+                                            console.log('pluginInfo data is : ', err, data);
+                                            Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
+                                                if (result && result.id) {
+                                                    pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
+                                                    context.pluginTitle = pluginTitle;
+                                                }
+                                                SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                                                    function (parentThreadRes) {
+                                                        console.log('Parent ThreadId -------success----', parentThreadRes);
+                                                        if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
+                                                            ContentHome.parentThreadId = parentThreadRes.data.result._id;
+                                                            Buildfire.datastore.insert({
+                                                                socialAppId: response.data.result,
+                                                                parentThreadId: parentThreadRes.data.result._id
+                                                            }, 'Social', false, function (err, data) {
+                                                                console.log('Data saved using datastore-------------', err, data);
+                                                            });
+                                                        }
+                                                    },
+                                                    function (error) {
+                                                        console.log('Parent thread callback error------', error);
+                                                    }
+                                                );
+                                            });
+                                        });
                                     }
                                 }, function (err) {
                                     console.error("Error add application api is: ", err);
@@ -166,6 +184,7 @@
 
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
+                ContentHome.modalPopupThreadId = postId;
                 Modals.removePopupModal({name: 'Post'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -194,6 +213,7 @@
 
             // Method for deleting comments of a post
             ContentHome.deleteComment = function (post, commentId) {
+                ContentHome.modalPopupThreadId = commentId;
                 Modals.removePopupModal({name: 'Comment'}).then(function (data) {
                     // Deleting post having id as postId
                     SocialDataStore.deleteComment(commentId, post._id, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -230,6 +250,7 @@
 
             // Method for banning a user by calling SocialDataStore banUser method
             ContentHome.banUser = function (userId, threadId) {
+                ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
                 Modals.banPopupModal().then(function (data) {
                     if (data == 'yes') {
@@ -427,6 +448,8 @@
                                 return el._id != event._id;
                             });
                             /* if (!$scope.$$phase)$scope.$digest();*/
+                            if(ContentHome.modalPopupThreadId == event._id)
+                                Modals.close('Post already deleted');
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
@@ -446,6 +469,8 @@
                             });
                             /* if (!$scope.$$phase)
                              $scope.$digest();*/
+                            if(ContentHome.modalPopupThreadId == event._id)
+                                Modals.close('Comment already deleted');
                             break;
                         case EVENTS.COMMENT_UNLIKED:
                             console.log('Comment unLike recieved--------------------------------', event);
