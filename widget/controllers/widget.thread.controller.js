@@ -241,7 +241,7 @@
                 var userImageUrl = '';
                 Thread.usersData.some(function (userData) {
                     if (userData && userData.userObject && userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
+                        userImageUrl = userData.userObject.imageUrl || '';
                         return true;
                     }
                 });
