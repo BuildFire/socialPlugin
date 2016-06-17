@@ -12,7 +12,7 @@
                             <div class="media-holder pull-left"
                                  ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
                                 <img ng-if="Thread.getUserImage(Thread.post.userId)" load-image="1x1" data-final-src="{{Thread.usersData | getUserImage: Thread.post.userId}}">
-                                <img ng-if="!Thread.getUserImage(Thread.post.userId)" load-image="1x1" data-final-src="./assets/images/avatar-placeholder.png">
+                                <img ng-if="!Thread.getUserImage(Thread.post.userId)" load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png">
                             </div>
                             <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                 <a class="text-primary"

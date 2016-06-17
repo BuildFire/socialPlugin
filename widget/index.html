@@ -22,7 +22,7 @@
     <script src="assets/js/moment.js"></script>
     <script src="modals.js"></script>
     <script src="app.js"></script>
-    <script src="assets/js/ng-infinite-scroll.custom.js"
+    <script src="../../../scripts/angular/ng-infinite-scroll.custom.js"
             type="application/javascript"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
     <script src="app.service.js"></script>
@@ -59,7 +59,7 @@
                                             <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
                                                  data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
                                             <img ng-if="!WidgetWall.getUserImage(post.userId)" load-image="1x1"
-                                            data-final-src="./assets/images/avatar-placeholder.png">
+                                            data-final-src="../../../styles/media/avatar-placeholder.png">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                             <a class="text-primary ng-cloak" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
