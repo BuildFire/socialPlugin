@@ -659,6 +659,7 @@
              * Implementation of pull down to refresh
              */
             var onRefresh=Buildfire.datastore.onRefresh(function(){
+                Location.go('#/thread/' + $routeParams.threadId);
             });
 
             /**
