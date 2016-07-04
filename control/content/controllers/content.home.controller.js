@@ -66,8 +66,9 @@
                         function (parentThreadRes) {
                             console.log('Parent ThreadId -------success----', parentThreadRes);
                             if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
-                                ContentHome.parentThreadId = parentThreadRes.data.result._id;
-                            } else if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.error && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.message == "Duplicate Insert Error") {
+                                if(parentThreadRes.data.result._id != ContentHome.parentThreadId)
+                                    addApplication(context);
+                            } else if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.error && parentThreadRes.data.error.message == "Duplicate Insert Error") {
                                 addApplication(context);
                             }
                         },

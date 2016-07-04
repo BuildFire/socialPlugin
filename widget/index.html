@@ -39,11 +39,11 @@
 </head>
 <body class="scrollable">
 <div class="main_view">
-    <div  ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall" ng-cloak>
-        <div class="slide content">
+    <div ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall" ng-cloak>
+        <div ng-if="WidgetWall.SocialItems.socialAppId" class="slide content">
             <div class="padding-zero" style="height: 100%;">
                 <div class="social-plugin social-wall" style="height: calc(100% - 39px)">
-                    <div class="head-btn text-center margin-bottom-fifteen" style="margin:0 !important;">
+                    <div  ng-if="WidgetWall.SocialItems.socialAppId" class="head-btn text-center margin-bottom-fifteen" style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" class="ng-cloak">{{WidgetWall.getFollowingStatus()}}</a>
                     </div>
                     <div style="overflow-x:hidden; width:100%; overflow-y: auto;height: calc(100% - 47px); padding-top: 15px !important;" class="infinite-scroll-parent">
@@ -113,7 +113,7 @@
             </div>
 
         </div>
-        <div class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
+        <div ng-if="WidgetWall.SocialItems.socialAppId" class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
 		    <hr class="small">
             <form ng-submit="" handle-phone-submit>
             <div class="post-holder clearfix">
