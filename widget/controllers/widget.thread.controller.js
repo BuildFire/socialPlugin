@@ -633,7 +633,8 @@
                                 Modals.close('Comment already deleted');
                             break;
                         case EVENTS.APP_RESET:
-                            Location.goToHome();
+                            /*$rootScope.showThread = true;
+                            Location.goToHome();*/
                         default :
                             break;
                     }

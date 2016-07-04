@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, EVENTS, $timeout) {
+        .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout) {
             console.log('Buildfire content--------------------------------------------- controller loaded');
             var ContentHome = this;
             ContentHome.usersData = [];
@@ -29,22 +29,6 @@
                     if (data && data.data && data.data.socialAppId) {
                         ContentHome.socialAppId = data.data.socialAppId;
                         ContentHome.parentThreadId = data.data.parentThreadId;
-                        if(appId && instanceId && datastoreWriteKey) {
-                            var context = {
-                                appId: appId,
-                                instanceId: instanceId,
-                                datastoreWriteKey: datastoreWriteKey
-                            };
-                            getParentThreadId(context);
-                        } else {
-                            Buildfire.getContext(function (err, context) {
-                                datastoreWriteKey = context.datastoreWriteKey;
-                                appId = context.appId;
-                                instanceId = context.instanceId;
-                                getParentThreadId(context);
-                            });
-                        }
-
                         $scope.$digest();
                         console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
                     }
@@ -60,23 +44,6 @@
                         });
                     }
                 });
-
-                function getParentThreadId(context) {
-                    SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
-                        function (parentThreadRes) {
-                            console.log('Parent ThreadId -------success----', parentThreadRes);
-                            if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
-                                if(parentThreadRes.data.result._id != ContentHome.parentThreadId)
-                                    addApplication(context);
-                            } else if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.error && parentThreadRes.data.error.message == "Duplicate Insert Error") {
-                                addApplication(context);
-                            }
-                        },
-                        function (error) {
-                            console.log('Parent thread callback error------', error);
-                        }
-                    );
-                }
 
                 function addApplication(context) {
                     SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
@@ -102,12 +69,14 @@
                                             console.log('Parent ThreadId -------success----', parentThreadRes);
                                             if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
                                                 ContentHome.parentThreadId = parentThreadRes.data.result._id;
-                                                Buildfire.datastore.insert({
+                                                Buildfire.datastore.save({
                                                     socialAppId: response.data.result,
                                                     parentThreadId: parentThreadRes.data.result._id
-                                                }, 'Social', false, function (err, data) {
+                                                }, 'Social', function (err, data) {
                                                     console.log('Data saved using datastore-------------', err, data);
-//                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
+                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
+                                                    $location.path('#/');
+                                                    $scope.$apply();
                                                 });
                                             }
                                         },
@@ -123,13 +92,13 @@
                     });
                 }
 
-                /*ContentHome.resetApp = function () {
+                ContentHome.resetApp = function () {
                     Modals.resetAppPopupModal({name: 'ResetApp'}).then(function (data) {
                         // resetting the app
                         if(appId && instanceId && datastoreWriteKey) {
                             var context = {
                                 appId: appId,
-                                instanceId: instanceId,
+                                instanceId: instanceId + new Date().getTime(),
                                 datastoreWriteKey: datastoreWriteKey
                             };
                             addApplication(context);
@@ -137,14 +106,14 @@
                             Buildfire.getContext(function (err, context) {
                                 datastoreWriteKey = context.datastoreWriteKey;
                                 appId = context.appId;
-                                instanceId = context.instanceId;
+                                instanceId = context.instanceId + new Date().getTime();
                                 addApplication(context);
                             });
                         }
                     }, function (err) {
                         console.log('Error is: ', err);
                     });
-                };*/
+                };
 
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
