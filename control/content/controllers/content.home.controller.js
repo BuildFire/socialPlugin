@@ -74,7 +74,7 @@
                                                     parentThreadId: parentThreadRes.data.result._id
                                                 }, 'Social', function (err, data) {
                                                     console.log('Data saved using datastore-------------', err, data);
-                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
+//                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
                                                     $location.path('#/');
                                                     $scope.$apply();
                                                 });
