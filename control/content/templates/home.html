@@ -1,12 +1,14 @@
 <div ng-if="!ContentHome.socialAppId || !ContentHome.posts.length">
     <h4 class="text-center" style="font-size:16px; line-height:22px;">Looks like you do not have any posts yet. To add one, you can do so through the emulator to your right.</h4>
 </div>
-<!--<div ng-if="ContentHome.socialAppId && ContentHome.posts.length" class="item clearfix row">
+<div ng-if="ContentHome.socialAppId && ContentHome.posts.length">
+<div ng-if="ContentHome.socialAppId && ContentHome.posts.length" class="item clearfix row">
 <div class="col-xs-6 col-xs-offset-3 pull-left">
-    <a class="btn btn-success stretch" ng-click="ContentHome.resetApp()">Clear all and reset the app</a>
+    <a class="btn btn-success stretch" ng-click="ContentHome.resetApp()">Clear all and reset the Wall</a>
 </div>
-    <hr class="none">
-</div>-->
+</div>
+<hr class="none">
+</div>
 <div ng-if="ContentHome.socialAppId" ng-style="{'height': ContentHome.height ? ContentHome.height-100+ 'px' : '800px'}"
      style="overflow-y:scroll;" class="infinite-scroll-parent">
     <div class="wrapper social-plugin" infinite-scroll-distance="0"

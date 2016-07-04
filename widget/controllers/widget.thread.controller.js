@@ -632,8 +632,9 @@
                             if(Thread.modalPopupThreadId == event._id)
                                 Modals.close('Comment already deleted');
                             break;
-                        case EVENTS.APP_RESET:
-                            Location.goToHome();
+//                        case EVENTS.APP_RESET:
+                            /*$rootScope.showThread = true;
+                            Location.goToHome();*/
                         default :
                             break;
                     }
