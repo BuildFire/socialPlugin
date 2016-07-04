@@ -24,6 +24,7 @@ module.exports = function (config) {
             './bower_components/ng-file-upload/ng-file-upload.min.js',
             './bower_components/ng-file-upload-shim/ng-file-upload-shim.min.js',
             './test/assets/buildfire.js',
+            './test/assets/ng-infinite-scroll.custom.js',
             './control/design/**/*.js',
             './control/content/**/*.js',
             './control/settings/**/*.js',

@@ -51,6 +51,28 @@
                     });
                     return banPopupDeferred.promise;
                 },
+                resetAppPopupModal: function (info) {
+                    var resetAppPopupDeferred = $q.defer();
+                    var resetAppPopupModal = $modal
+                        .open({
+                            templateUrl: 'templates/modals/reset-app-modal.html',
+                            controller: 'ResetAppPopupCtrl',
+                            controllerAs: 'ResetAppPopup',
+                            size: 'sm',
+                            resolve: {
+                                Info: function () {
+                                    return info;
+                                }
+                            }
+                        });
+                    resetAppPopupModal.result.then(function (imageInfo) {
+                        resetAppPopupDeferred.resolve(imageInfo);
+                    }, function (err) {
+                        //do something on cancel
+                        resetAppPopupDeferred.reject(err);
+                    });
+                    return resetAppPopupDeferred.promise;
+                },
                 close: function(reason) {
                     $modalStack.dismissAll(reason);
                 }
@@ -68,6 +90,15 @@
         }])
         .controller('BanPopupCtrl', ['$scope', '$modalInstance', 'Info', function ($scope, $modalInstance, Info) {
             console.log('Ban Popup Controller called-----');
+            $scope.ok = function () {
+                $modalInstance.close('yes');
+            };
+            $scope.cancel = function () {
+                $modalInstance.dismiss('no');
+            };
+        }])
+        .controller('ResetAppPopupCtrl', ['$scope', '$modalInstance', 'Info', function ($scope, $modalInstance, Info) {
+            console.log('ResetApp Popup Controller called-----');
             $scope.ok = function () {
                 $modalInstance.close('yes');
             };

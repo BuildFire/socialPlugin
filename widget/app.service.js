@@ -391,7 +391,7 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', 'Location', function (Buildfire, $http, SERVER_URL, Location) {
+        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', 'Location', 'SocialDataStore', function (Buildfire, $http, SERVER_URL, Location, SocialDataStore) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -441,10 +441,50 @@
                     Buildfire.datastore.get('Social', function (err, data) {
                         console.log('Get------------data--------datastore--------', err, data);
                         if(data && data.data){
-                            _this.socialAppId = data && data.data && data.data.socialAppId;
-                            _this.parentThreadId = data && data.data && data.data.parentThreadId;
+//                            _this.socialAppId = data && data.data && data.data.socialAppId;
+//                            _this.parentThreadId = data && data.data && data.data.parentThreadId;
                             console.log('Inside else 2---------------------------------------this', _this);
-                            getPosts();
+                            if(_this.context && !_this.context.appId && !_this.context.instanceId) {
+                                Buildfire.getContext(function (err, context) {
+                                    if (err) {
+                                        console.error("Error while getting buildfire context details", err);
+                                    } else {
+                                        console.log('inside get context success::::::::::');
+                                        _this.context = context;
+                                        SocialDataStore.getThreadByUniqueLink(encodeURIComponent(_this.context.appId + _this.context.instanceId), data.data.socialAppId, _this.userDetails.userToken).then(
+                                            function (parentThreadRes) {
+                                                console.log('Parent ThreadId -------success----', parentThreadRes);
+                                                if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id && data.data && parentThreadRes.data.result._id == data.data.parentThreadId) {
+                                                    _this.socialAppId = data && data.data && data.data.socialAppId;
+                                                    _this.parentThreadId = data && data.data && data.data.parentThreadId;
+                                                    getPosts();
+                                                } else {
+                                                    getAppIdAndParentThreadId();
+                                                }
+                                            },
+                                            function (error) {
+                                                console.log('Parent thread callback error------', error);
+                                            }
+                                        );
+                                    }
+                                });
+                            } else {
+                                SocialDataStore.getThreadByUniqueLink(encodeURIComponent(_this.context.appId + _this.context.instanceId), data.data.socialAppId, _this.userDetails.userToken).then(
+                                    function (parentThreadRes) {
+                                        console.log('Parent ThreadId -------success----', parentThreadRes);
+                                        if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id && data.data && parentThreadRes.data.result._id == data.data.parentThreadId) {
+                                            _this.socialAppId = data && data.data && data.data.socialAppId;
+                                            _this.parentThreadId = data && data.data && data.data.parentThreadId;
+                                            getPosts();
+                                        } else {
+                                            getAppIdAndParentThreadId();
+                                        }
+                                    },
+                                    function (error) {
+                                        console.log('Parent thread callback error------', error);
+                                    }
+                                );
+                            }
                         }
                         else{
                             getAppIdAndParentThreadId();

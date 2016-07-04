@@ -18,7 +18,8 @@
             POST_CREATED:"POST_CREATED",
             COMMENT_ADDED:"COMMENT_ADDED",
             COMMENT_LIKED: "COMMENT_LIKED",
-            COMMENT_UNLIKED: "COMMENT_UNLIKED"
+            COMMENT_UNLIKED: "COMMENT_UNLIKED",
+            APP_RESET: "APP_RESET"
         })
         .constant('THREAD_STATUS', {
             FOLLOW: "Follow Thread",

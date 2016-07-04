@@ -15,17 +15,36 @@
             ContentHome.parentThreadId;
             ContentHome.modalPopupThreadId;
             var datastoreWriteKey;
+            var appId;
             var instanceId;
             var pluginTitle;
             var init = function () {
                 Buildfire.getContext(function (err, context) {
                     datastoreWriteKey = context.datastoreWriteKey;
+                    appId = context.appId;
+                    instanceId = context.instanceId;
                 });
                 Buildfire.datastore.get('Social', function (err, data) {
                     console.log('Get data in content section socail App Id------------------', err, data);
                     if (data && data.data && data.data.socialAppId) {
                         ContentHome.socialAppId = data.data.socialAppId;
                         ContentHome.parentThreadId = data.data.parentThreadId;
+                        if(appId && instanceId && datastoreWriteKey) {
+                            var context = {
+                                appId: appId,
+                                instanceId: instanceId,
+                                datastoreWriteKey: datastoreWriteKey
+                            };
+                            getParentThreadId(context);
+                        } else {
+                            Buildfire.getContext(function (err, context) {
+                                datastoreWriteKey = context.datastoreWriteKey;
+                                appId = context.appId;
+                                instanceId = context.instanceId;
+                                getParentThreadId(context);
+                            });
+                        }
+
                         $scope.$digest();
                         console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
                     }
@@ -36,51 +55,96 @@
                             } else {
                                 console.log('buildfire get context response::: ', context);
                                 instanceId = context && context.instanceId;
-                                SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
-                                    if (response && response.data && response.data.result) {
-                                        console.log('application successfully added:::::-------------------------- ', response);
-                                        ContentHome.socialAppId = response.data.result;
-                                        Buildfire.datastore.insert({
-                                            "_buildfire": {
-                                                "myDynamicPluginCollection": {
-                                                    "data": instanceId,
-                                                    "dataType": "pluginInstance"
-                                                }
-                                            }
-                                        }, 'pluginInfo', false, function (err, data) {
-                                            console.log('pluginInfo data is : ', err, data);
-                                            Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
-                                                if (result && result.id) {
-                                                    pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
-                                                    context.pluginTitle = pluginTitle;
-                                                }
-                                                SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
-                                                    function (parentThreadRes) {
-                                                        console.log('Parent ThreadId -------success----', parentThreadRes);
-                                                        if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
-                                                            ContentHome.parentThreadId = parentThreadRes.data.result._id;
-                                                            Buildfire.datastore.insert({
-                                                                socialAppId: response.data.result,
-                                                                parentThreadId: parentThreadRes.data.result._id
-                                                            }, 'Social', false, function (err, data) {
-                                                                console.log('Data saved using datastore-------------', err, data);
-                                                            });
-                                                        }
-                                                    },
-                                                    function (error) {
-                                                        console.log('Parent thread callback error------', error);
-                                                    }
-                                                );
-                                            });
-                                        });
-                                    }
-                                }, function (err) {
-                                    console.error("Error add application api is: ", err);
-                                });
+                                addApplication(context);
                             }
                         });
                     }
                 });
+
+                function getParentThreadId(context) {
+                    SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                        function (parentThreadRes) {
+                            console.log('Parent ThreadId -------success----', parentThreadRes);
+                            if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
+                                if(parentThreadRes.data.result._id != ContentHome.parentThreadId)
+                                    addApplication(context);
+                            } else if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.error && parentThreadRes.data.error.message == "Duplicate Insert Error") {
+                                addApplication(context);
+                            }
+                        },
+                        function (error) {
+                            console.log('Parent thread callback error------', error);
+                        }
+                    );
+                }
+
+                function addApplication(context) {
+                    SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
+                        if (response && response.data && response.data.result) {
+                            console.log('application successfully added:::::-------------------------- ', response);
+                            ContentHome.socialAppId = response.data.result;
+                            Buildfire.datastore.insert({
+                                "_buildfire": {
+                                    "myDynamicPluginCollection": {
+                                        "data": instanceId,
+                                        "dataType": "pluginInstance"
+                                    }
+                                }
+                            }, 'pluginInfo', false, function (err, data) {
+                                console.log('pluginInfo data is : ', err, data);
+                                Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
+                                    if (result && result.id) {
+                                        pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
+                                        context.pluginTitle = pluginTitle;
+                                    }
+                                    SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                                        function (parentThreadRes) {
+                                            console.log('Parent ThreadId -------success----', parentThreadRes);
+                                            if (parentThreadRes && parentThreadRes.data && parentThreadRes.data.result && parentThreadRes.data.result._id) {
+                                                ContentHome.parentThreadId = parentThreadRes.data.result._id;
+                                                Buildfire.datastore.insert({
+                                                    socialAppId: response.data.result,
+                                                    parentThreadId: parentThreadRes.data.result._id
+                                                }, 'Social', false, function (err, data) {
+                                                    console.log('Data saved using datastore-------------', err, data);
+//                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
+                                                });
+                                            }
+                                        },
+                                        function (error) {
+                                            console.log('Parent thread callback error------', error);
+                                        }
+                                    );
+                                });
+                            });
+                        }
+                    }, function (err) {
+                        console.error("Error add application api is: ", err);
+                    });
+                }
+
+                /*ContentHome.resetApp = function () {
+                    Modals.resetAppPopupModal({name: 'ResetApp'}).then(function (data) {
+                        // resetting the app
+                        if(appId && instanceId && datastoreWriteKey) {
+                            var context = {
+                                appId: appId,
+                                instanceId: instanceId,
+                                datastoreWriteKey: datastoreWriteKey
+                            };
+                            addApplication(context);
+                        } else {
+                            Buildfire.getContext(function (err, context) {
+                                datastoreWriteKey = context.datastoreWriteKey;
+                                appId = context.appId;
+                                instanceId = context.instanceId;
+                                addApplication(context);
+                            });
+                        }
+                    }, function (err) {
+                        console.log('Error is: ', err);
+                    });
+                };*/
 
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
