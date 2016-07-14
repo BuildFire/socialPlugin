@@ -90,16 +90,27 @@
             };
         })
         .filter('getUserImage', ['Buildfire', function (Buildfire) {
-            return function (usersData, userId) {
+            filter.$stateful = true;
+            function filter (usersData, userId) {
                 var userImageUrl = '';
                 usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl ? Buildfire.imageLib.cropImage(userData.userObject.imageUrl, {width:40,height:40}) : '';
+                        if(userData.userObject.imageUrl) {
+                            Buildfire.imageLib.local.cropImage(userData.userObject.imageUrl, {
+                                width: 40,
+                                height: 40
+                            }, function (err, imgUrl) {
+                                userImageUrl = imgUrl;
+                            });
+                        } else {
+                            userImageUrl = '';
+                        }
                         return true;
                     }
                 });
                 return userImageUrl;
             }
+            return filter;
         }])
         .directive("loadImage", [function () {
             return {
