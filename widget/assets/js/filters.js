@@ -40,20 +40,36 @@
             };
         }])
         .filter('resizeImage', [function () {
-            return function (url, width, height) {
-                return buildfire.imageLib.resizeImage(url, {
-                    width: width,
-                    height: height
-                });
-            };
+            filter.$stateful = true;
+            function filter(url, width, height) {
+                var _imgUrl;
+                if (!_imgUrl) {
+                    buildfire.imageLib.local.resizeImage(url, {
+                        width: width,
+                        height: height
+                    }, function (err, imgUrl) {
+                        _imgUrl = imgUrl;
+                    });
+                }
+                return _imgUrl;
+            }
+            return filter;
         }])
         .filter('cropImage', [function () {
-            return function (url, width, height) {
-                return buildfire.imageLib.cropImage(url, {
-                    width: width,
-                    height: height
-                });
-            };
+            filter.$stateful = true;
+            function filter(url, width, height) {
+                var _imgUrl;
+                if (!_imgUrl) {
+                    buildfire.imageLib.local.cropImage(url, {
+                        width: width,
+                        height: height
+                    }, function (err, imgUrl) {
+                        _imgUrl = imgUrl;
+                    });
+                }
+                return _imgUrl;
+            }
+            return filter;
         }])
         .filter('newLine', ['$sce', function ($sce) {
             return function (html) {
