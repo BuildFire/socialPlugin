@@ -58,9 +58,9 @@
                                     <div class="col-xs-8 pull-left">
                                         <div class="media-holder pull-left ng-cloak" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">
                                             <img ng-if="WidgetWall.getUserImage(post.userId)" load-image="1x1"
-                                                 data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}">
+                                                 data-final-src="{{WidgetWall.usersData | getUserImage: post.userId}}" crop-width="40" crop-height="40" crop-type="crop">
                                             <img ng-if="!WidgetWall.getUserImage(post.userId)" load-image="1x1"
-                                            data-final-src="../../../styles/media/avatar-placeholder.png">
+                                            data-final-src="../../../styles/media/avatar-placeholder.png" crop-width="40" crop-height="40" crop-type="default">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
                                             <a class="text-primary ng-cloak" ng-click="WidgetWall.buildfire.auth.openProfile(post.userId)">{{WidgetWall.getUserName(post.userId)}}</a>
@@ -81,7 +81,7 @@
                                 <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl">
                                     <div class="plugin-slide text-center">
                                         <a href="#/thread/{{post.uniqueLink}}">
-											<img load-image="16x9" data-final-src="{{post.imageUrl | resizeImage :342 : 193}}">
+											<img load-image="16x9" data-final-src="{{post.imageUrl}}" crop-width="342" crop-height="193" crop-type="resize">
 										</a>
                                     </div>
                                 </div>

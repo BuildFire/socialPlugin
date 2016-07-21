@@ -96,12 +96,7 @@
                 usersData.some(function (userData) {
                     if (userData.userObject._id == userId) {
                         if(userData.userObject.imageUrl) {
-                            Buildfire.imageLib.local.cropImage(userData.userObject.imageUrl, {
-                                width: 40,
-                                height: 40
-                            }, function (err, imgUrl) {
-                                userImageUrl = imgUrl;
-                            });
+                            userImageUrl = userData.userObject.imageUrl;
                         } else {
                             userImageUrl = '';
                         }
@@ -112,20 +107,42 @@
             }
             return filter;
         }])
-        .directive("loadImage", [function () {
+        .directive("loadImage", function () {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
                     element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
 
-                    var elem = $("<img>");
+                    var _img = attrs.finalSrc;
+                    if (attrs.cropType == 'resize') {
+                        buildfire.imageLib.local.resizeImage(_img, {
+                            width: attrs.cropWidth,
+                            height: attrs.cropHeight
+                        }, function (err, imgUrl) {
+                            _img = imgUrl;
+                            replaceImg(_img);
+                        });
+                    } else if (attrs.cropType == 'default') {
+                        replaceImg(_img);
+                    } else {
+                        buildfire.imageLib.local.cropImage(_img, {
+                            width: attrs.cropWidth,
+                            height: attrs.cropHeight
+                        }, function (err, imgUrl) {
+                            _img = imgUrl;
+                            replaceImg(_img);
+                        });
+                    }
 
-                    elem[0].onload = function () {
-                        element.attr("src", attrs.finalSrc);
-                        elem.remove();
-                    };
-                    elem.attr("src", attrs.finalSrc);
+                    function replaceImg(finalSrc) {
+                        var elem = $("<img>");
+                        elem[0].onload = function () {
+                            element.attr("src", finalSrc);
+                            elem.remove();
+                        };
+                        elem.attr("src", finalSrc);
+                    }
                 }
             };
-        }]);
+        });
 })(window.angular, window.buildfire);
