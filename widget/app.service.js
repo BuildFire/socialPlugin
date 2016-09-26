@@ -45,7 +45,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
@@ -67,7 +68,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -96,7 +98,8 @@
                     console.log('Data----------------------------in add comment method--------', JSON.stringify(postDataObject));
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -122,7 +125,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -147,7 +151,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -178,7 +183,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -229,7 +235,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -258,7 +265,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -281,7 +289,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(success, error);
                     return deferred.promise;
@@ -312,7 +321,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -359,7 +369,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDeleteObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -384,7 +395,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDeleteObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -464,7 +476,8 @@
                     console.log('Post data in services-------------------', postDataObject);
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(function (data) {
                         console.log('Get posts in service of SocialItems-------------------------', data);
@@ -505,7 +518,8 @@
                             postDataObject.params.userToken = encodeURIComponent(_this.userDetails.userToken) || null;
                             $http({
                                 method: 'GET',
-                                url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                                url: SERVER_URL.link,
+                                params: {data: postDataObject},
                                 headers: {'Content-Type': 'application/json'}
                             }).then(function (response) {
                                 console.log('inside getUser settings :::::::::::::', response);
