@@ -31,9 +31,9 @@
                     postDataObject.params = postData || {};
                     //postDataObject.params.appId = "5672627b935839f42b000018";
                     postDataObject.params.secureToken = null;
-                    postDataObject.params.userToken = encodeURIComponent(postData.userToken);
+                    postDataObject.params.userToken = postData.userToken;
                     // postDataObject.params.parentThreadId = "5672628a935839f42b00001a";
-                    postDataObject.userToken = encodeURIComponent(postData.userToken);
+                    postDataObject.userToken = postData.userToken;
                     console.log('Create post param ???????????????????????? ???????????????????? ', postDataObject);
                     /*if (localStorage.getItem('user'))
                      postData.params.userToken = localStorage.getItem('user').userToken;*/
@@ -45,7 +45,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
@@ -67,7 +68,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -83,8 +85,8 @@
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.comment = data.comment;
                     postDataObject.params.attachedImage = data.imageUrl;
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
-                    postDataObject.userToken = encodeURIComponent(data.userToken) || null;
+                    postDataObject.params.userToken = data.userToken || null;
+                    postDataObject.userToken = data.userToken || null;
                     var successCallback = function (response) {
                         console.log('add Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -96,7 +98,8 @@
                     console.log('Data----------------------------in add comment method--------', JSON.stringify(postDataObject));
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -109,9 +112,9 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = appId;
                     postDataObject.params.uniqueLink = threadUniqueLink;
-                    postDataObject.params.userToken = encodeURIComponent(userToken) || null;
+                    postDataObject.params.userToken = userToken || null;
                     postDataObject.params.title = null;
-                    postDataObject.userToken = encodeURIComponent(userToken) || null;
+                    postDataObject.userToken = userToken || null;
                     var successCallback = function (response) {
                         console.log('get Post callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -122,7 +125,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -147,7 +151,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -161,7 +166,7 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = encodeURIComponent(userToken);
+                    postDataObject.params.userToken = userToken;
                     postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
@@ -178,7 +183,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -218,7 +224,7 @@
                     postDataObject.params.appId = data.appId;
                     postDataObject.params.threadId = data.threadId;
                     postDataObject.params.userId = data.userId || null;
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
+                    postDataObject.params.userToken = data.userToken || null;
                     var successCallback = function (response) {
                         console.log('get Comment callback recieved--------------', response);
                         return deferred.resolve(response);
@@ -229,7 +235,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -241,7 +248,7 @@
                     postDataObject.id = '1';
                     postDataObject.method = 'users/saveUserSettings';
                     postDataObject.params = {};
-                    postDataObject.params.userToken = encodeURIComponent(data.userToken) || null;
+                    postDataObject.params.userToken = data.userToken || null;
                     postDataObject.params.userSettings = {};
                     postDataObject.params.userSettings._id = data.settingsId;
                     postDataObject.params.userSettings.appId = data.appId;
@@ -258,7 +265,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -281,7 +289,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(success, error);
                     return deferred.promise;
@@ -294,7 +303,7 @@
                     postDataObject.params = {};
                     postDataObject.params.appId = appId;
                     postDataObject.params.threadId = post._id;
-                    postDataObject.params.userToken = encodeURIComponent(userToken) || null;
+                    postDataObject.params.userToken = userToken || null;
                     //postDataObject.params.parentThreadId = post.parentThreadId || post.threadId;
                     postDataObject.params.additionalInfo = {
                         type: type,
@@ -312,7 +321,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -348,7 +358,7 @@
                     postDeleteObject.params = {};
                     postDeleteObject.params.threadId = postId;
                     postDeleteObject.params.appId = appId;
-                    postDeleteObject.params.userToken = encodeURIComponent(userToken);
+                    postDeleteObject.params.userToken = userToken;
                     postDeleteObject.params.secureToken = null;
                     postDeleteObject.userToken = null;
                     var successCallback = function (response) {
@@ -359,7 +369,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDeleteObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -373,9 +384,9 @@
                     postDeleteObject.params.commentId = commentId;
                     postDeleteObject.params.appId = appId;
                     postDeleteObject.params.threadId = threadId;
-                    postDeleteObject.params.userToken = encodeURIComponent(userToken) || null;
+                    postDeleteObject.params.userToken = userToken || null;
                     postDeleteObject.params.secureToken = null;
-                    postDeleteObject.userToken = encodeURIComponent(userToken) || null;
+                    postDeleteObject.userToken = userToken || null;
                     var successCallback = function (response) {
                         return deferred.resolve(response);
                     };
@@ -384,7 +395,8 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDeleteObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDeleteObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
@@ -464,7 +476,8 @@
                     console.log('Post data in services-------------------', postDataObject);
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                        url: SERVER_URL.link,
+                        params: {data: postDataObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(function (data) {
                         console.log('Get posts in service of SocialItems-------------------------', data);
@@ -502,10 +515,11 @@
                             postDataObject.params.appId = _this.socialAppId;
                             postDataObject.params.threadId = _this.parentThreadId;
                             postDataObject.params.userId = _this.userDetails.userId || null;
-                            postDataObject.params.userToken = encodeURIComponent(_this.userDetails.userToken) || null;
+                            postDataObject.params.userToken = _this.userDetails.userToken || null;
                             $http({
                                 method: 'GET',
-                                url: SERVER_URL.link + '?data=' + JSON.stringify(postDataObject),
+                                url: SERVER_URL.link,
+                                params: {data: postDataObject},
                                 headers: {'Content-Type': 'application/json'}
                             }).then(function (response) {
                                 console.log('inside getUser settings :::::::::::::', response);
