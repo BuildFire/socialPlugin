@@ -46,7 +46,6 @@
                     postDataObject.params.uniqueLink = context.appId + context.instanceId;
                     postDataObject.params.userToken = null;
                     postDataObject.params.title = context.pluginTitle || null;
-                    postDataObject.params.title = postDataObject.params.title;
                     postDataObject.userToken = null;
                     var successCallback = function (response) {
                         console.log('thread/getThread in content callback recieved--------------', response);

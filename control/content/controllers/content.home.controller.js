@@ -30,6 +30,37 @@
                         ContentHome.socialAppId = data.data.socialAppId;
                         ContentHome.parentThreadId = data.data.parentThreadId;
                         $scope.$digest();
+
+                        //update the plugin name on social
+                        if (ContentHome.socialAppId && ContentHome.parentThreadId) {
+                            Buildfire.getContext(function (err, context) {
+                                if (err) {
+                                    console.error("Error occurred while getting buildfire context");
+                                } else {
+                                    console.log('buildfire get context response::: ', context);
+                                    instanceId = context && context.instanceId;
+
+                                    var updateThreadTitle = function () {
+                                        Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
+                                            if (result && result.id) {
+                                                pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
+                                                context.pluginTitle = pluginTitle;
+
+                                                SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                                                    function (parentThreadRes) {
+                                                        console.log('Parent ThreadId -------success----', parentThreadRes);
+                                                    },
+                                                    function (error) {
+                                                        console.log('Parent thread callback error------', error);
+                                                    }
+                                                );
+                                            }
+                                        });
+                                    };
+                                    updateThreadTitle();
+                                }
+                            });
+                        }
                         console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
                     }
                     else {
@@ -95,7 +126,7 @@
                 ContentHome.resetApp = function () {
                     Modals.resetAppPopupModal({name: 'ResetApp'}).then(function (data) {
                         // resetting the app
-                        if(appId && instanceId && datastoreWriteKey) {
+                        if (appId && instanceId && datastoreWriteKey) {
                             var context = {
                                 appId: appId,
                                 instanceId: instanceId + new Date().getTime(),
@@ -481,28 +512,28 @@
                                 return el._id != event._id;
                             });
                             /* if (!$scope.$$phase)$scope.$digest();*/
-                            if(ContentHome.modalPopupThreadId == event._id)
+                            if (ContentHome.modalPopupThreadId == event._id)
                                 Modals.close('Post already deleted');
                             break;
                         case EVENTS.COMMENT_DELETED:
                             ContentHome.posts.some(function (el) {
                                 if (el._id == event.postId) {
-                                    if(el.commentsCount>0){
+                                    if (el.commentsCount > 0) {
                                         el.commentsCount--;
                                     }
-                                    else{
-                                        el.commentsCount=0;
+                                    else {
+                                        el.commentsCount = 0;
                                     }
-                                    if(el.comments)
-                                    el.comments = el.comments.filter(function (comment) {
-                                        return comment._id != event._id;
-                                    });
+                                    if (el.comments)
+                                        el.comments = el.comments.filter(function (comment) {
+                                            return comment._id != event._id;
+                                        });
                                     return true;
                                 }
                             });
                             /* if (!$scope.$$phase)
                              $scope.$digest();*/
-                            if(ContentHome.modalPopupThreadId == event._id)
+                            if (ContentHome.modalPopupThreadId == event._id)
                                 Modals.close('Comment already deleted');
                             break;
                         case EVENTS.COMMENT_UNLIKED:
@@ -537,10 +568,10 @@
                                         el.comments.some(function (commentData) {
                                             console.log('Comment Data---------Liked-------------------', commentData);
                                             if (commentData._id == event._id) {
-                                                if(commentData.likesCount)
-                                                commentData.likesCount++;
+                                                if (commentData.likesCount)
+                                                    commentData.likesCount++;
                                                 else
-                                                commentData.likesCount=1;
+                                                    commentData.likesCount = 1;
                                                 return true;
                                             }
                                         });
