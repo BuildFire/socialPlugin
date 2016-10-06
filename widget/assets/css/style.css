@@ -409,12 +409,20 @@
 /* For IOS input focus issue
 */
 
-textarea {
+/*textarea {
     -webkit-user-select: auto !important;
     -khtml-user-select: auto !important;
     -moz-user-select: auto !important;
     -ms-user-select: auto !important;
     user-select: auto !important;
+}*/
+
+textarea {
+	-webkit-user-select: text !important;
+	-khtml-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
+	user-select: text !important;
 }
 
 /* Modal */
