@@ -248,6 +248,11 @@
 
                                     var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
                                     reportPostPromise.then(function (response) {
+                                        for(var index in WidgetWall.SocialItems.items)
+                                            if(WidgetWall.SocialItems.items[index]._id==post._id) {
+                                                WidgetWall.SocialItems.items.splice(index, 1);
+                                                break;
+                                            }
                                         $modal
                                             .open({
                                                 templateUrl: 'templates/modals/report-generated-modal.html',
