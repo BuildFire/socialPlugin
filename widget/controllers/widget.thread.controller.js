@@ -81,6 +81,7 @@
                     Thread.post = posts[0] || {};
                     console.log('Single post----------------------------------------------------------',Thread.post);
                     var uniqueIdsArray = [];
+                    Buildfire.history.push('Post', { post : Thread.post });
                     $rootScope.showThread = false;
                     //Thread.post = data.data.result;
                     Thread.showMore = Thread.post.commentsCount > 10;
@@ -604,7 +605,7 @@
                                 return el._id != event._id;
                             });
                             if(event._id==Thread.modalPopupThreadId) {
-                                $rootScope.showThread = true;
+                                Buildfire.history.pop();
                                 Modals.close('Post already deleted');
                             }
                             if (!$scope.$$phase)

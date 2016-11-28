@@ -24,6 +24,11 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
                     return true
                 }
             },
+            history:{
+                push:function(){},
+                pop:function(){},
+                onPop:function(){}
+            },
             messaging: {
 
             },

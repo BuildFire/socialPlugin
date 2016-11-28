@@ -9,7 +9,7 @@ describe('socialPluginWidget: App', function () {
             this.datastore = jasmine.createSpyObj('datastore', ['get', 'onUpdate']);
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login']);
             this.navigation = jasmine.createSpyObj('navigation', ['onBackButtonClick', 'onUpdate']);
-
+            this.history = jasmine.createSpyObj('history', ['pop', 'push', 'onPop']);
 
 
             this.datastore.onUpdate.and.callFake(function (callback) {

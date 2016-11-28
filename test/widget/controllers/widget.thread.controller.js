@@ -11,6 +11,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
             this.auth = jasmine.createSpyObj('auth', ['getCurrentUser', 'login','onLogin','onLogout']);
             this.navigation = jasmine.createSpyObj('navigation', ['get', 'onUpdate']);
             this.messaging = jasmine.createSpyObj('messaging', ['get', 'onUpdate','onReceivedMessage']);
+            this.history =  jasmine.createSpyObj('history', ['pop', 'push', 'onPop']);
             this.getContext = function (cb) {
                 cb(null, {});
             };
