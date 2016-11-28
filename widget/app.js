@@ -68,16 +68,14 @@
             $httpProvider.interceptors.push(interceptor);
         }])
         .run(['$location', '$rootScope', 'Location', 'Buildfire', function ($location, $rootScope, Location, Buildfire) {
-            Buildfire.navigation.onBackButtonClick = function () {
+            Buildfire.history.onPop(function () {
                 var path = $location.path();
                 if (path.indexOf('/thread') == 0) {
                     $rootScope.showThread = true;
                     $location.path('/');
                     $rootScope.$digest();
                 }
-                else
-                    Buildfire.navigation._goBackOne();
-            }
+            });
         }])
         .directive('handlePhoneSubmit', function () {
             return function (scope, element, attr) {
