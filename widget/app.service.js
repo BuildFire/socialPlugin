@@ -47,7 +47,7 @@
                     return useHttps;
                 },
                 getProxyServerUrl: function () {
-                    return requiresHttps() ? SERVER_URL.secureLink : SERVER_URL.link;
+                    return this.requiresHttps() ? SERVER_URL.secureLink : SERVER_URL.link;
                 }
             }
         }])
