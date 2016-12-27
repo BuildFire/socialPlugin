@@ -20,7 +20,38 @@
                 }
             };
         }])
-        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'SERVER_URL', '$http', 'Upload', function (Buildfire, $q, $timeout, SERVER_URL, $http, Upload) {
+        .factory('Util', ['SERVER_URL', function (SERVER_URL) {
+            return {
+                requiresHttps: function () {
+                    var useHttps = false;
+                    var userAgent = navigator.userAgent || navigator.vendor;
+                    var isiPhone = (/(iPhone|iPod|iPad)/i.test(userAgent));
+                    var isAndroid = (/android/i.test(userAgent));
+
+                    //iOS 10 and higher should use HTTPS
+                    if (isiPhone) {
+                        //This checks the first digit of the OS version. (Doesn't distinguish between 1 and 10)
+                        if (!(/OS [4-9](.*) like Mac OS X/i.test(userAgent))) {
+                            useHttps = true;
+                        }
+                    }
+
+                    //For web based access, use HTTPS
+                    if (!isiPhone && !isAndroid) {
+                        useHttps = true;
+                    }
+
+                    console.warn('userAgent: ' + userAgent);
+                    console.warn('useHttps: ' + useHttps);
+
+                    return useHttps;
+                },
+                getProxyServerUrl: function () {
+                    return this.requiresHttps() ? SERVER_URL.secureLink : SERVER_URL.link;
+                }
+            }
+        }])
+        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'Util', '$http', 'Upload', function (Buildfire, $q, $timeout, Util, $http, Upload) {
             return {
                 createPost: function (postData) {
                     var deferred = $q.defer();
@@ -45,9 +76,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
                     return deferred.promise;
@@ -68,9 +99,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -98,9 +129,9 @@
                     console.log('Data----------------------------in add comment method--------', JSON.stringify(postDataObject));
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -125,9 +156,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -151,9 +182,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -183,9 +214,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -193,11 +224,11 @@
                     var deferred = $q.defer();
                     console.log('inside upload image method : ', file, Upload);
                     Upload.upload({
-                        url: SERVER_URL.link + '?method=Image/upload',
+                        url: Util.getProxyServerUrl() + '?method=Image/upload',
                         data: {
                             'files': file,
                             'userToken': userToken,
-                            'secureToken' : null,
+                            'secureToken': null,
                             'appId': appId
 
                         }
@@ -209,8 +240,8 @@
                         deferred.reject(resp);
                     }, function (evt) {
                         file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-//                        deferred.notify(file.progress);
-                        angular.element('.progress-bar').css('width', file.progress+'%');
+                        //                        deferred.notify(file.progress);
+                        angular.element('.progress-bar').css('width', file.progress + '%');
                         angular.element('.filename').text(file.name + ' -' + file.progress + '%');
                     });
                     return deferred.promise;
@@ -235,9 +266,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -265,9 +296,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -289,9 +320,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(success, error);
                     return deferred.promise;
                 },
@@ -321,9 +352,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -369,9 +400,9 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDeleteObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDeleteObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -395,15 +426,15 @@
                     };
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDeleteObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDeleteObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 }
             }
         }])
-        .factory('SocialItems', ['Buildfire', '$http', 'SERVER_URL', 'Location', function (Buildfire, $http, SERVER_URL, Location) {
+        .factory('SocialItems', ['Buildfire', '$http', 'Util', 'Location', function (Buildfire, $http, Util, Location) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -418,7 +449,7 @@
                 _this.userDetails.userId = null;
                 _this.userDetails.settingsId = null;
                 _this._receivePushNotification;
-                _this.postMehodCalledFlag=false;
+                _this.postMehodCalledFlag = false;
 
             };
             var instance;
@@ -448,22 +479,22 @@
                 console.log('This in Service-------------------------------------------', this);
 
 
-                function getAppIdAndParentThreadId(){
+                function getAppIdAndParentThreadId() {
                     console.log('getAppIdAndParentThreadId method called-------------');
                     Buildfire.datastore.get('Social', function (err, data) {
                         console.log('Get------------data--------datastore--------', err, data);
-                        if(data && data.data){
+                        if (data && data.data) {
                             _this.socialAppId = data && data.data && data.data.socialAppId;
                             _this.parentThreadId = data && data.data && data.data.parentThreadId;
                             console.log('Inside else 2---------------------------------------this', _this);
                             getPosts();
                         }
-                        else{
+                        else {
                             getAppIdAndParentThreadId();
                         }
                     });
                 }
-                function getPosts(){
+                function getPosts() {
                     console.log('getPosts called');
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -476,16 +507,16 @@
                     console.log('Post data in services-------------------', postDataObject);
                     $http({
                         method: 'GET',
-                        url: SERVER_URL.link,
-                        params: {data: postDataObject},
-                        headers: {'Content-Type': 'application/json'}
+                        url: Util.getProxyServerUrl(),
+                        params: { data: postDataObject },
+                        headers: { 'Content-Type': 'application/json' }
                     }).then(function (data) {
                         console.log('Get posts in service of SocialItems-------------------------', data);
                         if (data && data.data && data.data.result && data.data.result.length) {
                             _this.items = _this.items.concat(data.data.result);
                             _this.lastThreadId = _this.items[_this.items.length - 1]._id;
                             _this.busy = data.data.result.length < 10;
-                            _this.postMehodCalledFlag=true;
+                            _this.postMehodCalledFlag = true;
                         }
                         else {
                             _this.busy = true;
@@ -499,7 +530,7 @@
             };
 
             SocialItems.prototype.loggedInUserDetails = function () {
-               Buildfire.datastore.get('Social', function (err, data) {
+                Buildfire.datastore.get('Social', function (err, data) {
                     console.log('Get------------data--------datastore--------', err, data);
                     _this.socialAppId = data && data.data && data.data.socialAppId;
                     _this.parentThreadId = data && data.data && data.data.parentThreadId;
@@ -518,9 +549,9 @@
                             postDataObject.params.userToken = _this.userDetails.userToken || null;
                             $http({
                                 method: 'GET',
-                                url: SERVER_URL.link,
-                                params: {data: postDataObject},
-                                headers: {'Content-Type': 'application/json'}
+                                url: Util.getProxyServerUrl(),
+                                params: { data: postDataObject },
+                                headers: { 'Content-Type': 'application/json' }
                             }).then(function (response) {
                                 console.log('inside getUser settings :::::::::::::', response);
                                 if (response && response.data && response.data.result) {
@@ -539,7 +570,7 @@
                 });
             };
             SocialItems.prototype.checkPostsCalled = function () {
-                return _this.postMehodCalledFlag &&  (_this.items.length>0);
+                return _this.postMehodCalledFlag && (_this.items.length > 0);
             }
             return {
                 getInstance: function () {
