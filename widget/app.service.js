@@ -77,8 +77,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     /*$http.get('http://social.kaleoapps.com/src/server.js?data={"id":1,"method":"thread/add","params":{"appId":"551ae57f94ed199c3400002e","parentThreadId":"564f676cfbe10b9c240002ff","userToken":"ouOUQF7Sbx9m1pkqkfSUrmfiyRip2YptbcEcEcoX170=","text":"testThread","title":"","imageUrl":null,"secureToken":null},"userToken":null}').then(successCallback, errorCallback);*/
                     return deferred.promise;
@@ -100,8 +100,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -130,8 +130,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -157,8 +157,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -183,8 +183,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -215,8 +215,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -267,8 +267,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -297,8 +297,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -321,8 +321,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(success, error);
                     return deferred.promise;
                 },
@@ -353,8 +353,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -401,8 +401,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDeleteObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDeleteObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
@@ -427,8 +427,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDeleteObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDeleteObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 }
@@ -444,10 +444,12 @@
                 _this.context = {};
                 _this.parentThreadId = null;
                 _this.socialAppId = null;
+                _this.appSettings = null;
                 _this.userDetails = {};
                 _this.userDetails.userToken = null;
                 _this.userDetails.userId = null;
                 _this.userDetails.settingsId = null;
+                _this.userDetails.userTags = null;
                 _this._receivePushNotification;
                 _this.postMehodCalledFlag = false;
 
@@ -486,6 +488,7 @@
                         if (data && data.data) {
                             _this.socialAppId = data && data.data && data.data.socialAppId;
                             _this.parentThreadId = data && data.data && data.data.parentThreadId;
+                            _this.appSettings = data && data.data && data.data.appSettings;
                             console.log('Inside else 2---------------------------------------this', _this);
                             getPosts();
                         }
@@ -494,6 +497,7 @@
                         }
                     });
                 }
+
                 function getPosts() {
                     console.log('getPosts called');
                     var postDataObject = {};
@@ -508,8 +512,8 @@
                     $http({
                         method: 'GET',
                         url: Util.getProxyServerUrl(),
-                        params: { data: postDataObject },
-                        headers: { 'Content-Type': 'application/json' }
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'}
                     }).then(function (data) {
                         console.log('Get posts in service of SocialItems-------------------------', data);
                         if (data && data.data && data.data.result && data.data.result.length) {
@@ -529,16 +533,24 @@
                 }
             };
 
-            SocialItems.prototype.loggedInUserDetails = function () {
+            SocialItems.prototype.loggedInUserDetails = function (callback) {
                 Buildfire.datastore.get('Social', function (err, data) {
+                    if (err) {
+                        if (callback)
+                            callback(err, null);
+                    }
                     console.log('Get------------data--------datastore--------', err, data);
                     _this.socialAppId = data && data.data && data.data.socialAppId;
                     _this.parentThreadId = data && data.data && data.data.parentThreadId;
+                    _this.appSettings = data && data.data && data.data.appSettings;
                     Buildfire.auth.getCurrentUser(function (err, userData) {
                         console.info('Current Logged In user details are -----------------', userData);
+
                         if (userData) {
                             _this.userDetails.userToken = userData.userToken;
                             _this.userDetails.userId = userData._id;
+                            _this.userDetails.userTags = userData.tags;
+
                             var postDataObject = {};
                             postDataObject.id = '1';
                             postDataObject.method = 'users/getUserSettings';
@@ -550,8 +562,8 @@
                             $http({
                                 method: 'GET',
                                 url: Util.getProxyServerUrl(),
-                                params: { data: postDataObject },
-                                headers: { 'Content-Type': 'application/json' }
+                                params: {data: postDataObject},
+                                headers: {'Content-Type': 'application/json'}
                             }).then(function (response) {
                                 console.log('inside getUser settings :::::::::::::', response);
                                 if (response && response.data && response.data.result) {
@@ -566,12 +578,17 @@
                                 console.log('Error while logging in user is: ', err);
                             });
                         }
+
+                        if (callback)
+                            callback(err, userData);
                     });
                 });
             };
+
             SocialItems.prototype.checkPostsCalled = function () {
                 return _this.postMehodCalledFlag && (_this.items.length > 0);
-            }
+            };
+
             return {
                 getInstance: function () {
                     if (!instance) {
