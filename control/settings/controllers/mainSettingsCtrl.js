@@ -11,7 +11,6 @@ app.controller('MainSettingsCtrl', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
-    $scope.tags=5;
 
     $scope.init = function () {
         buildfire.spinner.show();
