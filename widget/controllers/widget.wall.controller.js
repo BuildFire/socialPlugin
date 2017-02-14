@@ -23,18 +23,67 @@
             WidgetWall.showImageLoader = true;
             WidgetWall.modalPopupThreadId;
             $rootScope.showThread = true;
+            WidgetWall.createThreadPermission = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
-            var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
+            var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
-            WidgetWall.SocialItems.posts();
-            WidgetWall.SocialItems.loggedInUserDetails();
+            WidgetWall.showHideCommentBox = function () {
+                if (WidgetWall.SocialItems &&
+                    WidgetWall.SocialItems.appSettings &&
+                    WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
+                    WidgetWall.SocialItems.appSettings.mainThreadUserTags &&
+                    WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
+                ) {
+                    var _userTagsObj = WidgetWall.SocialItems.userDetails.userTags;
+                    var _userTags = [];
+                    if (_userTagsObj) {
+                        _userTags = _userTagsObj[Object.keys(_userTagsObj)[0]];
+                    }
+
+                    if (_userTags) {
+                        var _hasPermission = false;
+                        for (var i = 0; i < WidgetWall.SocialItems.appSettings.mainThreadUserTags.length; i++) {
+                            var _mainThreadTag = WidgetWall.SocialItems.appSettings.mainThreadUserTags[i].text;
+                            for (var x = 0; x < _userTags.length; x++) {
+                                if (_mainThreadTag.toLowerCase() == _userTags[x].tagName.toLowerCase()) {
+                                    _hasPermission = true;
+                                    break;
+                                }
+                            }
+                        }
+                        WidgetWall.createThreadPermission = _hasPermission;
+                    } else {
+                        WidgetWall.createThreadPermission = false;
+                    }
+                } else {
+                    WidgetWall.createThreadPermission = true;
+                }
+            };
+
+            WidgetWall.init = function () {
+                WidgetWall.SocialItems.posts();
+                WidgetWall.SocialItems.loggedInUserDetails(function (err, data) {
+                    if (err) {
+
+                    } else {
+                        //check if user logged in
+                        if (WidgetWall.SocialItems.userDetails.userId != null) {
+                            //check user if has permission to create thread
+                            WidgetWall.showHideCommentBox();
+                        }
+                    }
+                });
+            };
+
+            WidgetWall.init();
+
 
             WidgetWall.createPost = function ($event) {
 
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
-                        if(getImageSizeInMB(WidgetWall.picFile.size) <= FILE_UPLOAD.MAX_SIZE) {
+                        if (getImageSizeInMB(WidgetWall.picFile.size) <= FILE_UPLOAD.MAX_SIZE) {
                             WidgetWall.waitAPICompletion = true;
                             var success = function (response) {
                                 WidgetWall.imageName = WidgetWall.imageName + ' - 100%';
@@ -58,7 +107,7 @@
             };
 
             var getImageSizeInMB = function (size) {
-                return (size/(1024 * 1024));       // return size in MB
+                return (size / (1024 * 1024));       // return size in MB
             };
 
 
@@ -92,12 +141,12 @@
                     else if (err) {
                         return deferredObject.reject(err);
                     } else {
-                        if(err) {
+                        if (err) {
                             return deferredObject.reject(err);
                         } else {
                             Buildfire.auth.login(null, function (err, user) {
                                 console.log('Login called---------------------------------', user, err);
-                                if(err) {
+                                if (err) {
                                     return deferredObject.reject(err);
                                 }
                             });
@@ -109,7 +158,9 @@
 
             function finalPostCreation(imageUrl) {
                 var postData = {};
-                postData.text = WidgetWall.postText ? WidgetWall.postText.replace(/[#&%+!@^*()-]/g,function(match){ return encodeURIComponent(match)}) : '';
+                postData.text = WidgetWall.postText ? WidgetWall.postText.replace(/[#&%+!@^*()-]/g, function (match) {
+                    return encodeURIComponent(match)
+                }) : '';
                 postData.title = '';
                 postData.imageUrl = imageUrl || null;
                 postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
@@ -130,7 +181,7 @@
                         WidgetWall.imageName = '';
                         WidgetWall.imageSelected = false;
                         WidgetWall.SocialItems.items.unshift(response.data.result);
-                        if (!$scope.$$phase)$scope.$digest();
+                        if (!$scope.$$phase) $scope.$digest();
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
@@ -172,7 +223,7 @@
                             WidgetWall.postText = '';
                             WidgetWall.picFile = '';
                             WidgetWall.waitAPICompletion = false;
-                            if (!$scope.$$phase)$scope.$digest();
+                            if (!$scope.$$phase) $scope.$digest();
                         };
                         SocialDataStore.getUsers(userIds, WidgetWall.SocialItems.userDetails.userToken).then(successCallback, errorCallback);
                         if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
@@ -184,18 +235,18 @@
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
                     WidgetWall.waitAPICompletion = false;
-                    if(err.status==0){
-                    console.log('------------->INTERNET CONNECTION PROBLEM')
+                    if (err.status == 0) {
+                        console.log('------------->INTERNET CONNECTION PROBLEM')
                         $modal
                             .open({
                                 template: [
-                                                             '<div class="padded clearfix">',
-                                                                '<div class="content text-center">',
-                                                              '<p>No internet connection was found. please try again later</p>',
-                                                               '<a class="margin-zero"  ng-click="ok(option)">OK</a>',
-                                                               '</div>',
-                                                               '</div></div>'
-                                                                  ].join(''),
+                                    '<div class="padded clearfix">',
+                                    '<div class="content text-center">',
+                                    '<p>No internet connection was found. please try again later</p>',
+                                    '<a class="margin-zero"  ng-click="ok(option)">OK</a>',
+                                    '</div>',
+                                    '</div></div>'
+                                ].join(''),
                                 controller: 'MoreOptionsModalPopupCtrl',
                                 controllerAs: 'MoreOptionsPopup',
                                 size: 'sm',
@@ -207,7 +258,7 @@
                             });
 
                     }
-                    if (!$scope.$$phase)$scope.$digest();
+                    if (!$scope.$$phase) $scope.$digest();
 
                 };
                 SocialDataStore.createPost(postData).then(success, error);
@@ -238,24 +289,48 @@
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     console.log("Post id ------------->", post._id);
-                    Modals.showMoreOptionsModal({'postId': post._id,'userId':post.userId,'socialItemUserId':WidgetWall.SocialItems.userDetails.userId})
+                    Modals.showMoreOptionsModal({
+                        'postId': post._id,
+                        'userId': post.userId,
+                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId
+                    })
                         .then(function (data) {
-                            console.log('Data in Success------------------data :????????????????????????????????????', data);
+                                console.log('Data in Success------------------data :????????????????????????????????????', data);
 
-                            switch (data) {
+                                switch (data) {
 
-                                case MORE_MENU_POPUP.REPORT:
+                                    case MORE_MENU_POPUP.REPORT:
 
-                                    var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
-                                    reportPostPromise.then(function (response) {
-                                        for(var index in WidgetWall.SocialItems.items)
-                                            if(WidgetWall.SocialItems.items[index]._id==post._id) {
-                                                WidgetWall.SocialItems.items.splice(index, 1);
-                                                break;
-                                            }
+                                        var reportPostPromise = SocialDataStore.reportPost(post._id, WidgetWall.SocialItems.appId, WidgetWall.SocialItems.userDetails.userToken);
+                                        reportPostPromise.then(function (response) {
+                                            for (var index in WidgetWall.SocialItems.items)
+                                                if (WidgetWall.SocialItems.items[index]._id == post._id) {
+                                                    WidgetWall.SocialItems.items.splice(index, 1);
+                                                    break;
+                                                }
+                                            $modal
+                                                .open({
+                                                    templateUrl: 'templates/modals/report-generated-modal.html',
+                                                    controller: 'MoreOptionsModalPopupCtrl',
+                                                    controllerAs: 'MoreOptionsPopup',
+                                                    size: 'sm',
+                                                    resolve: {
+                                                        Info: function () {
+                                                            return post._id;
+                                                        }
+                                                    }
+                                                });
+
+                                        }, function () {
+
+                                        });
+
+                                        break;
+                                    case MORE_MENU_POPUP.BLOCK:
+
                                         $modal
                                             .open({
-                                                templateUrl: 'templates/modals/report-generated-modal.html',
+                                                templateUrl: 'templates/modals/delete-post-modal.html',
                                                 controller: 'MoreOptionsModalPopupCtrl',
                                                 controllerAs: 'MoreOptionsPopup',
                                                 size: 'sm',
@@ -265,34 +340,14 @@
                                                     }
                                                 }
                                             });
+                                        break;
+                                    default :
+                                }
 
-                                    }, function () {
-
-                                    });
-
-                                    break;
-                                case MORE_MENU_POPUP.BLOCK:
-
-                                    $modal
-                                        .open({
-                                            templateUrl: 'templates/modals/delete-post-modal.html',
-                                            controller: 'MoreOptionsModalPopupCtrl',
-                                            controllerAs: 'MoreOptionsPopup',
-                                            size: 'sm',
-                                            resolve: {
-                                                Info: function () {
-                                                    return post._id;
-                                                }
-                                            }
-                                        });
-                                    break;
-                                default :
-                            }
-
-                        },
-                        function (err) {
-                            console.log('Error in Error handler--------------------------', err);
-                        });
+                            },
+                            function (err) {
+                                console.log('Error in Error handler--------------------------', err);
+                            });
                 }, function (err) {
                     console.log('Error is ::::::', err);
                 });
@@ -309,7 +364,7 @@
                     var success = function (response) {
                         console.log('Get thread likes success-------------------', response);
                         if (response.data && response.data.result && response.data.result.length > 0) {
-                            console.log('First if in like post-----------------------',response.data.result);
+                            console.log('First if in like post-----------------------', response.data.result);
                             if (response.data.result[0].isUserLikeActive) {
                                 SocialDataStore.addThreadLike(post, type, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(function (res) {
                                     console.log('thread gets liked------------', res);
@@ -322,27 +377,27 @@
                                     WidgetWall.updateLikesData(post._id, false);
                                     if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                                         WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                                    if (!$scope.$$phase)$scope.$digest();
+                                    if (!$scope.$$phase) $scope.$digest();
                                 }, function (err) {
                                     console.error('error while liking thread', err);
                                 });
                             } else {
-                                if(response.data.result[0].likesCount)
-                                SocialDataStore.removeThreadLike(post, type, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(function (res) {
-                                    if (res.data && res.data.result)
-                                        Buildfire.messaging.sendMessageToControl({
-                                            'name': EVENTS.POST_UNLIKED,
-                                            '_id': post._id
-                                        });
-                                    post.likesCount--;
-                                    post.waitAPICompletion = false;
-                                    if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
-                                        WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                                    WidgetWall.updateLikesData(post._id, true);
-                                    if (!$scope.$$phase)$scope.$digest();
-                                }, function (err) {
-                                    console.error('error while removing like of thread', err);
-                                });
+                                if (response.data.result[0].likesCount)
+                                    SocialDataStore.removeThreadLike(post, type, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(function (res) {
+                                        if (res.data && res.data.result)
+                                            Buildfire.messaging.sendMessageToControl({
+                                                'name': EVENTS.POST_UNLIKED,
+                                                '_id': post._id
+                                            });
+                                        post.likesCount--;
+                                        post.waitAPICompletion = false;
+                                        if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
+                                            WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
+                                        WidgetWall.updateLikesData(post._id, true);
+                                        if (!$scope.$$phase) $scope.$digest();
+                                    }, function (err) {
+                                        console.error('error while removing like of thread', err);
+                                    });
                             }
                         }
                     };
@@ -363,7 +418,7 @@
             WidgetWall.seeMore = function (post) {
                 post.seeMore = true;
                 post.limit = 10000000;
-                if (!$scope.$$phase)$scope.$digest();
+                if (!$scope.$$phase) $scope.$digest();
             };
             WidgetWall.getDuration = function (timestamp) {
                 return moment(timestamp.toString()).fromNow();
@@ -410,18 +465,18 @@
                 var error = function (err) {
                     console.log('Error while deleting post ', err);
                 };
-                console.log('Post id appid usertoken-- in delete ---------------',postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken);
+                console.log('Post id appid usertoken-- in delete ---------------', postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken);
                 // Deleting post having id as postId
                 SocialDataStore.deletePost(postId, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userToken).then(success, error);
             };
 
             WidgetWall.followUnfollow = function (isFollow) {
-                if(WidgetWall.SocialItems.userDetails.userToken && WidgetWall.SocialItems.userDetails.userId) {
+                if (WidgetWall.SocialItems.userDetails.userToken && WidgetWall.SocialItems.userDetails.userId) {
                     updateFollowUnfollow(isFollow);
                 } else {
                     Buildfire.auth.login(null, function (err, user) {
                         console.log('Login called---------------------------------', user, err);
-                        if(err) {
+                        if (err) {
                             console.log('Error while logging in---------', err);
                         } else {
                             updateFollowUnfollow(isFollow);
@@ -460,7 +515,7 @@
                     switch (event.name) {
                         case EVENTS.POST_DELETED :
                             WidgetWall.deletePost(event._id);
-                            if(WidgetWall.modalPopupThreadId == event._id)
+                            if (WidgetWall.modalPopupThreadId == event._id)
                                 Modals.close('Post already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
@@ -481,7 +536,7 @@
                                     return true;
                                 }
                             });
-                            if(WidgetWall.modalPopupThreadId == event.postId)
+                            if (WidgetWall.modalPopupThreadId == event.postId)
                                 Modals.close('Comment already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
@@ -517,9 +572,9 @@
                 var errorCallback = function (err) {
                     console.error('Error while fetching users details ', err);
                 };
-                if(newUserIds && newUserIds.length)
+                if (newUserIds && newUserIds.length)
                     SocialDataStore.getUsers(newUserIds).then(successCallback, errorCallback);
-                console.log('newPostsUniqueIds is:::::::::',newPostsUniqueIds);
+                console.log('newPostsUniqueIds is:::::::::', newPostsUniqueIds);
                 SocialDataStore.getThreadLikes(newPostsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
                     if (response.data.error) {
                         console.error('Error while getting likes of thread by logged in user ', response.data.error);
@@ -531,24 +586,24 @@
                     console.error('Error while fetching thread likes ', err);
                 });
                 /*SocialDataStore.getThreadLikes(postsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
-                    postsUniqueIds = [];
-                    if (response.data.error) {
-                        console.error('Error while getting likes of thread by logged in user ', response.data.error);
-                    } else if (response.data.result) {
-                        getLikesData = response.data.result;
-                    }
-                }, function (err) {
-                    console.error('Error while fetching thread likes ', err);
-                });*/
+                 postsUniqueIds = [];
+                 if (response.data.error) {
+                 console.error('Error while getting likes of thread by logged in user ', response.data.error);
+                 } else if (response.data.result) {
+                 getLikesData = response.data.result;
+                 }
+                 }, function (err) {
+                 console.error('Error while fetching thread likes ', err);
+                 });*/
             }
 
             WidgetWall.uploadImage = function (file) {
-                console.log('inside select image method',file);
+                console.log('inside select image method', file);
                 var fileSize;
-                if(file) {
+                if (file) {
                     fileSize = getImageSizeInMB(file.size);      // get image size in MB
                     WidgetWall.imageSelected = true;
-                    if(fileSize > FILE_UPLOAD.MAX_SIZE) {
+                    if (fileSize > FILE_UPLOAD.MAX_SIZE) {
                         WidgetWall.imageName = file.name + ' - ' + FILE_UPLOAD.SIZE_EXCEED;
                         WidgetWall.showImageLoader = false;
                     } else {
@@ -567,7 +622,7 @@
                     WidgetWall.showImageLoader = true;
                     if (!$scope.$$phase)
                         $scope.$digest();
-                },500);
+                }, 500);
             };
 
             $scope.$watch(function () {
@@ -575,11 +630,11 @@
             }, function () {
                 if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
                     console.log('Before New Items loaded----------------------------', WidgetWall.SocialItems.items);
-                    console.log('before master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
-                    masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0,WidgetWall.SocialItems.items.length);
+                    console.log('before master items-------------------------------in widget--', masterItems, 'social Items-----------------', WidgetWall.SocialItems.items);
+                    masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
                     getUsersAndLikes();
                     console.log('After New Items loaded----------------------------', WidgetWall.SocialItems.items);
-                    console.log('After master items-------------------------------in widget--',masterItems,'social Items-----------------',WidgetWall.SocialItems.items);
+                    console.log('After master items-------------------------------in widget--', masterItems, 'social Items-----------------', WidgetWall.SocialItems.items);
 
                 }
             }, true);
@@ -598,30 +653,32 @@
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
             });
-            $rootScope.$on(EVENTS.POST_LIKED, function (e,post) {
+            $rootScope.$on(EVENTS.POST_LIKED, function (e, post) {
                 console.log('inside post liked event listener:::::::::::');
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                WidgetWall.updateLikesData(post._id,false);
+                WidgetWall.updateLikesData(post._id, false);
             });
-            $rootScope.$on(EVENTS.POST_UNLIKED, function (e,post) {
-                console.log('inside post unliked event listener:::::::::::', e,'--------------------------post------',post);
+            $rootScope.$on(EVENTS.POST_UNLIKED, function (e, post) {
+                console.log('inside post unliked event listener:::::::::::', e, '--------------------------post------', post);
                 if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                     WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                WidgetWall.updateLikesData(post._id,true);
+                WidgetWall.updateLikesData(post._id, true);
             });
-            Buildfire.datastore.onUpdate(function (err, response) {
-                console.log('----------- on Update ----',err,response);
+            Buildfire.datastore.onUpdate(function (response) {
+                console.log('----------- on Update Main Thread ----', response);
                 WidgetWall.SocialItems.parentThreadId = response && response.data.parentThreadId;
                 WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
-                Location.goToHome();
+                WidgetWall.init();
             });
             // On Login
-            Buildfire.auth.onLogin(function(user){
-                console.log('New user loggedIN from Widget Wall Page',user);
-                if(user && user._id){
-                    WidgetWall.SocialItems.userDetails.userToken=user.userToken;
-                    WidgetWall.SocialItems.userDetails.userId=user._id;
+            Buildfire.auth.onLogin(function (user) {
+                console.log('New user loggedIN from Widget Wall Page', user);
+                if (user && user._id) {
+                    WidgetWall.SocialItems.userDetails.userToken = user.userToken;
+                    WidgetWall.SocialItems.userDetails.userId = user._id;
+                    //check user if has permission to create thread
+                    WidgetWall.showHideCommentBox();
                     $scope.$digest();
                 }
             });
@@ -636,7 +693,7 @@
             /**
              * Implementation of pull down to refresh
              */
-            var onRefresh=Buildfire.datastore.onRefresh(function(){
+            var onRefresh = Buildfire.datastore.onRefresh(function () {
                 Location.goToHome();
             });
 

@@ -1,0 +1,30 @@
+<div ng-controller="MainSettingsCtrl">
+    <form name="mainSettingsForm">
+        <h2>Post Permission</h2>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" ng-model="data.allowMainThreadTags" ng-change="save()"/>
+                Allow posts on main wall only by users with tags</label>
+        </div>
+
+        <div class="form-group">
+            <tags-input ng-model="data.mainThreadUserTags"
+                        min-tags="{{data.allowMainThreadTags ? 1 : 0}}"
+                        on-tag-added="save()" on-tag-removed="save()"></tags-input>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" ng-model="data.allowSideThreadTags" ng-change="save()"/>
+                Allow posts on side threads only by users with tags</label>
+        </div>
+
+
+        <div class="form-group">
+            <tags-input ng-model="data.sideThreadUserTags"
+                        min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
+                        on-tag-added="save()" on-tag-removed="save()"
+            ></tags-input>
+        </div>
+    </form>
+</div>
