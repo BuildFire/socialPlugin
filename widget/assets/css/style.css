@@ -245,6 +245,18 @@
     vertical-align: middle;
 }
 
+.social-plugin .new-post-hud {
+    z-index: 9;
+    left: 0;
+    right: 0;
+    margin: 0 auto !important;
+    width: 40%;
+    text-align: center;
+    border-radius: 25px;
+    padding: 8px;
+    position: fixed;
+}
+
 .social-plugin .head-btn {
     position: relative;
     padding: 12px 12px 10px;
@@ -324,7 +336,7 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 38px;
+    height: 43px;
     z-index: 11;
 }
 
@@ -401,6 +413,7 @@
     position: relative;
     top: 3px;
     width: 100%;
+    color: #c1c1c1;
 }
 
 /* BOF Upload image section with uploader and cross */
@@ -513,6 +526,114 @@ textarea {
     height: 100%;
 }
 
+/* Comment Box */
 .has-comment-box {
     height: calc(100% - 39px)
+}
+
+.full-post-section{
+    height: 100% !important;
+}
+
+.full-post-section .full-post-box,
+.full-post-section .full-post-box .post-holder, .full-post-section .full-post-box .post-holder .add-message .text-area-custom {
+    height: 100% !important;
+}
+
+.slide-top {
+    -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+    -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+}
+.slide-top.ng-hide-add {
+    transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1;
+}
+/* line 139, ../sass/ng-animation.scss */
+.slide-top.ng-hide-add.ng-hide-add-active {
+    transform: translateY(60px);
+    -ms-transform: translateY(60px);
+    -webkit-transform: translateY(60px);
+    opacity: 0;
+}
+/* line 145, ../sass/ng-animation.scss */
+.slide-top.ng-hide-remove {
+    transform: translateY(60px);
+    -ms-transform: translateY(60px);
+    -webkit-transform: translateY(60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    display: block !important;
+    opacity: 0;
+}
+/* line 151, ../sass/ng-animation.scss */
+.slide-top.ng-hide-remove.ng-hide-remove-active {
+    transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    opacity: 1;
+}
+
+
+.full-post-section .full-post-box .comment-actions {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.full-post-section .full-post-box .user-info {
+    margin: 10px;
+    display: inline-block;
+}
+
+.full-post-section .full-post-box .user-info .media-holder img {
+    height: 50px;
+    width: 50px;
+}
+
+.full-post-section .full-post-box .user-info .media-holder .user-name {
+    margin-left: 8px;
+}
+
+.full-post-section .full-post-box .add-message {
+    height: 50%;
+    margin: 10px;
+    display: inline-block;
+}
+
+.full-post-section .full-post-box .add-message .text-area-custom {
+    font-size: 26px;
+    padding: 0px;
+    height: 100% !important;
+}
+
+.full-post-section .full-post-box .media-section {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    padding: 13px 20px;
+}
+
+.full-post-section .full-post-box .media-section .icon {
+    font-size: 22px;
+    vertical-align: middle;
+}
+
+.full-post-section .full-post-box .media-section .media-text {
+    margin-left: 10px;
+    font-size: 17px;
+    vertical-align: middle;
 }

@@ -1,5 +1,6 @@
 <div class="slide content">
-    <div class="padding-zero" ng-class="Thread.userDetails.userId == null || Thread.createThreadPermission ?'has-comment-box' : 'fluid-height'">
+    <div class="padding-zero"
+         ng-class="Thread.userDetails.userId == null || Thread.createThreadPermission ?'has-comment-box' : 'fluid-height'">
         <div class="social-plugin social-thread" style="height: 100%;">
             <div class="padded head-btn text-center padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
@@ -28,7 +29,7 @@
                         </div>
                     </div>
                     <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
-                        <p class="margin-zero" ng-bind-html="Thread.post.text | newLine"></p>
+                        <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
                     </div>
                     <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="Thread.post.imageUrl">
                         <div class="plugin-slide text-center">
@@ -65,7 +66,7 @@
                         <a ng-click="Thread.loadMoreComments()">Load More Comments</a>
                     </div>
                     <div class="comments-list">
-                        <div class="social-comment" ng-repeat="comment in Thread.comments">
+                        <div class="social-comment" ng-repeat="comment in Thread.SocialItems.comments">
                             <hr class="small">
                             <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
                                 <div class="col-xs-8 pull-left">
@@ -83,7 +84,7 @@
                                   class="btn-delete-icon btn-danger"></a>-->
 
                             <div class="copy padding-left-ten padding-right-ten margin-bottom-five">
-                                <p class="margin-zero" ng-bind-html="comment.comment|newLine"></p>
+                                <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(comment.comment)|newLine"></p>
                             </div>
                             <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="comment.attachedImage">
                                 <div class="plugin-slide text-center">
@@ -122,9 +123,9 @@
     </div>
 </div>
 <div ng-show="Thread.userDetails.userId == null || Thread.createThreadPermission"
-     class="holder padding-zero bottom-post bodyBackgroundTheme post-container">
+     class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':Thread.goFullScreen}">
     <hr class="small">
-    <div class="post-holder clearfix">
+    <div class="post-holder clearfix" ng-show="!Thread.goFullScreen">
         <div class="add-media">
             <a>
                 <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage($file)"
@@ -134,8 +135,10 @@
             </a>
         </div>
         <div class="add-message pull-left">
-            <textarea rows="1" cols="30" placeholder="Type your comment message..." name="text"
-                      ng-model="Thread.comment" class="text-area-custom"></textarea>
+            <!--<textarea rows="1" cols="30" placeholder="Type your comment message..." name="text"-->
+                      <!--ng-model="Thread.comment" class="text-area-custom"></textarea>-->
+            <label ng-click="Thread.openCommentSection()"
+                   ng-model="Thread.comment" class="text-area-custom text-primary">Type your comment message...</label>
             <!-- <input type="text" class="form-control" placeholder="Type your comment message..."
                     ng-model="Thread.comment">-->
         </div>
@@ -151,5 +154,49 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="full-post-box slide-top" ng-show="Thread.goFullScreen">
+            <div class="clearfix comment-actions border-bottom-grey">
+                <a ng-click="Thread.closeCommentSection()" class="pull-left text-primary">Cancel</a>
+                <a class="pull-right text-primary" value="Send"
+                   ng-click="Thread.addComment()">Send</a>
+            </div>
+            <div class="user-info">
+                <div class="media-holder ng-cloak"
+                     ng-click="Thread.buildfire.auth.openProfile(post.userId)">
+                    <img ng-if="Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
+                         data-final-src="{{Thread.usersData | getUserImage: post.userId}}"
+                         crop-width="50" crop-height="50" crop-type="crop">
+                    <img ng-if="!Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
+                         data-final-src="../../../styles/media/avatar-placeholder.png"
+                         crop-width="50" crop-height="50" crop-type="default">
+                    <a class="user-name text-primary ng-cloak"
+                       ng-click="Thread.buildfire.auth.openProfile(post.userId)">{{Thread.getUserName(Thread.SocialItems.userDetails.userId)}}</a>
+                </div>
+            </div>
+            <div class="add-message">
+                    <textarea rows="1" cols="30" placeholder="Type your comment message..." name="text"
+                              ng-model="Thread.comment" class="text-area-custom backgroundColorTheme text-primary"></textarea>
+            </div>
+            <div class="media-section border-top-grey">
+                <a>
+                    <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage($file)"
+                          ng-model="Thread.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
+                          ngf-accept="'image/*'" accept="image/*" ngf-allow-dir="true"
+                          name="files"></span>
+                    <span class="media-text text-primary">Image</span>
+                </a>
+
+            </div>
+            <div class="image-upload-queue ng-cloak" ng-if="Thread.imageSelected">
+                <div class="uploadifive-queue-item titleBarBackgroundTheme"><a ng-click="Thread.cancelImageSelect()"
+                                                       class="btn-delete-icon cross-icon titleBarTextAndIcons"></a>
+                    <div><span class="filename titleBarTextAndIcons">{{Thread.imageName}}</span></div>
+                    <div class="progress" ng-if="Thread.showImageLoader">
+                        <div class="progress-bar titleBarTextAndIcons"></div>
+                    </div>
+                </div>
+            </div>
     </div>
 </div>
