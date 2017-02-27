@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout) {
+        .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout','Util', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout,util) {
             var WidgetWall = this;
             WidgetWall.usersData = [];
             var userIds = [];
@@ -24,6 +24,7 @@
             WidgetWall.modalPopupThreadId;
             $rootScope.showThread = true;
             WidgetWall.createThreadPermission = false;
+            WidgetWall.util = util;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
@@ -61,6 +62,7 @@
             };
 
             WidgetWall.init = function () {
+                WidgetWall.SocialItems.init();
                 WidgetWall.SocialItems.posts();
                 WidgetWall.SocialItems.loggedInUserDetails(function (err, data) {
                     if (err) {
@@ -77,9 +79,8 @@
 
             WidgetWall.init();
 
-
             WidgetWall.createPost = function ($event) {
-
+                WidgetWall.goFullScreen = false;
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
@@ -105,6 +106,18 @@
                 });
 
             };
+            WidgetWall.openPostSection = function () {
+                WidgetWall.goFullScreen = true;
+                Buildfire.history.push('Post Section',{fullScreenMode : true});
+            };
+            WidgetWall.closePostSection = function () {
+                WidgetWall.goFullScreen = false;
+                Buildfire.history.pop();
+            };
+            Buildfire.history.onPop(function (breadcrumb) {
+                WidgetWall.goFullScreen = false;
+                if (!$scope.$$phase) $scope.$digest();
+            },true);
 
             var getImageSizeInMB = function (size) {
                 return (size / (1024 * 1024));       // return size in MB

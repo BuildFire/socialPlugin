@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location','Util', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location,util) {
             var Thread = this;
             var userIds = [];
             Thread.usersData = [];
@@ -12,12 +12,14 @@
             Thread.height = window.innerHeight;
             Thread.buildfire = Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
+            Thread.SocialItems.comments = [];
             Thread.createThreadPermission = false;
             Thread.imageSelected = false;
             Thread.imageName = '';
             Thread.post = {};
             Thread.showImageLoader = true;
             Thread.modalPopupThreadId;
+            Thread.util=util;
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
@@ -58,6 +60,55 @@
                 $scope.$digest();
             };
 
+
+            Thread.getComments = function (postId, lastCommentId) {
+                SocialDataStore.getCommentsOfAPost({
+                    threadId: postId,
+                    lastCommentId: lastCommentId,
+                    userToken: Thread.userDetails.userToken,
+                    appId: Thread.SocialItems.socialAppId
+                }).then(
+                    function (data) {
+                        var newUniqueLinksOfComments = [], newUserIds = [];
+                        console.log('Success get Comments---------', data);
+                        if (data && data.data && data.data.result)
+                            Thread.SocialItems.comments = Thread.SocialItems.comments.concat(data.data.result);
+                        Thread.SocialItems.comments.forEach(function (commentData) {
+                            if (uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
+                                uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                                newUniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
+                            }
+                            if (userIds.indexOf(commentData.userId) == -1) {
+                                userIds.push(commentData.userId);
+                                newUserIds.push(commentData.userId);
+                            }
+                        });
+                        if (userIds.indexOf(Thread.post.userId) == -1) {
+                            userIds.push(Thread.post.userId);
+                            newUserIds.push(Thread.post.userId);
+                        }
+                        console.log('newUserIds :::::::::::::::::::', newUserIds, userIds);
+                        console.log('newUniqueLinksOfComments :::::::::::::::::::', newUniqueLinksOfComments, uniqueLinksOfComments);
+                        getCommentsLikeAndUpdate(newUniqueLinksOfComments);
+                        if (newUserIds && newUserIds.length > 0) {
+                            SocialDataStore.getUsers(newUserIds, Thread.userDetails.userToken).then(function (response) {
+                                console.info('Users fetching for comments and response is: ', response.data.result);
+                                if (response.data.error) {
+                                    console.error('Error while fetching users for comments ', response.data.error);
+                                } else if (response.data.result) {
+                                    console.info('Users fetched successfully for comments ', response.data.result);
+                                    Thread.usersData = Thread.usersData.concat(response.data.result);
+                                }
+                            }, function (err) {
+                                console.log('Error while fetching users of comments inside thread page: ', err);
+                            });
+                        }
+                    },
+                    function (err) {
+                        console.log('Error get Comments----------', err);
+                    }
+                );
+            };
 
             var checkAuthenticatedUser = function (callFromInit) {
                 var deferred = $q.defer();
@@ -118,13 +169,18 @@
                 });
                 return deferred.promise;
             };
-            var init = function () {
+            Thread.init = function () {
+                Thread.SocialItems.comments = [];
+                Thread.SocialItems.newCommentsAvailable = false;
                 if ($routeParams.threadId) {
                     var posts = Thread.SocialItems.items.filter(function (el) {
                         return el.uniqueLink == $routeParams.threadId;
                     });
                     console.log(posts);
                     Thread.post = posts[0] || {};
+
+                    Thread.getComments(Thread.post._id, null);
+
                     console.log('Single post----------------------------------------------------------', Thread.post);
                     var uniqueIdsArray = [];
                     Buildfire.history.push('Post', {post: Thread.post});
@@ -153,56 +209,8 @@
                     });
                 }
             };
-            init();
+            Thread.init();
 
-            Thread.getComments = function (postId, lastCommentId) {
-                SocialDataStore.getCommentsOfAPost({
-                    threadId: postId,
-                    lastCommentId: lastCommentId,
-                    userToken: Thread.userDetails.userToken,
-                    appId: Thread.SocialItems.socialAppId
-                }).then(
-                    function (data) {
-                        var newUniqueLinksOfComments = [], newUserIds = [];
-                        console.log('Success get Comments---------', data);
-                        if (data && data.data && data.data.result)
-                            Thread.comments = Thread.comments.concat(data.data.result);
-                        Thread.comments.forEach(function (commentData) {
-                            if (uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
-                                uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
-                                newUniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
-                            }
-                            if (userIds.indexOf(commentData.userId) == -1) {
-                                userIds.push(commentData.userId);
-                                newUserIds.push(commentData.userId);
-                            }
-                        });
-                        if (userIds.indexOf(Thread.post.userId) == -1) {
-                            userIds.push(Thread.post.userId);
-                            newUserIds.push(Thread.post.userId);
-                        }
-                        console.log('newUserIds :::::::::::::::::::', newUserIds, userIds);
-                        console.log('newUniqueLinksOfComments :::::::::::::::::::', newUniqueLinksOfComments, uniqueLinksOfComments);
-                        getCommentsLikeAndUpdate(newUniqueLinksOfComments);
-                        if (newUserIds && newUserIds.length > 0) {
-                            SocialDataStore.getUsers(newUserIds, Thread.userDetails.userToken).then(function (response) {
-                                console.info('Users fetching for comments and response is: ', response.data.result);
-                                if (response.data.error) {
-                                    console.error('Error while fetching users for comments ', response.data.error);
-                                } else if (response.data.result) {
-                                    console.info('Users fetched successfully for comments ', response.data.result);
-                                    Thread.usersData = Thread.usersData.concat(response.data.result);
-                                }
-                            }, function (err) {
-                                console.log('Error while fetching users of comments inside thread page: ', err);
-                            });
-                        }
-                    },
-                    function (err) {
-                        console.log('Error get Comments----------', err);
-                    }
-                );
-            };
             /**
              * Thread.addComment method checks whether image is present or not in comment.
              */
@@ -245,20 +253,20 @@
              * loadMoreComments methods is loads the more comments of a post.
              */
             Thread.loadMoreComments = function () {
-                if (Thread.comments && Thread.comments.length < Thread.post.commentsCount) {
+                if (Thread.SocialItems.comments&& Thread.SocialItems.comments.length < Thread.post.commentsCount) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: Thread.post._id,
-                        lastCommentId: Thread.comments[Thread.comments.length - 1]._id,
+                        lastCommentId: Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1]._id,
                         userToken: Thread.userDetails.userToken,
                         appId: Thread.SocialItems.socialAppId
                     }).then(
                         function (data) {
                             console.log('Success get Load more Comments---------', data);
                             if (data && data.data && data.data.result) {
-                                Thread.comments = Thread.comments.concat(data.data.result);
-                                Thread.showMore = Thread.comments.length < Thread.post.commentsCount;
+                                Thread.SocialItems.comments= Thread.SocialItems.comments.concat(data.data.result);
+                                Thread.showMore = Thread.SocialItems.comments.length < Thread.post.commentsCount;
                                 if (!$scope.$$phase) $scope.$digest();
-                                console.log('After Update comments---------------------', Thread.comments);
+                                console.log('After Update comments---------------------', Thread.SocialItems.comments);
                             }
                         },
                         function (err) {
@@ -511,7 +519,7 @@
                             postId: Thread.post._id
                         });
                         Thread.post.commentsCount--;
-                        Thread.comments = Thread.comments.filter(function (el) {
+                        Thread.SocialItems.comments= Thread.SocialItems.comments.filter(function (el) {
                             return el._id != commentId;
                         });
                         if (!$scope.$$phase)
@@ -528,7 +536,7 @@
              * @param imageUrl
              */
             var addComment = function (imageUrl) {
-
+                Thread.closeCommentSection();
                 SocialDataStore.addComment({
                     threadId: Thread.post._id,
                     comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g, function (match) {
@@ -552,8 +560,8 @@
                             '_id': Thread.post._id,
                             'userId': Thread.userDetails.userId
                         });
-                        if (Thread.comments.length) {
-                            Thread.getComments(Thread.post._id, Thread.comments[Thread.comments.length - 1]._id);
+                        if (Thread.SocialItems.comments.length) {
+                            Thread.getComments(Thread.post._id, Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1]._id);
                         }
                         else {
                             Thread.getComments(Thread.post._id, null);
@@ -574,7 +582,7 @@
                         console.log('Response of a post comments like-----------------', data);
                         if (data && data.data && data.data.result && data.data.result.length) {
                             console.log('In If------------------', data.data.result);
-                            Thread.comments.forEach(function (comment) {
+                            Thread.SocialItems.comments.forEach(function (comment) {
                                 data.data.result.forEach(function (uniqueLinkData) {
                                     if (uniqueLinkData.uniqueLink == (comment.threadId + "cmt" + comment._id)) {
                                         comment.likesCount = uniqueLinkData.likesCount;
@@ -586,13 +594,13 @@
                                     comment.isUserLikeActive = true;
                                 }
                             });
-                        } else if (data && data.data && data.data.result == null && Thread.comments && Thread.comments.length > 0) {
-                            Thread.comments.forEach(function (comment) {
+                        } else if (data && data.data && data.data.result == null && Thread.SocialItems.comments&& Thread.SocialItems.comments.length > 0) {
+                            Thread.SocialItems.comments.forEach(function (comment) {
                                 comment.isUserLikeActive = true;
                             });
                         }
                         /*data.data.result.forEach(function (uniqueLinkData) {
-                         Thread.comments.some(function(comment){
+                         Thread.SocialItems.comments.some(function(comment){
                          if(uniqueLinkData.uniqueLink==(comment.threadId+"cmt"+comment._id)){
                          comment.likesCount=uniqueLinkData.likesCount;
                          comment.isUserLikeActive=uniqueLinkData.isUserLikeActive;
@@ -606,6 +614,19 @@
                         console.log('Response error of comment likes ------------', err);
                     });
             };
+
+            Thread.openCommentSection = function () {
+                Thread.goFullScreen = true;
+                Buildfire.history.push('Comment Section',{fullScreenMode : true});
+            };
+            Thread.closeCommentSection = function () {
+                Thread.goFullScreen = false;
+                Buildfire.history.pop();
+            };
+            Buildfire.history.onPop(function (breadcrumb) {
+                Thread.goFullScreen = false;
+                if (!$scope.$$phase) $scope.$digest();
+            },true);
 
             Thread.uploadImage = function (file) {
                 console.log('inside select image method', file);
@@ -635,8 +656,6 @@
                         $scope.$digest();
                 }, 500);
             };
-
-            Thread.getComments(Thread.post._id, null);
 
             Thread.deletePost = function (postId) {
                 var success = function (response) {
@@ -689,7 +708,7 @@
                             console.log('Comment Deleted in thread controlled event called-----------', event);
                             if (event.postId == Thread.post._id) {
                                 Thread.post.commentsCount--;
-                                Thread.comments = Thread.comments.filter(function (el) {
+                                Thread.SocialItems.comments = Thread.SocialItems.comments.filter(function (el) {
                                     return el._id != event._id;
                                 });
                                 if (!$scope.$$phase)
@@ -709,7 +728,7 @@
             // On Login
             Buildfire.datastore.onUpdate(function (response) {
                 console.log('----------- on Update Side Thread ----', response);
-                init();
+                Thread.init();
             });
 
             Buildfire.auth.onLogin(function (user) {

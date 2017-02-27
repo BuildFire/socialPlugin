@@ -44,7 +44,7 @@
 
                     request: function (config) {
                         console.log('config-------------------------', config, config.url.indexOf('threadLikes'));
-                        if (config.url.indexOf('threadLikes') == -1 && config.url.indexOf('thread/add') == -1 && config.url.indexOf('Image/upload') == -1) {
+                        if (!config.silent && config.url.indexOf('threadLikes') == -1 && config.url.indexOf('thread/add') == -1 && config.url.indexOf('Image/upload') == -1) {
                             increaseCounter();
                             toggleSpinner();
                         }
@@ -68,14 +68,14 @@
             $httpProvider.interceptors.push(interceptor);
         }])
         .run(['$location', '$rootScope', 'Location', 'Buildfire', function ($location, $rootScope, Location, Buildfire) {
-            Buildfire.history.onPop(function () {
+            Buildfire.history.onPop(function (breadcrumb) {
                 var path = $location.path();
-                if (path.indexOf('/thread') == 0) {
+                if (path.indexOf('/thread') == 0 && (breadcrumb.label && breadcrumb.label.toLowerCase() != "post")) {
                     $rootScope.showThread = true;
                     $location.path('/');
                     $rootScope.$digest();
                 }
-            });
+            },true);
         }])
         .directive('handlePhoneSubmit', function () {
             return function (scope, element, attr) {

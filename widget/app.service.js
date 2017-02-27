@@ -48,6 +48,42 @@
                 },
                 getProxyServerUrl: function () {
                     return this.requiresHttps() ? SERVER_URL.secureLink : SERVER_URL.link;
+                },injectAnchors:function (text,options) {
+                    text = decodeURIComponent(text);
+                    var URL_CLASS = "reffix-url";
+                    var URLREGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+                    var EMAILREGEX = /([\w\.]+)@([\w\.]+)\.(\w+)/g;
+
+                    if(!options)options={injectURLAnchors:true,injectEmailAnchors:true};
+                    var lookup=[];
+                    if(!options.urlAnchorGen)
+                        options.urlAnchorGen = function(url){
+                            return {url:url,target:''}
+                        };
+                    if(options.injectURLAnchors)
+                        text= text.replace(URLREGEX, function(url) {
+                            var obj = options.urlAnchorGen(url);
+                            if(obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0){
+                                obj.url = 'http://' + obj.url;
+                            }
+                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' inappbrowser='true'>" + url + "</a>");
+                            return "_RF" + (lookup.length -1) + "_";
+                        });
+                    if(!options.emailAnchorGen)
+                        options.emailAnchorGen = function(email){
+                            return {url:"mailto:" + email,target:'_system'}
+                        };
+                    if(options.injectEmailAnchors)
+                        text= text.replace(EMAILREGEX, function(url) {
+                            var obj = options.emailAnchorGen(url);
+                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
+                            return "_RF" + (lookup.length -1) + "_";
+                        });
+                    /// this is done so you dont swap what was injected
+                    lookup.forEach(function(e,i){
+                        text = text.replace("_RF" + i + "_",e);
+                    });
+                    return text;
                 }
             }
         }])
@@ -434,7 +470,7 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Buildfire', '$http', 'Util', 'Location', function (Buildfire, $http, Util, Location) {
+        .factory('SocialItems', ['Buildfire', '$http', 'Util', 'Location', '$routeParams', 'SocialDataStore', function (Buildfire, $http, Util, Location, $routeParams, SocialDataStore) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -452,6 +488,10 @@
                 _this.userDetails.userTags = null;
                 _this._receivePushNotification;
                 _this.postMehodCalledFlag = false;
+                _this.newPostTimerChecker = null;
+                _this.newPostAvailable = false;
+                _this.newCommentsAvailable = false;
+                _this.comments = [];
 
             };
             var instance;
@@ -463,7 +503,9 @@
                 _this.busy = true;
                 if (_this.parentThreadId && _this.socialAppId) {
                     console.log('Inside if---------------------------------------this', _this);
-                    getPosts();
+                    getPosts(function () {
+                        startBackgroundService();
+                    });
                 }
                 else {
                     console.log('Inside else 1---------------------------------------this', _this);
@@ -490,7 +532,9 @@
                             _this.parentThreadId = data && data.data && data.data.parentThreadId;
                             _this.appSettings = data && data.data && data.data.appSettings;
                             console.log('Inside else 2---------------------------------------this', _this);
-                            getPosts();
+                            getPosts(function () {
+                                startBackgroundService();
+                            });
                         }
                         else {
                             getAppIdAndParentThreadId();
@@ -498,7 +542,7 @@
                     });
                 }
 
-                function getPosts() {
+                function getPosts(callback) {
                     console.log('getPosts called');
                     var postDataObject = {};
                     postDataObject.id = '1';
@@ -525,10 +569,90 @@
                         else {
                             _this.busy = true;
                         }
+                        if (callback)
+                            callback();
 
                     }, function (err) {
                         _this.busy = false;
                         console.log('Get posts in service of SocialItems---------err----------------', err);
+                        if (callback)
+                            callback();
+                    });
+                }
+
+                function startBackgroundService() {
+                    if (!_this.newPostTimerChecker) {
+                        console.info('Start background for new posts availability');
+                        _this.newPostTimerChecker = setInterval(function () {
+                            console.info('Background service check for new posts or comments.....');
+                            checkNewPostsAvailability();
+                        }, 10000);
+                    }
+                }
+
+                function checkNewPostsAvailability() {
+                    console.log('getPosts called');
+                    var postDataObject = {};
+                    postDataObject.id = '1';
+                    postDataObject.method = 'thread/findByPage';
+                    postDataObject.params = {};
+                    postDataObject.params.appId = _this.socialAppId;
+                    postDataObject.params.parentThreadId = _this.parentThreadId;
+                    postDataObject.params.lastThreadId = null;
+                    postDataObject.userToken = null;
+                    console.log('Post data in services-------------------', postDataObject);
+                    $http({
+                        method: 'GET',
+                        url: Util.getProxyServerUrl(),
+                        params: {data: postDataObject},
+                        headers: {'Content-Type': 'application/json'},
+                        silent:true
+                    }).then(function (response) {
+                        var _newPostsAvailable = false;
+                        if (response
+                            && response.data
+                            && response.data.result
+                            && response.data.result.length) {
+                            if (_this.items.length == 0 || response.data.result[0]._id != _this.items[0]._id) {
+                                _newPostsAvailable = true;
+                            }
+                        }
+
+                        _this.newPostAvailable = _newPostsAvailable;
+
+                    }, function (err) {
+
+                    });
+                }
+
+                function checkNewCommentsAvailability(threadId) {
+                    //todo this not used now until we fix comments api to get the news comments instead of the oldest
+                    //if side thread is active
+                    var posts = _this.items.filter(function (el) {
+                        return el.uniqueLink == threadId;
+                    });
+
+                    var post = posts[0] || {};
+                    SocialDataStore.getCommentsOfAPost({
+                        threadId: post._id,
+                        lastCommentId: null,
+                        userToken: null,
+                        appId: _this.socialAppId
+                    }).then(function (response) {
+                        var _newCommentsAvailable = false;
+                        if (response
+                            && response.data
+                            && response.data.result
+                            && response.data.result.length) {
+                            if (_this.comments.length == 0 ||
+                                response.data.result[response.data.result.length - 1]._id != _this.comments[_this.comments.length - 1]._id) {
+                                _newCommentsAvailable = true;
+                            }
+                        }
+
+                        _this.newCommentsAvailable = _newCommentsAvailable;
+                    }, function (err) {
+                        console.log('Error while logging in user is: ', err);
                     });
                 }
             };
@@ -587,6 +711,15 @@
 
             SocialItems.prototype.checkPostsCalled = function () {
                 return _this.postMehodCalledFlag && (_this.items.length > 0);
+            };
+
+            SocialItems.prototype.init = function () {
+                _this.lastThreadId = null;
+                _this.items = [];
+                _this.busy = false;
+                _this.newPostAvailable = false;
+                _this.comments = [];
+                _this.newCommentsAvailable = false;
             };
 
             return {
