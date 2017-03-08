@@ -58,7 +58,7 @@
                     var lookup=[];
                     if(!options.urlAnchorGen)
                         options.urlAnchorGen = function(url){
-                            return {url:url,target:''}
+                            return {url:url,target:'_system'}
                         };
                     if(options.injectURLAnchors)
                         text= text.replace(URLREGEX, function(url) {
@@ -470,7 +470,7 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Buildfire', '$http', 'Util', 'Location', '$routeParams', 'SocialDataStore', function (Buildfire, $http, Util, Location, $routeParams, SocialDataStore) {
+        .factory('SocialItems', ['Buildfire', '$http', 'Util', 'Location', '$routeParams', 'SocialDataStore','$rootScope', function (Buildfire, $http, Util, Location, $routeParams, SocialDataStore,$rootScope) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -591,6 +591,9 @@
                 }
 
                 function checkNewPostsAvailability() {
+                    if($rootScope.postBusy)
+                        return;
+
                     console.log('getPosts called');
                     var postDataObject = {};
                     postDataObject.id = '1';

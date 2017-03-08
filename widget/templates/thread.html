@@ -92,7 +92,7 @@
                                          crop-height="193" crop-type="resize">
                                 </div>
                             </div>
-                            <div class="footer margin-bottom-ten clearfix">
+                            <div ng-show="comment._id" class="footer margin-bottom-ten clearfix">
                                 <div class="icons col-xs-3 padding-right-zero padding-left-ten pull-left">
                                     <a class="social-icon" ng-click="Thread.likeComment(comment, 'comment')">
                                     <span class="icon icon-heart"
@@ -128,10 +128,7 @@
     <div class="post-holder clearfix" ng-show="!Thread.goFullScreen">
         <div class="add-media">
             <a>
-                <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage($file)"
-                      ng-model="Thread.picFile"
-                      ngf-pattern="'image/*'" ngf-multiple="false" ngf-accept="'image/*'" accept="image/*"
-                      ngf-allow-dir="true" name="files"></span>
+                <span class="icon icon-camera2 text-primary" ng-click="Thread.openCommentSection()"></span>
             </a>
         </div>
         <div class="add-message pull-left">
@@ -143,36 +140,36 @@
                     ng-model="Thread.comment">-->
         </div>
         <div class="send-message">
-            <input type="submit" class="text-primary send-btn" value="Send" ng-click="Thread.addComment()">
+            <input type="submit" class="text-primary send-btn" value="Post" ng-click="Thread.addComment()">
         </div>
-        <div class="image-upload-queue" ng-if="Thread.imageSelected">
-            <div class="uploadifive-queue-item"><a ng-click="Thread.cancelImageSelect()"
-                                                   class="btn-delete-icon cross-icon"></a>
-                <div><span class="filename">{{Thread.imageName}}</span></div>
-                <div class="progress" ng-if="Thread.showImageLoader">
-                    <div class="progress-bar"></div>
-                </div>
-            </div>
-        </div>
+        <!--<div class="image-upload-queue" ng-if="Thread.imageSelected">-->
+            <!--<div class="uploadifive-queue-item"><a ng-click="Thread.cancelImageSelect()"-->
+                                                   <!--class="btn-delete-icon cross-icon"></a>-->
+                <!--<div><span class="filename">{{Thread.imageName}}</span></div>-->
+                <!--<div class="progress" ng-if="Thread.showImageLoader">-->
+                    <!--<div class="progress-bar"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
     </div>
 
     <div class="full-post-box slide-top" ng-show="Thread.goFullScreen">
             <div class="clearfix comment-actions border-bottom-grey">
                 <a ng-click="Thread.closeCommentSection()" class="pull-left text-primary">Cancel</a>
                 <a class="pull-right text-primary" value="Send"
-                   ng-click="Thread.addComment()">Send</a>
+                   ng-click="Thread.addComment()">Post</a>
             </div>
             <div class="user-info">
                 <div class="media-holder ng-cloak"
-                     ng-click="Thread.buildfire.auth.openProfile(post.userId)">
+                     ng-click="Thread.buildfire.auth.openProfile(Thread.SocialItems.userDetails.userId)">
                     <img ng-if="Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
-                         data-final-src="{{Thread.usersData | getUserImage: post.userId}}"
+                         data-final-src="{{Thread.usersData | getUserImage: Thread.SocialItems.userDetails.userId}}"
                          crop-width="50" crop-height="50" crop-type="crop">
                     <img ng-if="!Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
                          data-final-src="../../../styles/media/avatar-placeholder.png"
                          crop-width="50" crop-height="50" crop-type="default">
                     <a class="user-name text-primary ng-cloak"
-                       ng-click="Thread.buildfire.auth.openProfile(post.userId)">{{Thread.getUserName(Thread.SocialItems.userDetails.userId)}}</a>
+                       ng-click="Thread.buildfire.auth.openProfile(Thread.SocialItems.userDetails.userId)">{{Thread.getUserName(Thread.SocialItems.userDetails.userId)}}</a>
                 </div>
             </div>
             <div class="add-message">
@@ -184,10 +181,11 @@
                     <span class="icon icon-camera2 text-primary" ngf-select="Thread.uploadImage($file)"
                           ng-model="Thread.picFile" ngf-pattern="'image/*'" ngf-multiple="false"
                           ngf-accept="'image/*'" accept="image/*" ngf-allow-dir="true"
-                          name="files"></span>
-                    <span class="media-text text-primary">Image</span>
-                </a>
+                          name="files">
+                        <span class="media-text text-primary">Image</span>
+                    </span>
 
+                </a>
             </div>
             <div class="image-upload-queue ng-cloak" ng-if="Thread.imageSelected">
                 <div class="uploadifive-queue-item titleBarBackgroundTheme"><a ng-click="Thread.cancelImageSelect()"

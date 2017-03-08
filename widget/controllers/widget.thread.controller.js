@@ -71,8 +71,29 @@
                     function (data) {
                         var newUniqueLinksOfComments = [], newUserIds = [];
                         console.log('Success get Comments---------', data);
-                        if (data && data.data && data.data.result)
-                            Thread.SocialItems.comments = Thread.SocialItems.comments.concat(data.data.result);
+                        if (data && data.data && data.data.result){
+                            if(lastCommentId == null){
+                                if(Thread.SocialItems.comments.length == 1){
+                                    var _lastCommentIdAdded = Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1]._id;
+                                    for(var i=0;i<data.data.result.length ; i++){
+                                        if(_lastCommentIdAdded ==data.data.result[i]._id)
+                                        {
+                                            Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1] =data.data.result[i];
+                                        }
+                                    }
+                                }else
+                                    Thread.SocialItems.comments = Thread.SocialItems.comments.concat(data.data.result);
+                            }else{
+                                var _lastCommentIdAdded = Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1]._id;
+                                for(var i=0;i<data.data.result.length ; i++){
+                                    if(_lastCommentIdAdded ==data.data.result[i]._id)
+                                    {
+                                        Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1] =data.data.result[i];
+                                    }
+                                }
+                            }
+                        }
+
                         Thread.SocialItems.comments.forEach(function (commentData) {
                             if (uniqueLinksOfComments.indexOf(commentData.threadId + "cmt" + commentData._id) == -1) {
                                 uniqueLinksOfComments.push(commentData.threadId + "cmt" + commentData._id);
@@ -354,6 +375,13 @@
                 checkUserPromise.then(function () {
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(post.uniqueLink);
+                    if(post.isUserLikeActive){
+                        post.likesCount++;
+                        post.isUserLikeActive = false;
+                    }else{
+                        post.likesCount--;
+                        post.isUserLikeActive = true;
+                    }
                     var success = function (response) {
                         console.log('inside success of getThreadLikes', response);
                         if (response.data && response.data.result && response.data.result.length > 0) {
@@ -364,12 +392,12 @@
                                         'name': EVENTS.POST_LIKED,
                                         '_id': Thread.post._id
                                     });
-                                    post.likesCount++;
                                     post.waitAPICompletion = false;
-                                    post.isUserLikeActive = false;
                                     $rootScope.$broadcast(EVENTS.POST_LIKED, post);
                                     if (!$scope.$$phase) $scope.$digest();
                                 }, function (err) {
+                                    post.likesCount--;
+                                    post.isUserLikeActive = true;
                                     console.log('error while liking thread', err);
                                 });
                             } else {
@@ -380,12 +408,12 @@
                                             'name': EVENTS.POST_UNLIKED,
                                             '_id': Thread.post._id
                                         });
-                                    post.likesCount--;
                                     post.waitAPICompletion = false;
-                                    post.isUserLikeActive = true;
                                     $rootScope.$broadcast(EVENTS.POST_UNLIKED, post);
                                     if (!$scope.$$phase) $scope.$digest();
                                 }, function (err) {
+                                    post.likesCount++;
+                                    post.isUserLikeActive = false;
                                     console.log('error while removing like of thread', err);
                                 });
                             }
@@ -394,6 +422,13 @@
                     var error = function (err) {
                         post.waitAPICompletion = false;
                         console.log('error is : ', err);
+                        if(post.isUserLikeActive){
+                            post.likesCount--;
+                            post.isUserLikeActive = true;
+                        }else{
+                            post.likesCount++;
+                            post.isUserLikeActive = false;
+                        }
                     };
                     if (!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
@@ -443,6 +478,11 @@
             Thread.likeComment = function (comment, type) {
                 if (comment.isUserLikeActive && !comment.waitAPICompletion) {
                     comment.isUserLikeActive = false;
+                    if (comment.likesCount)
+                        comment.likesCount++;
+                    else
+                        comment.likesCount = 1;
+
                     comment.waitAPICompletion = true;
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(comment.threadId + "cmt" + comment._id);
@@ -452,10 +492,6 @@
                             data.data.result.threadId = comment.threadId;
                             SocialDataStore.addThreadLike(data.data.result, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('thread gets liked in thread page', res);
-                                if (comment.likesCount)
-                                    comment.likesCount++;
-                                else
-                                    comment.likesCount = 1;
                                 comment.waitAPICompletion = false;
                                 $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                                 if (!$scope.$$phase) $scope.$digest();
@@ -465,11 +501,16 @@
                                     '_id': comment._id
                                 });
                             }, function (err) {
+                                if (comment.likesCount)
+                                    comment.likesCount--;
+
                                 comment.waitAPICompletion = false;
                                 console.log('error while liking comment', err);
                             });
                         },
                         function (err) {
+                            if (comment.likesCount)
+                                comment.likesCount--;
                             comment.waitAPICompletion = false;
                             console.log('Get comment like ----------------error', err);
                         }
@@ -477,6 +518,7 @@
                 }
                 else if (!comment.waitAPICompletion) {
                     comment.isUserLikeActive = true;
+                    comment.likesCount--;
                     comment.waitAPICompletion = true;
                     SocialDataStore.getThreadByUniqueLink(comment.threadId + "cmt" + comment._id, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(
                         function (data) {
@@ -484,7 +526,6 @@
                             data.data.result.threadId = comment.threadId;
                             SocialDataStore.removeThreadLike(data.data.result, type, Thread.SocialItems.socialAppId, Thread.userDetails.userToken).then(function (res) {
                                 console.log('Response--------------------------remove like--------', res);
-                                comment.likesCount--;
                                 comment.waitAPICompletion = false;
                                 $rootScope.$broadcast(EVENTS.COMMENT_UNLIKED);
                                 if (!$scope.$$phase) $scope.$digest();
@@ -494,11 +535,13 @@
                                     '_id': comment._id
                                 });
                             }, function (err) {
+                                comment.likesCount++;
                                 comment.waitAPICompletion = false;
                                 console.error('error while removing like of thread', err);
                             });
                         },
                         function (err) {
+                            comment.likesCount++;
                             comment.waitAPICompletion = false;
                             console.log('Get comment like ----------------error', err);
                         }
@@ -536,16 +579,23 @@
              * @param imageUrl
              */
             var addComment = function (imageUrl) {
+                var lastCommentId = null;
+                if(Thread.SocialItems.comments.length > 0)
+                  lastCommentId = Thread.SocialItems.comments[Thread.SocialItems.comments.length-1]._id;
+
                 Thread.closeCommentSection();
-                SocialDataStore.addComment({
+                var commentData = {
                     threadId: Thread.post._id,
                     comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g, function (match) {
                         return encodeURIComponent(match)
                     }) : '',
                     userToken: Thread.userDetails.userToken,
                     imageUrl: imageUrl || null,
+                    userId:Thread.userDetails.userId,
                     appId: Thread.SocialItems.socialAppId
-                }).then(
+                };
+                Thread.SocialItems.comments.push(commentData);
+                SocialDataStore.addComment(commentData).then(
                     function (data) {
                         console.log('Add Comment Successsss------------------', data);
                         Thread.picFile = '';
@@ -554,6 +604,7 @@
                         Thread.post.commentsCount++;
                         Thread.imageSelected = false;
                         Thread.imageName = '';
+                        commentData._id =data.data.result;
                         $rootScope.$broadcast(EVENTS.COMMENT_ADDED);
                         Buildfire.messaging.sendMessageToControl({
                             'name': EVENTS.COMMENT_ADDED,
@@ -561,7 +612,7 @@
                             'userId': Thread.userDetails.userId
                         });
                         if (Thread.SocialItems.comments.length) {
-                            Thread.getComments(Thread.post._id, Thread.SocialItems.comments[Thread.SocialItems.comments.length - 1]._id);
+                            Thread.getComments(Thread.post._id, lastCommentId);
                         }
                         else {
                             Thread.getComments(Thread.post._id, null);
