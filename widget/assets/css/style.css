@@ -1,5 +1,6 @@
 /* Plugin CSS */
 /* Fixed Bottom */
+.main_view,.main-thread-section{height: 100%}
 .holder.has-bottom {
     padding-bottom: 38px !important;
 }
@@ -526,19 +527,7 @@ textarea {
     height: 100%;
 }
 
-/* Comment Box */
-.has-comment-box {
-    height: calc(100% - 39px)
-}
-
-.full-post-section{
-    height: 100% !important;
-}
-
-.full-post-section .full-post-box,
-.full-post-section .full-post-box .post-holder, .full-post-section .full-post-box .post-holder .add-message .text-area-custom {
-    height: 100% !important;
-}
+/*Animation*/
 
 .slide-top {
     -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -562,14 +551,14 @@ textarea {
     -webkit-transition-duration: 250ms;
     opacity: 1;
 }
-/* line 139, ../sass/ng-animation.scss */
+
 .slide-top.ng-hide-add.ng-hide-add-active {
     transform: translateY(60px);
     -ms-transform: translateY(60px);
     -webkit-transform: translateY(60px);
     opacity: 0;
 }
-/* line 145, ../sass/ng-animation.scss */
+
 .slide-top.ng-hide-remove {
     transform: translateY(60px);
     -ms-transform: translateY(60px);
@@ -579,7 +568,7 @@ textarea {
     display: block !important;
     opacity: 0;
 }
-/* line 151, ../sass/ng-animation.scss */
+
 .slide-top.ng-hide-remove.ng-hide-remove-active {
     transform: translateY(0);
     -ms-transform: translateY(0);
@@ -587,7 +576,197 @@ textarea {
     opacity: 1;
 }
 
+/* ------------------------------------------- */
+/* Slide Right
+/* ------------------------------------------- */
+.slide-right {
+    -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+    -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+}
 
+.slide-right.ng-enter {
+    transform: translateX(60px);
+    -ms-transform: translateX(60px);
+    -webkit-transform: translateX(60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 0;
+}
+
+.slide-right.ng-enter-active {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-right.ng-leave {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1;
+}
+
+.slide-right.ng-leave-active {
+    transform: translateX(60px);
+    -ms-transform: translateX(60px);
+    -webkit-transform: translateX(60px);
+    opacity: 0;
+}
+
+.slide-right.ng-hide-add {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1;
+}
+
+.slide-right.ng-hide-add.ng-hide-add-active {
+    transform: translateX(60px);
+    -ms-transform: translateX(60px);
+    -webkit-transform: translateX(60px);
+    opacity: 0;
+}
+
+.slide-right.ng-hide-remove {
+    transform: translateX(60px);
+    -ms-transform: translateX(60px);
+    -webkit-transform: translateX(60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    display: block !important;
+    opacity: 0;
+}
+
+.slide-right.ng-hide-remove.ng-hide-remove-active {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    opacity: 1;
+}
+/* ------------------------------------------- */
+/* Slide Left
+/* ------------------------------------------- */
+.slide-left {
+    -webkit-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+    -webkit-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -moz-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -ms-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -o-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* easeOutQuad */
+}
+
+.slide-left.ng-enter {
+    transform: translateX(-60px);
+    -ms-transform: translateX(-60px);
+    -webkit-transform: translateX(-60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 0;
+}
+
+.slide-left.ng-enter-active {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-left.ng-leave {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1;
+}
+
+.slide-left.ng-leave-active {
+    transform: translateX(-60px);
+    -ms-transform: translateX(-60px);
+    -webkit-transform: translateX(-60px);
+    opacity: 0;
+}
+
+.slide-left.ng-hide-add {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    opacity: 1;
+}
+
+.slide-left.ng-hide-add.ng-hide-add-active {
+    transform: translateX(-60px);
+    -ms-transform: translateX(-60px);
+    -webkit-transform: translateX(-60px);
+    opacity: 0;
+}
+
+.slide-left.ng-hide-remove {
+    transform: translateX(-60px);
+    -ms-transform: translateX(-60px);
+    -webkit-transform: translateX(-60px);
+    transition-duration: 250ms;
+    -webkit-transition-duration: 250ms;
+    display: block !important;
+    opacity: 0;
+}
+
+.slide-left.ng-hide-remove.ng-hide-remove-active {
+    transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    opacity: 1;
+}
+/*
+    End Animation
+*/
+
+.post-section{
+    position: absolute;
+    top: 0;
+    /*left: 90%; /* dont scroll till data loaded*/
+    width: 100%;
+    height: 100%;
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+}
+/* Comment Box */
+.has-comment-box {
+    height: calc(100% - 39px)
+}
+
+.full-post-section{
+    height: 100% !important;
+}
+
+.full-post-section .full-post-box,
+.full-post-section .full-post-box .post-holder, .full-post-section .full-post-box .post-holder .add-message .text-area-custom {
+    height: 100% !important;
+}
 .full-post-section .full-post-box .comment-actions {
     padding: 10px 20px;
     font-size: 16px;
@@ -617,6 +796,7 @@ textarea {
     font-size: 26px;
     padding: 0px;
     height: 100% !important;
+    line-height:34px;
 }
 
 .full-post-section .full-post-box .media-section {
@@ -635,5 +815,5 @@ textarea {
 .full-post-section .full-post-box .media-section .media-text {
     margin-left: 10px;
     font-size: 17px;
-    vertical-align: middle;
+    vertical-align: 3px;
 }

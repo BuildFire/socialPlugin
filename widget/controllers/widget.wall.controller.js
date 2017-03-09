@@ -80,9 +80,12 @@
             WidgetWall.init();
 
             WidgetWall.createPost = function ($event) {
-                WidgetWall.goFullScreen = false;
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
+                    $rootScope.postBusy = true;
+                    if (!$rootScope.$$phase) $rootScope.$digest();
+                    WidgetWall.closePostSection();
+
                     if (WidgetWall.picFile && !WidgetWall.waitAPICompletion) {                // image post
                         if (getImageSizeInMB(WidgetWall.picFile.size) <= FILE_UPLOAD.MAX_SIZE) {
                             WidgetWall.waitAPICompletion = true;
@@ -179,12 +182,16 @@
                 postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
                 postData.appId = WidgetWall.SocialItems.socialAppId;
                 postData.parentThreadId = WidgetWall.SocialItems.parentThreadId;
+                postData.userId = WidgetWall.SocialItems.userDetails.userId;
+                WidgetWall.SocialItems.items.unshift(postData);
                 var success = function (response) {
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
                     if (response.data.error) {
                         console.error('Error while creating post ', response.data.error);
                         WidgetWall.waitAPICompletion = false;
+                        var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
+                        WidgetWall.SocialItems.items.splice(_postIndex,1);
                     } else if (response.data.result) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.POST_CREATED,
@@ -193,8 +200,13 @@
                         });
                         WidgetWall.imageName = '';
                         WidgetWall.imageSelected = false;
-                        WidgetWall.SocialItems.items.unshift(response.data.result);
+                        postData.uniqueLink = response.data.result.uniqueLink;
+                        getUsersAndLikes(function (err,result) {
+                            angular.extend(postData, response.data.result);
+                        });
+
                         if (!$scope.$$phase) $scope.$digest();
+                        $rootScope.postBusy = false;
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
@@ -244,6 +256,9 @@
                     }
                 };
                 var error = function (err) {
+                    var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
+                    WidgetWall.SocialItems.items.splice(_postIndex,1);
+                    $rootScope.postBusy = false;
                     console.log('Error while creating post ', err);
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';
@@ -374,6 +389,15 @@
                     console.log('Promise Resolved-------------------------------------and userDetails are---');
                     var uniqueIdsArray = [];
                     uniqueIdsArray.push(post.uniqueLink);
+                    if(WidgetWall.isUserLikeActive(post._id)){
+                        //add like
+                        WidgetWall.updateLikesData(post._id, false);
+                        post.likesCount++;
+                    }else{
+                        //remove like
+                        WidgetWall.updateLikesData(post._id, true);
+                        post.likesCount--;
+                    }
                     var success = function (response) {
                         console.log('Get thread likes success-------------------', response);
                         if (response.data && response.data.result && response.data.result.length > 0) {
@@ -385,13 +409,16 @@
                                         'name': EVENTS.POST_LIKED,
                                         '_id': post._id
                                     });
-                                    post.likesCount++;
+                                    //post.likesCount++;
                                     post.waitAPICompletion = false;
-                                    WidgetWall.updateLikesData(post._id, false);
+                                    //WidgetWall.updateLikesData(post._id, false);
                                     if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                                         WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
                                     if (!$scope.$$phase) $scope.$digest();
                                 }, function (err) {
+                                    //undo add like
+                                    WidgetWall.updateLikesData(post._id, true);
+                                    post.likesCount--;
                                     console.error('error while liking thread', err);
                                 });
                             } else {
@@ -402,13 +429,16 @@
                                                 'name': EVENTS.POST_UNLIKED,
                                                 '_id': post._id
                                             });
-                                        post.likesCount--;
+                                        //post.likesCount--;
                                         post.waitAPICompletion = false;
                                         if (WidgetWall.getFollowingStatus() != GROUP_STATUS.FOLLOWING)
                                             WidgetWall.followUnfollow(GROUP_STATUS.FOLLOW);
-                                        WidgetWall.updateLikesData(post._id, true);
+                                        //WidgetWall.updateLikesData(post._id, true);
                                         if (!$scope.$$phase) $scope.$digest();
                                     }, function (err) {
+                                        //undo remove like
+                                        WidgetWall.updateLikesData(post._id, false);
+                                        post.likesCount++;
                                         console.error('error while removing like of thread', err);
                                     });
                             }
@@ -417,6 +447,15 @@
                     var error = function (err) {
                         post.waitAPICompletion = false;
                         console.error('error is : ', err);
+                        if(WidgetWall.isUserLikeActive(post._id)){
+                            //undo add like
+                            WidgetWall.updateLikesData(post._id, true);
+                            post.likesCount--;
+                        }else{
+                            //undo remove like
+                            WidgetWall.updateLikesData(post._id, false);
+                            post.likesCount++;
+                        }
                     };
                     if (!post.waitAPICompletion) {
                         post.waitAPICompletion = true;
@@ -434,7 +473,8 @@
                 if (!$scope.$$phase) $scope.$digest();
             };
             WidgetWall.getDuration = function (timestamp) {
-                return moment(timestamp.toString()).fromNow();
+                if(timestamp)
+                    return moment(timestamp.toString()).fromNow();
             };
 
             WidgetWall.goInToThread = function (threadId) {
@@ -442,7 +482,7 @@
                 if (threadId)
                     Location.go('#/thread/' + threadId);
             };
-            WidgetWall.isLikedByLoggedInUser = function (postId) {
+            WidgetWall.isUserLikeActive = function (postId) {
 
                 var isUserLikeActive = true;
                 getLikesData.some(function (likeData) {
@@ -559,7 +599,7 @@
                     }
                 }
             };
-            function getUsersAndLikes() {
+            function getUsersAndLikes(callback) {
                 var count = 0;
                 var postIdsChunkArray = [], newUserIds = [], newPostsUniqueIds = [], chunk = 10;
 //                getLikesData = [];
@@ -595,7 +635,12 @@
                         getLikesData = getLikesData.concat(response.data.result);
                         console.log('getLikesData is::::::::::::::::::::::::::::', getLikesData);
                     }
+                    if(callback)
+                        callback(null);
+
                 }, function (err) {
+                    if(callback)
+                        callback(err);
                     console.error('Error while fetching thread likes ', err);
                 });
                 /*SocialDataStore.getThreadLikes(postsUniqueIds, WidgetWall.SocialItems.socialAppId, WidgetWall.SocialItems.userDetails.userId).then(function (response) {
