@@ -60,6 +60,29 @@
                 $scope.$digest();
             };
 
+            var getUserData = function (userId) {
+                if(userId){
+                    if (userIds.indexOf(userId.toString()) == -1) {
+                        userIds.push(userId.toString());
+                    }
+                    var successCallback = function (response) {
+                        if (response.data.error) {
+                            console.error('Error while fetching users ', response.data.error);
+                        } else if (response.data.result) {
+                            console.info('Users fetched successfully', response.data.result);
+                            Thread.usersData = response.data.result;
+                            if (!$scope.$$phase) $scope.$digest();
+                        }
+                    };
+                    var errorCallback = function (err) {
+                        console.log('Error while fetching users details ', err);
+
+                        if (!$scope.$$phase) $scope.$digest();
+                    };
+                    SocialDataStore.getUsers(userIds, Thread.userDetails.userToken).then(successCallback, errorCallback);
+                }
+            };
+
 
             Thread.getComments = function (postId, lastCommentId) {
                 SocialDataStore.getCommentsOfAPost({
@@ -144,7 +167,6 @@
                                 Thread.userDetails.userId = userData._id;
                                 Thread.userDetails.userToken = userData.userToken;
                                 Thread.userDetails.userTags = userData.tags;
-
                                 Buildfire.datastore.get('Social', function (err, SocialData) {
                                     if (err) {
                                         console.error('Side Thread Get Social settings', err);
@@ -214,6 +236,7 @@
                     var checkUserPromise = checkAuthenticatedUser(true);
 
                     checkUserPromise.then(function () {
+                        getUserData(Thread.userDetails.userId);
                         SocialDataStore.getThreadLikes(uniqueIdsArray, Thread.SocialItems.socialAppId, Thread.userDetails.userId).then(function (response) {
                             console.info('get thread likes response is: ', response.data.result);
                             if (response.data.error) {
@@ -787,6 +810,7 @@
                 if (user && user._id) {
                     Thread.userDetails.userToken = user.userToken;
                     Thread.userDetails.userId = user._id;
+                    getUserData(user._id);
                     //check user if has permission to create thread
                     Thread.showHideCommentBox();
                     $scope.$digest();

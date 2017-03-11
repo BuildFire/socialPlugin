@@ -66,7 +66,7 @@
                             if(obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0){
                                 obj.url = 'http://' + obj.url;
                             }
-                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' inappbrowser='true'>" + url + "</a>");
+                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
                             return "_RF" + (lookup.length -1) + "_";
                         });
                     if(!options.emailAnchorGen)
