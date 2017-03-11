@@ -61,6 +61,27 @@
                 }
             };
 
+            var getUserData = function (userId) {
+                if (userIds.indexOf(userId.toString()) == -1) {
+                    userIds.push(userId.toString());
+                }
+                var successCallback = function (response) {
+
+                    if (response.data.error) {
+                        console.error('Error while fetching users ', response.data.error);
+                    } else if (response.data.result) {
+                        console.info('Users fetched successfully', response.data.result);
+                        WidgetWall.usersData = response.data.result;
+                    }
+                };
+                var errorCallback = function (err) {
+                    console.log('Error while fetching users details ', err);
+
+                    if (!$scope.$$phase) $scope.$digest();
+                };
+                SocialDataStore.getUsers(userIds, WidgetWall.SocialItems.userDetails.userToken).then(successCallback, errorCallback);
+            }
+
             WidgetWall.init = function () {
                 WidgetWall.SocialItems.init();
                 WidgetWall.SocialItems.posts();
@@ -70,6 +91,7 @@
                     } else {
                         //check if user logged in
                         if (WidgetWall.SocialItems.userDetails.userId != null) {
+                            getUserData(WidgetWall.SocialItems.userDetails.userId);
                             //check user if has permission to create thread
                             WidgetWall.showHideCommentBox();
                         }
@@ -609,9 +631,11 @@
                         userIds.push(postData.userId.toString());
                         newUserIds.push(postData.userId.toString());
                     }
-                    if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1) {
-                        postsUniqueIds.push(postData.uniqueLink);
-                        newPostsUniqueIds.push(postData.uniqueLink);
+                    if(postData.uniqueLink){
+                        if (postsUniqueIds.indexOf(postData.uniqueLink.toString()) == -1) {
+                            postsUniqueIds.push(postData.uniqueLink);
+                            newPostsUniqueIds.push(postData.uniqueLink);
+                        }
                     }
                 });
                 var successCallback = function (response) {
@@ -735,6 +759,7 @@
                 if (user && user._id) {
                     WidgetWall.SocialItems.userDetails.userToken = user.userToken;
                     WidgetWall.SocialItems.userDetails.userId = user._id;
+                    getUserData(user._id);
                     //check user if has permission to create thread
                     WidgetWall.showHideCommentBox();
                     $scope.$digest();

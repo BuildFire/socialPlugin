@@ -161,15 +161,15 @@
             </div>
             <div class="user-info">
                 <div class="media-holder ng-cloak"
-                     ng-click="Thread.buildfire.auth.openProfile(Thread.SocialItems.userDetails.userId)">
-                    <img ng-if="Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
-                         data-final-src="{{Thread.usersData | getUserImage: Thread.SocialItems.userDetails.userId}}"
+                     ng-click="Thread.buildfire.auth.openProfile(Thread.userDetails.userId)">
+                    <img ng-if="Thread.getUserImage(Thread.userDetails.userId)" load-image="1x1"
+                         data-final-src="{{Thread.usersData | getUserImage: Thread.userDetails.userId}}"
                          crop-width="50" crop-height="50" crop-type="crop">
-                    <img ng-if="!Thread.getUserImage(Thread.SocialItems.userDetails.userId)" load-image="1x1"
+                    <img ng-if="!Thread.getUserImage(Thread.userDetails.userId)" load-image="1x1"
                          data-final-src="../../../styles/media/avatar-placeholder.png"
                          crop-width="50" crop-height="50" crop-type="default">
                     <a class="user-name text-primary ng-cloak"
-                       ng-click="Thread.buildfire.auth.openProfile(Thread.SocialItems.userDetails.userId)">{{Thread.getUserName(Thread.SocialItems.userDetails.userId)}}</a>
+                       ng-click="Thread.buildfire.auth.openProfile(Thread.userDetails.userId)">{{Thread.getUserName(Thread.userDetails.userId)}}</a>
                 </div>
             </div>
             <div class="add-message">
