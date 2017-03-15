@@ -491,6 +491,7 @@
                 _this.newPostTimerChecker = null;
                 _this.newPostAvailable = false;
                 _this.newCommentsAvailable = false;
+                _this.pauseNewPostBgService = false;
                 _this.comments = [];
 
             };
@@ -591,7 +592,7 @@
                 }
 
                 function checkNewPostsAvailability() {
-                    if($rootScope.postBusy)
+                    if(_this.pauseNewPostBgService)
                         return;
 
                     console.log('getPosts called');
@@ -611,6 +612,9 @@
                         headers: {'Content-Type': 'application/json'},
                         silent:true
                     }).then(function (response) {
+                        if(_this.pauseNewPostBgService)
+                            return;
+
                         var _newPostsAvailable = false;
                         if (response
                             && response.data
