@@ -143,8 +143,17 @@
         <div ng-show="WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.createThreadPermission"
              class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
             <hr class="small">
-            <form ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
+            <form class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
                 <div class="post-holder clearfix">
+                    <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
+                        <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()"
+                                                               class="btn-delete-icon cross-icon"></a>
+                            <div><span class="filename">{{WidgetWall.imageName}}</span></div>
+                            <div class="progress" ng-if="WidgetWall.showImageLoader">
+                                <div class="progress-bar"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="add-media">
                         <a>
                     <span class="icon icon-camera2 text-primary" ng-click="WidgetWall.openPostSection()"></span>
@@ -161,15 +170,7 @@
                         <input type="submit" class="text-primary send-btn" value="Post"
                                ng-click="WidgetWall.createPost($event)">
                     </div>
-                    <!--<div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">-->
-                        <!--<div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()"-->
-                                                               <!--class="btn-delete-icon cross-icon"></a>-->
-                            <!--<div><span class="filename">{{WidgetWall.imageName}}</span></div>-->
-                            <!--<div class="progress" ng-if="WidgetWall.showImageLoader">-->
-                                <!--<div class="progress-bar"></div>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
+
                 </div>
             </form>
 
@@ -196,6 +197,16 @@
                     <textarea rows="1" cols="30" placeholder="Type your message..." name="text"
                               ng-model="WidgetWall.postText" class="text-area-custom backgroundColorTheme text-primary"></textarea>
                     </div>
+                    <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
+                        <div class="uploadifive-queue-item titleBarBackgroundTheme">
+                            <a ng-click="WidgetWall.cancelImageSelect()"
+                               class="btn-delete-icon cross-icon titleBarTextAndIcons"></a>
+                            <div><span class="filename titleBarTextAndIcons">{{WidgetWall.imageName}}</span></div>
+                            <div class="progress" ng-if="WidgetWall.showImageLoader">
+                                <div class="progress-bar titleBarTextAndIcons"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="media-section border-top-grey">
                         <a>
                     <span class="icon icon-camera2 text-primary" ngf-select="WidgetWall.uploadImage($file)"
@@ -207,16 +218,6 @@
 
                         </a>
 
-                    </div>
-                    <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
-                        <div class="uploadifive-queue-item titleBarBackgroundTheme">
-                            <a ng-click="WidgetWall.cancelImageSelect()"
-                                                               class="btn-delete-icon cross-icon titleBarTextAndIcons"></a>
-                            <div><span class="filename titleBarTextAndIcons">{{WidgetWall.imageName}}</span></div>
-                            <div class="progress" ng-if="WidgetWall.showImageLoader">
-                                <div class="progress-bar titleBarTextAndIcons"></div>
-                            </div>
-                        </div>
                     </div>
             </form>
         </div>

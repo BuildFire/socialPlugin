@@ -104,7 +104,7 @@
             WidgetWall.createPost = function ($event) {
                 var checkuserAuthPromise = checkUserIsAuthenticated();
                 checkuserAuthPromise.then(function (response) {
-                    $rootScope.postBusy = true;
+                    WidgetWall.SocialItems.pauseNewPostBgService = true;
                     if (!$rootScope.$$phase) $rootScope.$digest();
                     WidgetWall.closePostSection();
 
@@ -214,6 +214,7 @@
                         WidgetWall.waitAPICompletion = false;
                         var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
                         WidgetWall.SocialItems.items.splice(_postIndex,1);
+                        WidgetWall.SocialItems.pauseNewPostBgService = false;
                     } else if (response.data.result) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.POST_CREATED,
@@ -228,7 +229,7 @@
                         });
 
                         if (!$scope.$$phase) $scope.$digest();
-                        $rootScope.postBusy = false;
+                        WidgetWall.SocialItems.pauseNewPostBgService = false;
                         if (userIds.indexOf(response.data.result.userId.toString()) == -1) {
                             userIds.push(response.data.result.userId.toString());
                         }
@@ -280,7 +281,7 @@
                 var error = function (err) {
                     var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
                     WidgetWall.SocialItems.items.splice(_postIndex,1);
-                    $rootScope.postBusy = false;
+                    WidgetWall.SocialItems.pauseNewPostBgService = false;
                     console.log('Error while creating post ', err);
                     WidgetWall.postText = '';
                     WidgetWall.picFile = '';

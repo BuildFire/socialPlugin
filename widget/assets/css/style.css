@@ -595,19 +595,17 @@ textarea {
 }
 
 .slide-right.ng-enter {
-    transform: translateX(60px);
-    -ms-transform: translateX(60px);
-    -webkit-transform: translateX(60px);
+    transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 0;
 }
 
 .slide-right.ng-enter-active {
     transform: translateX(0);
     -ms-transform: translateX(0);
     -webkit-transform: translateX(0);
-    opacity: 1;
 }
 
 .slide-right.ng-leave {
@@ -616,14 +614,12 @@ textarea {
     -webkit-transform: translateX(0);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 1;
 }
 
 .slide-right.ng-leave-active {
-    transform: translateX(60px);
-    -ms-transform: translateX(60px);
-    -webkit-transform: translateX(60px);
-    opacity: 0;
+    transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
 }
 
 .slide-right.ng-hide-add {
@@ -632,31 +628,27 @@ textarea {
     -webkit-transform: translateX(0);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 1;
 }
 
 .slide-right.ng-hide-add.ng-hide-add-active {
-    transform: translateX(60px);
-    -ms-transform: translateX(60px);
-    -webkit-transform: translateX(60px);
-    opacity: 0;
+    transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
 }
 
 .slide-right.ng-hide-remove {
-    transform: translateX(60px);
-    -ms-transform: translateX(60px);
-    -webkit-transform: translateX(60px);
+    transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
     display: block !important;
-    opacity: 0;
 }
 
 .slide-right.ng-hide-remove.ng-hide-remove-active {
     transform: translateX(0);
     -ms-transform: translateX(0);
     -webkit-transform: translateX(0);
-    opacity: 1;
 }
 /* ------------------------------------------- */
 /* Slide Left
@@ -677,19 +669,17 @@ textarea {
 }
 
 .slide-left.ng-enter {
-    transform: translateX(-60px);
-    -ms-transform: translateX(-60px);
-    -webkit-transform: translateX(-60px);
+    transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 0;
 }
 
 .slide-left.ng-enter-active {
     transform: translateX(0);
     -ms-transform: translateX(0);
     -webkit-transform: translateX(0);
-    opacity: 1;
 }
 
 .slide-left.ng-leave {
@@ -698,14 +688,12 @@ textarea {
     -webkit-transform: translateX(0);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 1;
 }
 
 .slide-left.ng-leave-active {
-    transform: translateX(-60px);
-    -ms-transform: translateX(-60px);
-    -webkit-transform: translateX(-60px);
-    opacity: 0;
+    transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
 }
 
 .slide-left.ng-hide-add {
@@ -714,31 +702,27 @@ textarea {
     -webkit-transform: translateX(0);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
-    opacity: 1;
 }
 
 .slide-left.ng-hide-add.ng-hide-add-active {
-    transform: translateX(-60px);
-    -ms-transform: translateX(-60px);
-    -webkit-transform: translateX(-60px);
-    opacity: 0;
+    transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
 }
 
 .slide-left.ng-hide-remove {
-    transform: translateX(-60px);
-    -ms-transform: translateX(-60px);
-    -webkit-transform: translateX(-60px);
+    transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
     transition-duration: 250ms;
     -webkit-transition-duration: 250ms;
     display: block !important;
-    opacity: 0;
 }
 
 .slide-left.ng-hide-remove.ng-hide-remove-active {
     transform: translateX(0);
     -ms-transform: translateX(0);
     -webkit-transform: translateX(0);
-    opacity: 1;
 }
 /*
     End Animation
@@ -755,6 +739,15 @@ textarea {
     -webkit-overflow-scrolling:touch;
 }
 /* Comment Box */
+.small-post-box{
+    position: relative;
+}
+    .small-post-box .image-upload-queue{
+        position: absolute;
+        top: -78px;
+        width: 90%;
+    }
+
 .has-comment-box {
     height: calc(100% - 39px)
 }
