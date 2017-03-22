@@ -111,6 +111,11 @@
                 link: function (scope, element, attrs) {
                     element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
 
+                    if(attrs.imgType && attrs.imgType.toLowerCase() == 'local'){
+                        replaceImg(attrs.finalSrc);
+                        return;
+                    }
+
                     attrs.$observe('finalSrc', function() {
                         var _img = attrs.finalSrc;
 

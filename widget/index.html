@@ -75,6 +75,7 @@
                                                  crop-width="40" crop-height="40" crop-type="crop">
                                             <img ng-if="!WidgetWall.getUserImage(post.userId)" load-image="1x1"
                                                  data-final-src="../../../styles/media/avatar-placeholder.png"
+                                                 data-img-type="local"
                                                  crop-width="40" crop-height="40" crop-type="default">
                                         </div>
                                         <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
@@ -188,6 +189,7 @@
                                  crop-width="50" crop-height="50" crop-type="crop">
                             <img ng-if="!WidgetWall.getUserImage(WidgetWall.SocialItems.userDetails.userId)" load-image="1x1"
                                  data-final-src="../../../styles/media/avatar-placeholder.png"
+                                 data-img-type="local"
                                  crop-width="50" crop-height="50" crop-type="default">
                             <a class="user-name text-primary ng-cloak"
                                ng-click="WidgetWall.buildfire.auth.openProfile(WidgetWall.SocialItems.userDetails.userId)">{{WidgetWall.getUserName(WidgetWall.SocialItems.userDetails.userId)}}</a>
