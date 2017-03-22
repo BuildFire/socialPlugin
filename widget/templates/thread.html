@@ -16,7 +16,8 @@
                                      data-final-src="{{Thread.usersData | getUserImage: Thread.post.userId}}"
                                      crop-width="40" crop-height="40" crop-type="crop">
                                 <img ng-if="!Thread.getUserImage(Thread.post.userId)" load-image="1x1"
-                                     data-final-src="../../../styles/media/avatar-placeholder.png" crop-width="40"
+                                     data-final-src="../../../styles/media/avatar-placeholder.png"
+                                     data-img-type="local" crop-width="40"
                                      crop-height="40" crop-type="default">
                             </div>
                             <p class="text-primary ellipsis margin-top-ten margin-bottom-zero padding-left-ten">
@@ -167,6 +168,7 @@
                          crop-width="50" crop-height="50" crop-type="crop">
                     <img ng-if="!Thread.getUserImage(Thread.userDetails.userId)" load-image="1x1"
                          data-final-src="../../../styles/media/avatar-placeholder.png"
+                         data-img-type="local"
                          crop-width="50" crop-height="50" crop-type="default">
                     <a class="user-name text-primary ng-cloak"
                        ng-click="Thread.buildfire.auth.openProfile(Thread.userDetails.userId)">{{Thread.getUserName(Thread.userDetails.userId)}}</a>
