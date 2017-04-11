@@ -13,7 +13,6 @@
             Thread.buildfire = Buildfire;
             Thread.SocialItems = SocialItems.getInstance();
             Thread.SocialItems.comments = [];
-            Thread.createThreadPermission = false;
             Thread.imageSelected = false;
             Thread.imageName = '';
             Thread.post = {};
@@ -23,41 +22,6 @@
             var _receivePushNotification;
             Thread.getFollowingStatus = function () {
                 return (typeof _receivePushNotification !== 'undefined') ? (_receivePushNotification ? THREAD_STATUS.FOLLOWING : THREAD_STATUS.FOLLOW) : '';
-            };
-
-            Thread.showHideCommentBox = function () {
-                if (Thread.SocialItems &&
-                    Thread.SocialItems.appSettings &&
-                    Thread.SocialItems.appSettings.allowSideThreadTags &&
-                    Thread.SocialItems.appSettings.sideThreadUserTags &&
-                    Thread.SocialItems.appSettings.sideThreadUserTags.length > 0
-                ) {
-                    var _userTagsObj = Thread.userDetails.userTags;
-                    var _userTags = [];
-                    if (_userTagsObj) {
-                        _userTags = _userTagsObj[Object.keys(_userTagsObj)[0]];
-                    }
-
-                    if (_userTags) {
-                        var _hasPermission = false;
-                        for (var i = 0; i < Thread.SocialItems.appSettings.sideThreadUserTags.length; i++) {
-                            var _sideThreadTag = Thread.SocialItems.appSettings.sideThreadUserTags[i].text;
-                            for (var x = 0; x < _userTags.length; x++) {
-                                if (_sideThreadTag.toLowerCase() == _userTags[x].tagName.toLowerCase()) {
-                                    _hasPermission = true;
-                                    break;
-                                }
-                            }
-                        }
-                        Thread.createThreadPermission = _hasPermission;
-                    } else {
-                        Thread.createThreadPermission = false;
-                    }
-                } else {
-                    Thread.createThreadPermission = true;
-                }
-
-                $scope.$digest();
             };
 
             var getUserData = function (userId) {
@@ -172,7 +136,6 @@
                                         console.error('Side Thread Get Social settings', err);
                                     } else {
                                         Thread.SocialItems.appSettings = SocialData && SocialData.data && SocialData.data.appSettings;
-                                        Thread.showHideCommentBox();
                                         deferred.resolve();
                                         SocialDataStore.getUserSettings({
                                             threadId: Thread.post._id,
@@ -811,8 +774,6 @@
                     Thread.userDetails.userToken = user.userToken;
                     Thread.userDetails.userId = user._id;
                     getUserData(user._id);
-                    //check user if has permission to create thread
-                    Thread.showHideCommentBox();
                     $scope.$digest();
                 }
             });

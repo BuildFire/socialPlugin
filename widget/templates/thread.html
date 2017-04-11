@@ -1,6 +1,5 @@
 <div class="slide content">
-    <div class="padding-zero"
-         ng-class="Thread.userDetails.userId == null || Thread.createThreadPermission ?'has-comment-box' : 'fluid-height'">
+    <div class="padding-zero has-comment-box">
         <div class="social-plugin social-thread" style="height: 100%;">
             <div class="padded head-btn text-center padding-bottom-ten">
                 <a ng-click="Thread.followUnfollow(Thread.getFollowingStatus())">{{Thread.getFollowingStatus()}}</a>
@@ -123,8 +122,7 @@
         </div>
     </div>
 </div>
-<div ng-show="Thread.userDetails.userId == null || Thread.createThreadPermission"
-     class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':Thread.goFullScreen}">
+<div class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':Thread.goFullScreen}">
     <hr class="small">
     <div class="post-holder clearfix" ng-show="!Thread.goFullScreen">
         <div class="add-media">
