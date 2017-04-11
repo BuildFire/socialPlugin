@@ -23,43 +23,10 @@
             WidgetWall.showImageLoader = true;
             WidgetWall.modalPopupThreadId;
             $rootScope.showThread = true;
-            WidgetWall.createThreadPermission = false;
             WidgetWall.util = util;
             WidgetWall.SocialItems = SocialItems.getInstance();
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
-            WidgetWall.showHideCommentBox = function () {
-                if (WidgetWall.SocialItems &&
-                    WidgetWall.SocialItems.appSettings &&
-                    WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
-                    WidgetWall.SocialItems.appSettings.mainThreadUserTags &&
-                    WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
-                ) {
-                    var _userTagsObj = WidgetWall.SocialItems.userDetails.userTags;
-                    var _userTags = [];
-                    if (_userTagsObj) {
-                        _userTags = _userTagsObj[Object.keys(_userTagsObj)[0]];
-                    }
-
-                    if (_userTags) {
-                        var _hasPermission = false;
-                        for (var i = 0; i < WidgetWall.SocialItems.appSettings.mainThreadUserTags.length; i++) {
-                            var _mainThreadTag = WidgetWall.SocialItems.appSettings.mainThreadUserTags[i].text;
-                            for (var x = 0; x < _userTags.length; x++) {
-                                if (_mainThreadTag.toLowerCase() == _userTags[x].tagName.toLowerCase()) {
-                                    _hasPermission = true;
-                                    break;
-                                }
-                            }
-                        }
-                        WidgetWall.createThreadPermission = _hasPermission;
-                    } else {
-                        WidgetWall.createThreadPermission = false;
-                    }
-                } else {
-                    WidgetWall.createThreadPermission = true;
-                }
-            };
 
             var getUserData = function (userId) {
                 if (userIds.indexOf(userId.toString()) == -1) {
@@ -92,8 +59,6 @@
                         //check if user logged in
                         if (WidgetWall.SocialItems.userDetails.userId != null) {
                             getUserData(WidgetWall.SocialItems.userDetails.userId);
-                            //check user if has permission to create thread
-                            WidgetWall.showHideCommentBox();
                         }
                     }
                 });
@@ -761,8 +726,6 @@
                     WidgetWall.SocialItems.userDetails.userToken = user.userToken;
                     WidgetWall.SocialItems.userDetails.userId = user._id;
                     getUserData(user._id);
-                    //check user if has permission to create thread
-                    WidgetWall.showHideCommentBox();
                     $scope.$digest();
                 }
             });

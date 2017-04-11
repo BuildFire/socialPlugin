@@ -45,8 +45,7 @@
     <div class="slide-right main-thread-section" ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall" ng-cloak>
         <div class="post-section backgroundColorTheme content">
             <div class="padding-zero" style="height: 100%;">
-                <div class="social-plugin social-wall"
-                     ng-class="WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.createThreadPermission ?'has-comment-box' : 'fluid-height'">
+                <div class="social-plugin social-wall has-comment-box">
                     <div ng-if="WidgetWall.SocialItems.socialAppId" class="head-btn text-center margin-bottom-fifteen"
                          style="margin:0 !important;">
                         <a ng-click="WidgetWall.followUnfollow(WidgetWall.getFollowingStatus())" class="ng-cloak">{{WidgetWall.getFollowingStatus()}}</a>
@@ -141,8 +140,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.createThreadPermission"
-             class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
+        <div class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
             <hr class="small">
             <form class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
                 <div class="post-holder clearfix">
