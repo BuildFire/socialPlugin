@@ -347,11 +347,14 @@
 
 .holder.bottom-post .post-holder {
     position: relative;
+    height: 100%;
 }
 
 .holder.bottom-post .post-holder .add-message {
-    width: 100%;
-    padding: 0 50px 0 38px;
+    position: absolute;
+    top: 12px;
+    width:100%;
+    text-align:center;
 }
 
 .holder.bottom-post .post-holder .add-message input {
@@ -363,32 +366,20 @@
 
 .holder.bottom-post .post-holder .add-media {
     position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 38px;
-    height: 100%;
-    text-align: center;
-}
-
-.holder.bottom-post .post-holder .add-media a {
-    padding: 7px;
-    display: inline-block;
+    left: 17px;
+    top: 11px;
+    font-size: 22px;
 }
 
 .holder.bottom-post .post-holder .send-message {
     position: absolute;
-    right: 0px;
-    top: 0px;
-    width: 49px;
-    height: 100%;
+    right: 17px;
+    top: 11px;
 }
 
 .holder.bottom-post .post-holder .add-media .icon {
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 22px;
     color: inherit !important;
-    position: relative;
-    top: 1px;
 }
 
 .holder.bottom-post .post-holder .send-message input {
@@ -741,6 +732,7 @@ textarea {
 /* Comment Box */
 .small-post-box{
     position: relative;
+    height: 100%;
 }
     .small-post-box .image-upload-queue{
         position: absolute;
