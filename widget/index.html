@@ -90,7 +90,7 @@
                                 <div class="copy padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <p class="margin-zero cursor-pointer">
                                         <span ng-click="WidgetWall.goInToThread(post.uniqueLink)"
-                                              ng-bind-html="(post.text | limitTo : (post.limit || 150) :0) | newLine"></span>
+                                              ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
                                         <span ng-if="(post.text.length>150 && !post.seeMore)"
                                               class="ng-cloak">...</span>
                                         <a ng-if="(post.text.length>150 && !post.seeMore)"
@@ -142,8 +142,8 @@
         </div>
         <div class="holder padding-zero bottom-post backgroundColorTheme" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
             <hr class="small">
-            <form class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
-                <div class="post-holder clearfix">
+            <div ng-click="WidgetWall.openPostSection()" class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
+                <div class="post-holder">
                     <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
                         <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()"
                                                                class="btn-delete-icon cross-icon"></a>
@@ -153,25 +153,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="add-media">
-                        <a>
-                    <span class="icon icon-camera2 text-primary" ng-click="WidgetWall.openPostSection()"></span>
-                        </a>
+                    <div class="add-media icon icon-camera2 text-primary">
                     </div>
-                    <div class="add-message pull-left">
+                    <div class="add-message">
                     <!--<textarea ng-click="WidgetWall.goFullScreen = true" rows="1" cols="30" placeholder="Type your message..." name="text"-->
                               <!--ng-model="WidgetWall.postText" class="text-area-custom"></textarea>-->
 
-                        <label ng-click="WidgetWall.openPostSection()"
-                                  ng-model="WidgetWall.postText" class="text-area-custom text-primary">Type your message...</label>
+                        <label class="text-primary">Write a post…</label>
                     </div>
                     <div class="send-message">
-                        <input type="submit" class="text-primary send-btn" value="Post"
-                               ng-click="WidgetWall.createPost($event)">
+                        <label class="text-primary" >Post</label>
                     </div>
 
                 </div>
-            </form>
+            </div>
 
             <form ng-submit=""  handle-phone-submit class="full-post-box slide-top" ng-show="WidgetWall.goFullScreen">
                     <div class="clearfix comment-actions border-bottom-grey">
@@ -194,7 +189,7 @@
                         </div>
                     </div>
                     <div class="add-message">
-                    <textarea rows="1" cols="30" placeholder="Type your message..." name="text"
+                    <textarea rows="1" cols="30" placeholder="Write a post…" name="text"
                               ng-model="WidgetWall.postText" class="text-area-custom backgroundColorTheme text-primary"></textarea>
                     </div>
                     <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">

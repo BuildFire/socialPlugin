@@ -673,6 +673,10 @@
                 }, 500);
             };
 
+            WidgetWall.decodeText = function (text) {
+                return decodeURIComponent(text);
+            };
+
             $scope.$watch(function () {
                 return WidgetWall.SocialItems.items;
             }, function () {
