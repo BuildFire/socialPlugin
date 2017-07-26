@@ -87,7 +87,7 @@
                 }
             }
         }])
-        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'Util', '$http', 'Upload', function (Buildfire, $q, $timeout, Util, $http, Upload) {
+        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'Util', '$http', 'Upload', '$rootScope', function (Buildfire, $q, $timeout, Util, $http, Upload, $rootScope) {
             return {
                 createPost: function (postData) {
                     var deferred = $q.defer();
@@ -466,6 +466,51 @@
                         params: {data: postDeleteObject},
                         headers: {'Content-Type': 'application/json'}
                     }).then(successCallback, errorCallback);
+                    return deferred.promise;
+                },
+                blockUser: function (blockUserId) {
+                    $rootScope.blockedUsers = $rootScope.blockedUsers || [];
+                    $rootScope.blockedUsers.push(blockUserId);
+                    var deferred = $q.defer();
+                    Buildfire.userData.insert({blockUserId: blockUserId}, 'blockedUsers', null, false, function(err, result) {
+                        if(err)
+                            deferred.reject(err);
+                        else
+                            deferred.resolve(result);
+
+                        if (!$rootScope.$$phase) $rootScope.$digest();
+                    });
+                    return deferred.promise;
+                },
+                loadBlockedUsers: function () {
+                    var deferred = $q.defer();
+                    $rootScope.blockedUsersRetrieved = false; // reset flag
+                    Buildfire.userData.search({} , 'blockedUsers', function(err, result) {
+                        $rootScope.blockedUsers = [];
+                        $rootScope.blockedUsersRetrieved = true;
+                        if(err) {
+                            deferred.reject(err);
+                        }
+                        else {
+                            if (result && result.length) {
+                                for (var blockedUserIndex = 0; blockedUserIndex < result.length; blockedUserIndex++) {
+                                    if (result[blockedUserIndex].data && result[blockedUserIndex].data.blockUserId) {
+                                        $rootScope.blockedUsers.push(result[blockedUserIndex].data.blockUserId);
+                                    }
+                                }
+                            }
+                            deferred.resolve($rootScope.blockedUsers);
+                        }
+                        if (!$rootScope.$$phase) $rootScope.$digest();
+                    });
+                    setTimeout(function() {
+                        // userData may not return with any callback
+                        if (!$rootScope.blockedUsersRetrieved) {
+                            $rootScope.blockedUsers = [];
+                            $rootScope.blockedUsersRetrieved = true;
+                            if (!$rootScope.$$phase) $rootScope.$digest();
+                        }
+                    }, 1000);
                     return deferred.promise;
                 }
             }

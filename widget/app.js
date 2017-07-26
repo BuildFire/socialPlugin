@@ -105,6 +105,17 @@
             }
             return filter;
         }])
+        .filter('nonBlocked',[ '$rootScope', function ($rootScope) {
+            return function(items) {
+                var filtered = [];
+                angular.forEach(items, function(item) {
+                    if(!item || !item.userId || !$rootScope.blockedUsers || $rootScope.blockedUsers.indexOf(item.userId) === -1 ){
+                        filtered.push(item);
+                    }
+                });
+                return filtered;
+            }
+        }])
         .directive("loadImage", function () {
             return {
                 restrict: 'A',

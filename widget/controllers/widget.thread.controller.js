@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location','Util', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location,util) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'MORE_MENU_POPUP', 'SocialItems', '$q', '$timeout', '$modal', 'Location','Util', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, MORE_MENU_POPUP, SocialItems, $q, $timeout, $modal, Location,util) {
             var Thread = this;
             var userIds = [];
             Thread.usersData = [];
@@ -321,8 +321,32 @@
                 Thread.modalPopupThreadId = Thread.post._id;
                 var checkUserPromise = checkAuthenticatedUser(false);
                 checkUserPromise.then(function () {
-                    Modals.showMoreOptionsModal({postId: Thread.post._id}).then(function (data) {
+                    Modals.showMoreOptionsModal({
+                        'postId': Thread.post._id,
+                        'userId': Thread.post.userId,
+                        'socialItemUserId': Thread.SocialItems.userDetails.userId
+                    }).then(function (data) {
                             console.log('Data in Successs------------------data');
+
+                            switch (data) {
+                                case MORE_MENU_POPUP.BLOCK_USER:
+                                    $modal
+                                        .open({
+                                            templateUrl: 'templates/modals/block-user-modal.html',
+                                            controller: 'MoreOptionsBlockModalPopupCtrl',
+                                            controllerAs: 'MoreOptionsPopup',
+                                            size: 'sm',
+                                            resolve: {
+                                                Info: function () {
+                                                    return {
+                                                        blockUserId: Thread.post.userId
+                                                    };
+                                                }
+                                            }
+                                        });
+                                    break;
+                                default :
+                            }
                         },
                         function (err) {
                             console.log('Error in Error handler--------------------------', err);
@@ -754,6 +778,9 @@
                             if (Thread.modalPopupThreadId == event._id)
                                 Modals.close('Comment already deleted');
                             break;
+                        case EVENTS.USER_BLOCKED :
+                            Buildfire.history.pop();
+                            break;
 //                        case EVENTS.APP_RESET:
                         /*$rootScope.showThread = true;
                          Location.goToHome();*/
@@ -776,6 +803,7 @@
                     getUserData(user._id);
                     $scope.$digest();
                 }
+                SocialDataStore.loadBlockedUsers();
             });
             // On Logout
             Buildfire.auth.onLogout(function () {
@@ -783,6 +811,7 @@
                 Thread.userDetails.userToken = null;
                 Thread.userDetails.userId = null;
                 $scope.$digest();
+                SocialDataStore.loadBlockedUsers();
             });
 
 

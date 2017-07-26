@@ -28,6 +28,8 @@
             var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
             console.log('SocialItems------------------Wall Controller-------------------- this---------------333333333333----', WidgetWall.SocialItems);
 
+            SocialDataStore.loadBlockedUsers();
+
             var getUserData = function (userId) {
                 if (userIds.indexOf(userId.toString()) == -1) {
                     userIds.push(userId.toString());
@@ -353,6 +355,22 @@
                                                 resolve: {
                                                     Info: function () {
                                                         return post._id;
+                                                    }
+                                                }
+                                            });
+                                        break;
+                                    case MORE_MENU_POPUP.BLOCK_USER:
+                                        $modal
+                                            .open({
+                                                templateUrl: 'templates/modals/block-user-modal.html',
+                                                controller: 'MoreOptionsBlockModalPopupCtrl',
+                                                controllerAs: 'MoreOptionsPopup',
+                                                size: 'sm',
+                                                resolve: {
+                                                    Info: function () {
+                                                        return {
+                                                            blockUserId: post.userId
+                                                        };
                                                     }
                                                 }
                                             });
@@ -732,6 +750,7 @@
                     getUserData(user._id);
                     $scope.$digest();
                 }
+                SocialDataStore.loadBlockedUsers();
             });
             // On Logout
             Buildfire.auth.onLogout(function () {
@@ -739,6 +758,7 @@
                 WidgetWall.SocialItems.userDetails.userToken = null;
                 WidgetWall.SocialItems.userDetails.userId = null;
                 $scope.$digest();
+                SocialDataStore.loadBlockedUsers();
             });
 
             /**

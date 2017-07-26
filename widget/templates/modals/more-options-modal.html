@@ -6,6 +6,7 @@
 		<div class="dynamic-links">
 			<a class="text-danger" ng-repeat="option in MoreOptionsPopup.options" ng-click="ok(option)">{{option}}</a>
 			<a class="text-danger" ng-if="socialItemUserId == userId" ng-click="deletePost(postId)">Delete Post</a>
+			<a class="text-danger" ng-if="socialItemUserId != userId" ng-click="blockUser(userId)">Block User</a>
 		</div>
 	</div>
 	<div class="bottom border-top-grey clearfix">

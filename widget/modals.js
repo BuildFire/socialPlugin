@@ -92,7 +92,11 @@
                     console.log(err);
                 })
 
-            }
+            };
+
+            $scope.blockUser = function(){
+                $modalInstance.close('Block User');
+            };
         }])
         .controller('MoreOptionsCommentModalPopupCtrl', ['$scope', '$modalInstance', 'Info','$rootScope','SocialDataStore','Buildfire', function ($scope, $modalInstance, Info,$rootScope,SocialDataStore,Buildfire) {
             console.log('MoreOptionsModalPopup Controller called-----');
@@ -116,5 +120,31 @@
                 $rootScope.$emit('Delete-Comment',{'commentId':commentId})
                 $modalInstance.close();
             }
+        }])
+        .controller('MoreOptionsBlockModalPopupCtrl', ['$scope', '$modalInstance', 'Info','$rootScope','SocialDataStore','Buildfire', function ($scope, $modalInstance, Info,$rootScope,SocialDataStore,Buildfire) {
+            $scope.blockUserId = Info.blockUserId;
+
+            $scope.ok = function (option) {
+                $modalInstance.close(option);
+            };
+            $scope.cancel = function () {
+                $modalInstance.dismiss('no');
+            };
+
+            $scope.blockUser =function(){
+                var blockUserPromise = SocialDataStore.blockUser($scope.blockUserId);
+                blockUserPromise.then(function(response){
+                    var event={};
+                    event.name = "USER_BLOCKED";
+                    event._id = $scope.blockUserId;
+                    Buildfire.messaging.onReceivedMessage(event);
+                    $modalInstance.dismiss('no');
+                    console.log(response);
+                },function(err){
+                    $modalInstance.dismiss('no');
+                    console.log(err);
+                })
+
+            };
         }])
 })(window.angular, window.buildfire);

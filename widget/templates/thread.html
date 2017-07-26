@@ -66,7 +66,7 @@
                         <a ng-click="Thread.loadMoreComments()">Load More Comments</a>
                     </div>
                     <div class="comments-list">
-                        <div class="social-comment" ng-repeat="comment in Thread.SocialItems.comments">
+                        <div class="social-comment" ng-repeat="comment in Thread.SocialItems.comments | nonBlocked">
                             <hr class="small">
                             <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-zero">
                                 <div class="col-xs-8 pull-left">
@@ -106,7 +106,7 @@
                                                 ng-hide="comment.likesCount == 1">s</span></p>
                                         <!--<p class="pull-left margin-bottom-zero margin-left-twenty">5 Comments</p>-->
                                         <a class="more-info" ng-if="Thread.userDetails.userId == comment.userId"
-                                           ng-click="Thread.showMoreOptionsComment(comment._id)"">
+                                           ng-click="Thread.showMoreOptionsComment(comment._id)">
                                         <span class="pull-left icon icon-ellipsis margin-left-twenty"></span>
                                         </a>
                                         <!-- <a style="float: right; margin-right: 5px" ng-click="Thread.deleteComment(comment._id)"

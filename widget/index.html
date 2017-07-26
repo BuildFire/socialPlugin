@@ -62,8 +62,7 @@
                                 <a ng-click="WidgetWall.init()" class="ng-cloak"><span class="titleBarTextAndIcons"><i
                                         class="glyphicon glyphicon-arrow-up titleBarTextAndIcons"></i> New Posts</span></a>
                             </div>
-
-                            <div class="social-item clearfix" ng-repeat="post in WidgetWall.SocialItems.items">
+                            <div class="social-item clearfix" ng-show="blockedUsersRetrieved" ng-repeat="post in WidgetWall.SocialItems.items | nonBlocked">
                                 <hr class="small">
                                 <div class="head row clearfix padding-left-ten padding-right-ten margin-bottom-fifteen">
                                     <div class="col-xs-8 pull-left">
