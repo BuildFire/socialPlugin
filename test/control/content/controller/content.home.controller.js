@@ -10,7 +10,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
     beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_ ,EVENTS) {
             scope = _$rootScope_.$new();
             Modals = jasmine.createSpyObj('Modals',['removePopupModal','open','banPopupModal']);
-            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost','getThreadLikes']);
+            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost','getThreadLikes', 'loadBlockedUsers', 'blockUser']);
 
             $timeout = _$timeout_;
             $q = _$q_;

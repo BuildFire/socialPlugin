@@ -8,6 +8,7 @@
         })
         .constant('MORE_MENU_POPUP', {
             REPORT: 'Report Post',
+            BLOCK_USER: 'Block User',
             BLOCK: 'Delete Post'
         })
         .constant('EVENTS',{
@@ -20,7 +21,8 @@
             COMMENT_ADDED:"COMMENT_ADDED",
             COMMENT_LIKED: "COMMENT_LIKED",
             COMMENT_UNLIKED: "COMMENT_UNLIKED",
-            APP_RESET: "APP_RESET"
+            APP_RESET: "APP_RESET",
+            USER_BLOCKED: "USER_BLOCKED"
         })
         .constant('THREAD_STATUS', {
             FOLLOW: "Follow Thread",

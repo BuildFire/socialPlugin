@@ -59,7 +59,7 @@ describe('Unit : Controller - ThreadCtrl', function () {
 */
 
 
-        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','getCommentsOfAPost']);
+        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','getCommentsOfAPost', 'loadBlockedUsers', 'blockUser']);
         Location1 = Location;
         SocialItem =_SocialItems_;
         $scope = _$rootScope_.$new();

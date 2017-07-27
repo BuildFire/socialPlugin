@@ -39,7 +39,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
     beforeEach(inject(function ($controller, _$rootScope_, Location,SocialItems,_Modals_, _SocialDataStore_, _$timeout_,_$q_,_Buildfire_) {
         Buildfire = _Buildfire_;
-        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','saveUserSettings']);;
+        SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','saveUserSettings', 'loadBlockedUsers', 'blockUser']);
         Location1 = Location;
         SocialItem =SocialItems;
         scope = _$rootScope_.$new();
@@ -72,7 +72,7 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
         it('it should pass if getFollowingStatus is called', function () {
 
-            WidgetWallCtrl.getFollowingStatus();
+                WidgetWallCtrl.getFollowingStatus();
 
         });
     });
