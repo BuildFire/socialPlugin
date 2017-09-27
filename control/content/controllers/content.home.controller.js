@@ -14,6 +14,8 @@
             ContentHome.socialAppId;
             ContentHome.parentThreadId;
             ContentHome.modalPopupThreadId;
+            ContentHome.originalAppId;
+            ContentHome.originalInstanceId;
             var datastoreWriteKey;
             var appId;
             var instanceId;
@@ -23,57 +25,72 @@
                     datastoreWriteKey = context.datastoreWriteKey;
                     appId = context.appId;
                     instanceId = context.instanceId;
-                });
-                Buildfire.datastore.get('Social', function (err, data) {
-                    console.log('Get data in content section socail App Id------------------', err, data);
-                    if (data && data.data && data.data.socialAppId) {
-                        ContentHome.socialAppId = data.data.socialAppId;
-                        ContentHome.parentThreadId = data.data.parentThreadId;
-                        $scope.$digest();
+                    ContentHome.originalAppId = context.appId;
+                    ContentHome.originalInstanceId = context.instanceId;
 
-                        //update the plugin name on social
-                        if (ContentHome.socialAppId && ContentHome.parentThreadId) {
-                            Buildfire.getContext(function (err, context) {
-                                if (err) {
-                                    console.error("Error occurred while getting buildfire context");
-                                } else {
-                                    console.log('buildfire get context response::: ', context);
-                                    instanceId = context && context.instanceId;
+                    Buildfire.datastore.get('Social', function (err, data) {
+                        console.log('Get data in content section socail App Id------------------', err, data);
+                        if (data && data.data && data.data.socialAppId && data.data.parentThreadId) {
+                            ContentHome.socialAppId = data.data.socialAppId;
+                            ContentHome.parentThreadId = data.data.parentThreadId;
+                            var _storedAppId = data.data.appId;
+                            var _storedInstanceId = data.data.instanceId;
+                            $scope.$digest();
 
-                                    var updateThreadTitle = function () {
-                                        Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
-                                            if (result && result.id) {
-                                                pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
-                                                context.pluginTitle = pluginTitle;
+                            //update the plugin name on social
+                            var updateThreadTitle = function () {
+                                Buildfire.datastore.getWithDynamicData('pluginInfo', function (err, result) {
+                                    if (result && result.id) {
+                                        pluginTitle = result.data && result.data._buildfire && result.data._buildfire.myDynamicPluginCollection && result.data._buildfire.myDynamicPluginCollection.result && result.data._buildfire.myDynamicPluginCollection.result.length && result.data._buildfire.myDynamicPluginCollection.result[0].data && result.data._buildfire.myDynamicPluginCollection.result[0].data.title;
+                                        context.pluginTitle = pluginTitle;
 
-                                                SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
-                                                    function (parentThreadRes) {
-                                                        console.log('Parent ThreadId -------success----', parentThreadRes);
-                                                    },
-                                                    function (error) {
-                                                        console.log('Parent thread callback error------', error);
-                                                    }
-                                                );
+                                        SocialDataStore.getThreadByUniqueLink(ContentHome.socialAppId, context).then(
+                                            function (parentThreadRes) {
+                                                console.log('Parent ThreadId -------success----', parentThreadRes);
+                                            },
+                                            function (error) {
+                                                console.log('Parent thread callback error------', error);
                                             }
-                                        });
-                                    };
-                                    updateThreadTitle();
-                                }
-                            });
-                        }
-                        console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
-                    }
-                    else {
-                        Buildfire.getContext(function (err, context) {
-                            if (err) {
-                                console.error("Error occurred while getting buildfire context");
+                                        );
+                                    }
+                                });
+                            };
+
+                            /*
+                             *   We want the appId to be saved in the datastore to prevent the duplicate data in the plugin when
+                             *   we clone the app, so we can compare the original appId with the one from buildfire.getContext
+                             *   we also need to compare the instanceId to because we might clone the plugin itself not the app
+                             *   and in this case the appId will remain the same but the instanceId will be changed
+                             */
+
+                            if (!_storedAppId || !_storedInstanceId) {
+                                Buildfire.datastore.save({
+                                    socialAppId: ContentHome.socialAppId,
+                                    parentThreadId: ContentHome.parentThreadId,
+                                    appId: ContentHome.originalAppId,
+                                    instanceId: ContentHome.originalInstanceId
+                                }, 'Social', function (err, data) {
+                                    console.log('Data saved using datastore-------------', err, data);
+                                });
+                                updateThreadTitle();
+
+                            } else if (ContentHome.originalAppId != _storedAppId || ContentHome.originalInstanceId != _storedInstanceId) {
+                                /*
+                                 * check if the context appId is not the same as the one in the datastore
+                                 * or if the current plugin instance is not the same as old one in myDynamicPluginCollection
+                                 * and reset the app
+                                 * */
+                                ContentHome.forceResetApp();
+
                             } else {
-                                console.log('buildfire get context response::: ', context);
-                                instanceId = context && context.instanceId;
-                                addApplication(context);
+                                updateThreadTitle();
                             }
-                        });
-                    }
+
+                            console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
+                        }
+                        else {
+                            addApplication(context);
+                        }});
                 });
 
                 function addApplication(context) {
@@ -102,7 +119,9 @@
                                                 ContentHome.parentThreadId = parentThreadRes.data.result._id;
                                                 Buildfire.datastore.save({
                                                     socialAppId: response.data.result,
-                                                    parentThreadId: parentThreadRes.data.result._id
+                                                    parentThreadId: parentThreadRes.data.result._id,
+                                                    appId : ContentHome.originalAppId,
+                                                    instanceId : ContentHome.originalInstanceId
                                                 }, 'Social', function (err, data) {
                                                     console.log('Data saved using datastore-------------', err, data);
 //                                                    Buildfire.messaging.sendMessageToWidget({'name': EVENTS.APP_RESET, 'data': data});
@@ -129,7 +148,7 @@
                         if (appId && instanceId && datastoreWriteKey) {
                             var context = {
                                 appId: appId,
-                                instanceId: instanceId + new Date().getTime(),
+                                instanceId: instanceId  + new Date().getTime(),
                                 datastoreWriteKey: datastoreWriteKey
                             };
                             addApplication(context);
@@ -137,12 +156,22 @@
                             Buildfire.getContext(function (err, context) {
                                 datastoreWriteKey = context.datastoreWriteKey;
                                 appId = context.appId;
-                                instanceId = context.instanceId + new Date().getTime();
+                                instanceId = context.instanceId  + new Date().getTime();
                                 addApplication(context);
                             });
                         }
                     }, function (err) {
                         console.log('Error is: ', err);
+                    });
+                };
+
+                ContentHome.forceResetApp = function () {
+                    // resetting the app when the app or plugin is cloned
+                    Buildfire.getContext(function (err, context) {
+                        datastoreWriteKey = context.datastoreWriteKey;
+                        appId = context.appId;
+                        instanceId = context.instanceId;
+                        addApplication(context);
                     });
                 };
 
