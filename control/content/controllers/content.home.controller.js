@@ -16,6 +16,7 @@
             ContentHome.modalPopupThreadId;
             ContentHome.originalAppId;
             ContentHome.originalInstanceId;
+            ContentHome.startLoadingPosts = false;
             var datastoreWriteKey;
             var appId;
             var instanceId;
@@ -35,7 +36,10 @@
                             ContentHome.parentThreadId = data.data.parentThreadId;
                             var _storedAppId = data.data.appId;
                             var _storedInstanceId = data.data.instanceId;
-                            $scope.$digest();
+
+                            if(!$scope.$$phase) {
+                                $scope.$digest();
+                            }
 
                             //update the plugin name on social
                             var updateThreadTitle = function () {
@@ -56,6 +60,14 @@
                                 });
                             };
 
+                            var startApp = function(){
+                                ContentHome.startLoadingPosts = true;
+                                ContentHome.getPosts();
+                                if(!$scope.$$phase) {
+                                    $scope.$digest();
+                                }
+                            };
+
                             /*
                              *   We want the appId to be saved in the datastore to prevent the duplicate data in the plugin when
                              *   we clone the app, so we can compare the original appId with the one from buildfire.getContext
@@ -73,6 +85,7 @@
                                     console.log('Data saved using datastore-------------', err, data);
                                 });
                                 updateThreadTitle();
+                                startApp();
 
                             } else if (ContentHome.originalAppId != _storedAppId || ContentHome.originalInstanceId != _storedInstanceId) {
                                 /*
@@ -80,10 +93,13 @@
                                  * or if the current plugin instance is not the same as old one in myDynamicPluginCollection
                                  * and reset the app
                                  * */
-                                ContentHome.forceResetApp();
+                                ContentHome.forceResetApp(function () {
+                                    startApp();
+                                });
 
                             } else {
                                 updateThreadTitle();
+                                startApp();
                             }
 
                             console.log('Content------------------------social App id, parent id', ContentHome.socialAppId, ContentHome.parentThreadId);
@@ -93,7 +109,7 @@
                         }});
                 });
 
-                function addApplication(context) {
+                function addApplication(context,callback) {
                     SocialDataStore.addApplication(context.appId, context.datastoreWriteKey).then(function (response) {
                         if (response && response.data && response.data.result) {
                             console.log('application successfully added:::::-------------------------- ', response);
@@ -128,9 +144,16 @@
                                                     $location.path('#/');
                                                     $scope.$apply();
                                                 });
+
+                                                if(callback){
+                                                    callback(null);
+                                                }
                                             }
                                         },
                                         function (error) {
+                                            if(callback){
+                                                callback(err);
+                                            }
                                             console.log('Parent thread callback error------', error);
                                         }
                                     );
@@ -138,6 +161,9 @@
                             });
                         }
                     }, function (err) {
+                        if(callback){
+                            callback(err);
+                        }
                         console.error("Error add application api is: ", err);
                     });
                 }
@@ -165,13 +191,19 @@
                     });
                 };
 
-                ContentHome.forceResetApp = function () {
+                ContentHome.forceResetApp = function (callback) {
                     // resetting the app when the app or plugin is cloned
                     Buildfire.getContext(function (err, context) {
                         datastoreWriteKey = context.datastoreWriteKey;
                         appId = context.appId;
                         instanceId = context.instanceId;
-                        addApplication(context);
+                        addApplication(context,function (err,result) {
+                            if(callback){
+                                if(!err){
+                                    callback();
+                                }
+                            }
+                        });
                     });
                 };
 

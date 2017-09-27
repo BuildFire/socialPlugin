@@ -13,7 +13,7 @@
      style="overflow-y:scroll;" class="infinite-scroll-parent">
     <div class="wrapper social-plugin" infinite-scroll-distance="0"
          data-infinite-container=".infinite-scroll-parent"
-         infinite-scroll="ContentHome.getPosts()"
+         infinite-scroll="ContentHome.startLoadingPosts && ContentHome.getPosts()"
          infinite-scroll-disabled="ContentHome.noMore">
         <div class="social-item clearfix border-grey padded border-radius-three" ng-repeat="post in ContentHome.posts">
             <div class="padded padding-bottom-zero">
