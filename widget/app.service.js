@@ -538,6 +538,8 @@
                 _this.newCommentsAvailable = false;
                 _this.pauseNewPostBgService = false;
                 _this.comments = [];
+                _this.originalAppId = null;
+                _this.originalInstanceId = null;
 
             };
             var instance;
@@ -561,6 +563,8 @@
                         } else {
                             console.log('inside get context success::::::::::');
                             _this.context = context;
+                            _this.originalAppId = context.appId;
+                            _this.originalInstanceId = context.instanceId;
                             getAppIdAndParentThreadId();
                         }
                     });
@@ -577,10 +581,26 @@
                             _this.socialAppId = data && data.data && data.data.socialAppId;
                             _this.parentThreadId = data && data.data && data.data.parentThreadId;
                             _this.appSettings = data && data.data && data.data.appSettings;
+
+                            var _storedAppId = data && data.data && data.data.appId;
+                            var _storedInstanceId = data && data.data && data.data.instanceId;
+
+                            if(_storedAppId && _storedInstanceId){
+                                if (_this.originalAppId == _storedAppId && _this.originalInstanceId == _storedInstanceId){
+                                    getPosts(function () {
+                                        startBackgroundService();
+                                    });
+                                }else{
+                                    //do nothing
+                                }
+                            }else{
+                                getPosts(function () {
+                                    startBackgroundService();
+                                });
+                            }
+
                             console.log('Inside else 2---------------------------------------this', _this);
-                            getPosts(function () {
-                                startBackgroundService();
-                            });
+
                         }
                         else {
                             getAppIdAndParentThreadId();
