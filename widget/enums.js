@@ -3,7 +3,7 @@
 (function (angular) {
     angular.module('socialPluginWidget')
         .constant('SERVER_URL', {
-            link: 'http://social.kaleoapps.com/src/server.js',
+            link: 'http://social.buildfire.com/src/server.js',
             secureLink: 'https://social.buildfire.com/src/server.js'
         })
         .constant('MORE_MENU_POPUP', {

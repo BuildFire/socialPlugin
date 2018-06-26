@@ -40,7 +40,8 @@
                     if (!isiPhone && !isAndroid) {
                         useHttps = true;
                     }
-
+                    if(window &&window.location&&window.location.protocol&& window.location.protocol.startsWith("https"))
+                        useHttps = true;
                     console.warn('userAgent: ' + userAgent);
                     console.warn('useHttps: ' + useHttps);
 
