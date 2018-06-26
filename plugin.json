@@ -1,25 +1,23 @@
 {
-  "author": "BuildFire",
-  "pluginName": "Social Wall",
-  "pluginDescription": "Keep your users engaged and communicating in your app with social walls. When users perform an interactive action (i.e. liking, commenting), other users in that group will even get an automated SMARTPush™ notification.Related Topics: Bible",
-  "supportEmail": "support@buildfire.com",
-  "supportSite": "http://learn.appdocumentation.com/plugin-tutorials/social-wall-plugin-tutorial",
-  "pluginIcon": "icon.png",
-  "control": {
-    "content": {
-      "enabled": true
-    },
-    "design": {
-      "enabled": false
-    },
-    "settings": {
-      "enabled": false
-    }
-  },
-  "widget": {
-  },
-  "features": [],
-  "languages": [
-    "en"
-  ]
+  "author":"BuildFire"
+,"pluginName":"Social Wall"
+,"pluginDescription":"Keep your users engaged and communicating in your app with social walls. When users perform an interactive action (i.e. liking, commenting), other users in that group will even get an automated SMARTPush™ notification.Related Topics: Bible"
+,"supportEmail":"support@buildfire.com"
+,"supportSite":"http://learn.appdocumentation.com/plugin-tutorials/social-wall-plugin-tutorial"
+,"pluginIcon": "icon.png"
+,"control":{
+  "content":{
+    "enabled":true
+  }
+, "design":{
+    "enabled":false
+  }
+, "settings":{
+    "enabled":false
+  }
+}
+,"widget":{
+},
+  "features" : [],
+  "languages" : ["en"]
 }
