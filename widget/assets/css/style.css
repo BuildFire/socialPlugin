@@ -1,10 +1,4 @@
 /* Plugin CSS */
-/* Fixed Bottom */
-
-.iphone-x-padding{
-    padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-    padding-top: env(safe-area-inset-top); /* iOS 11.2 */
-}
 
 .main_view,.main-thread-section{height: 100%}
 .holder.has-bottom {
@@ -345,8 +339,6 @@
     width: 100%;
     height: 43px;
     z-index: 11;
-    margin-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
-    margin-bottom: env(safe-area-inset-bottom); /* iOS 11.2 */
 }
 
 .holder.bottom-post hr {
