@@ -4,7 +4,8 @@
   "description": "\"social-plugin\"",
   "scripts": {
     "postinstall": "./node_modules/.bin/bower install",
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
+    "build": "cd .. && rm -rf socialPlugin.zip && zip -r socialPlugin.zip socialPlugin/ -x *node_modules/* *.git* *test/*"
   },
   "keywords": [
     "angularjs",
